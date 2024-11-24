@@ -13,6 +13,7 @@ function App() {
   const [errorMessage, setErrorMessage] = useState('');
   const [accounts, setAccounts] = useState({});
   const [profile, setProfile] = useState({ username: '', gender: '', age: '', avatar: 'https://icon-library.com/images/no-profile-picture-icon/no-profile-picture-icon-15.jpg' });
+  const [emptyIndices, setEmptyIndices] = useState([]);
 
   const computerTerms = {
     ALGORITHM: "A process or set of rules to be followed in calculations or other problem-solving operations, especially by a computer.",
@@ -155,29 +156,37 @@ function App() {
 
   const handleLetterClick = (letter, index) => {
     if (letter) {
-      setSelectedLetters([...selectedLetters, letter]);
-      const newGridLetters = [...gridLetters];
-      newGridLetters[index] = '';
-      setGridLetters(newGridLetters);
+        setSelectedLetters([...selectedLetters, letter]);
+        const newGridLetters = [...gridLetters];
+        newGridLetters[index] = '';
+        setGridLetters(newGridLetters);
+        setEmptyIndices([...emptyIndices, index]);
     }
-  };
+};
 
-  const handleSelectedLetterClick = (letter, index) => {
+// Handle letter click in the selected letters box
+const handleSelectedLetterClick = (letter, index) => {
     const newSelectedLetters = [...selectedLetters];
     newSelectedLetters.splice(index, 1);
     setSelectedLetters(newSelectedLetters);
 
-    const emptyIndex = gridLetters.indexOf('');
-    if (emptyIndex !== -1) {
-      const newGridLetters = [...gridLetters];
-      newGridLetters[emptyIndex] = letter;
-      setGridLetters(newGridLetters);
+    const emptyIndex = emptyIndices.shift();
+    if (emptyIndex !== undefined) {
+        const newGridLetters = [...gridLetters];
+        newGridLetters[emptyIndex] = letter;
+        setGridLetters(newGridLetters);
+        setEmptyIndices(emptyIndices);
     }
-  };
+};
 
-  const handleScramble = () => {
-    setGridLetters(generateRandomLetters());
-  };
+// Handle scramble button click
+const handleScramble = () => {
+    const newGridLetters = generateRandomLetters();
+    emptyIndices.forEach(index => {
+        newGridLetters[index] = '';
+    });
+    setGridLetters(newGridLetters);
+};
 
   const handleAttack = () => {
     const word = selectedLetters.join('');
