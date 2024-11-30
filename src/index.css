@@ -1,16 +1,9 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+body {
+  font-family: 'Press Start 2P', cursive;
+  background: url('https://cdn.fbsbx.com/v/t59.2708-21/466981595_1363973704581527_6459452857071688842_n.gif?_nc_cat=109&ccb=1-7&_nc_sid=cf94fc&_nc_eui2=AeHB7XhudQPt5uWzko_c58kpGFZfegAhYtcYVl96ACFi12jhjmOTTWzOFBUgqKrS_2Z5DD-_JWxEm0isCEU4ryiq&_nc_ohc=EhP1UB-b5ZYQ7kNvgGWJO2k&_nc_zt=7&_nc_ht=cdn.fbsbx.com&_nc_gid=As4BJ-NvQhcarcPSMXdCZXL&oh=03_Q7cD1QFrcS7QrtoOuEqTA1k6kPV8Kuk3UE-PPtjPXPBXLGeoSA&oe=673A073E') no-repeat center center fixed;
+  background-size: cover;
+}
