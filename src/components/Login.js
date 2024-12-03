@@ -24,7 +24,7 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="mb-4 p-2 border border-gray-300 rounded text-black" // Added text-black class
+                    className="mb-4 p-2 border border-gray-300 rounded text-black" 
                     required
                 />
                 <input
@@ -32,7 +32,7 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="mb-4 p-2 border border-gray-300 rounded text-black" // Added text-black class
+                    className="mb-4 p-2 border border-gray-300 rounded text-black" 
                     required
                 />
                 {error && <p className="text-red-500 text-center">{error}</p>}

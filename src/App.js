@@ -6,7 +6,7 @@ import Profile from './components/Profile';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Slidebar from './components/Slidebar';
-import bgImage from './assets/bg.gif'; // Import the background image
+import bgImage from './assets/bg.gif'; 
 
 const App = () => {
     const [currentPage, setCurrentPage] = useState('mainMenu');
@@ -89,7 +89,7 @@ const App = () => {
     return (
         <div 
             className="min-h-screen bg-cover bg-center"
-            style={{ backgroundImage: `url(${bgImage})` }} // Use the imported background image
+            style={{ backgroundImage: `url(${bgImage})` }} 
         >
             {loginOpen && renderLoginPopup()}
             {signupOpen && renderSignupPopup()}

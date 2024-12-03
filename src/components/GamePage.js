@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Cross } from 'hamburger-react'; // Import the Cross hamburger component
+import { Cross } from 'hamburger-react'; 
 import GameSettings from './GameSettings';
 import Profile from './Profile';
 import Slidebar from './Slidebar';
 import computerTerms from './computerTerms';
-import heartImage from '../assets/heart.png'; // Import the heart image
+import heartImage from '../assets/heart.png'; 
 
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout}) => {
     const [selectedLetters, setSelectedLetters] = useState([]);

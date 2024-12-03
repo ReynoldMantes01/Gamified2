@@ -12,9 +12,9 @@ const Signup = ({ onSwitchToLogin }) => {
             setError('Passwords do not match');
             return;
         }
-        // Mock signup logic
+        
         console.log('User  signed up:', email);
-        onSwitchToLogin(); // Switch back to login after signup
+        onSwitchToLogin(); 
     };
 
     return (
@@ -26,7 +26,7 @@ const Signup = ({ onSwitchToLogin }) => {
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="mb-4 p-2 border border-gray-300 rounded text-black" // Added text-black class
+                    className="mb-4 p-2 border border-gray-300 rounded text-black" 
                     required
                 />
                 <input
@@ -34,7 +34,7 @@ const Signup = ({ onSwitchToLogin }) => {
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="mb-4 p-2 border border-gray-300 rounded text-black" // Added text-black class
+                    className="mb-4 p-2 border border-gray-300 rounded text-black" 
                     required
                 />
                 <input
@@ -42,7 +42,7 @@ const Signup = ({ onSwitchToLogin }) => {
                     placeholder="Confirm Password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="mb-4 p-2 border border-gray-300 rounded text-black" // Added text-black class
+                    className="mb-4 p-2 border border-gray-300 rounded text-black" 
                     required
                 />
                 {error && <p className="text-red-500 text-center">{error}</p>}
