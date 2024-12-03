@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Cross } from 'hamburger-react'; 
+import { Cross } from 'hamburger-react'; // Import the Cross hamburger component
 import GameSettings from './GameSettings';
 import Profile from './Profile';
 import Slidebar from './Slidebar';
 import computerTerms from './computerTerms';
-import heartImage from '../assets/heart.png'; 
+import heartImage from '../assets/heart.png'; // Import the heart image
 
-const GamePage = ({ onMainMenu, profileData, setProfileData }) => {
+const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout}) => {
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState(generateRandomLetters());
     const [definition, setDefinition] = useState('');
@@ -105,10 +105,12 @@ const GamePage = ({ onMainMenu, profileData, setProfileData }) => {
         <div className="game-container flex flex-col items-center justify-center h-screen relative">
             <Slidebar
                 isOpen={slidebarOpen}
-                toggleSlidebar ={toggleSlidebar}
+                toggleSlidebar={toggleSlidebar}
                 onMainMenu={onMainMenu}
                 setSettingsOpen={setSettingsOpen}
                 setProfileOpen={setProfileOpen}
+                onLogout={onLogout}
+
             />
             <div className="top-bar absolute top-2 left-2 flex items-center z-0">
                 <div className="slidebar-icon text-2xl mr-2 cursor-pointer" onClick={toggleSlidebar}>

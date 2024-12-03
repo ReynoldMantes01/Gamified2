@@ -3,49 +3,73 @@ import MainMenu from './components/MainMenu';
 import GamePage from './components/GamePage';
 import GameSettings from './components/GameSettings';
 import Profile from './components/Profile';
-import Login from './components/Login';  // New component
-import Signup from './components/Signup';  // New component
+import Login from './components/Login';
+import Signup from './components/Signup';
+import Slidebar from './components/Slidebar';
+import bgImage from './assets/bg.gif'; // Import the background image
 
 const App = () => {
     const [currentPage, setCurrentPage] = useState('mainMenu');
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);  // New state
-    const [userData, setUserData] = useState(null);  // New state for user data
+    const [loginOpen, setLoginOpen] = useState(true);
+    const [signupOpen, setSignupOpen] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [profileData, setProfileData] = useState({
         image: '',
         username: '',
         age: '',
         gender: ''
     });
+    const [slidebarOpen, setSlidebarOpen] = useState(false);
 
-    // Handle login success
-    const handleLoginSuccess = (user) => {
-        setUserData(user);
+    const handleLoginSuccess = () => {
         setIsAuthenticated(true);
-        setCurrentPage('mainMenu'); // Redirect to main menu after login
+        setLoginOpen(false);
+        setCurrentPage('mainMenu');
     };
 
-    // Handle logout
+    const handleSignupSuccess = () => {
+        setSignupOpen(false);
+        setLoginOpen(true);
+    };
+
     const handleLogout = () => {
         setIsAuthenticated(false);
-        setUserData(null);
-        setCurrentPage('mainMenu'); // Redirect to main menu after logout
+        setLoginOpen(true);
+        setCurrentPage('mainMenu');
+        setSlidebarOpen(false);
     };
 
-    // Render the correct page based on currentPage
+    const renderLoginPopup = () => {
+        return (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
+                <div className="bg-gray-800 text-white p-8 rounded w-96">
+                    <Login onLoginSuccess={handleLoginSuccess} onSwitchToSignup={() => { setLoginOpen(false); setSignupOpen(true); }} />
+                </div>
+            </div>
+        );
+    };
+
+    const renderSignupPopup = () => {
+        return (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
+                <div className="bg-gray-800 text-white p-8 rounded w-96">
+                    <Signup onSwitchToLogin={handleSignupSuccess} />
+                </div>
+            </div>
+        );
+    };
+
     const renderPage = () => {
         switch (currentPage) {
             case 'mainMenu':
                 return (
                     <MainMenu
-                        onPlay={() => isAuthenticated ? setCurrentPage('gamePage') : setCurrentPage('login')}
+                        onPlay={() => isAuthenticated ? setCurrentPage('gamePage') : setLoginOpen(true)}
                         onSettings={() => setSettingsOpen(true)}
                         onProfile={() => setProfileOpen(true)}
-                        onLogin={() => setCurrentPage('login')}
-                        onSignup={() => setCurrentPage('signup')}
                         onLogout={handleLogout}
-                        isAuthenticated={isAuthenticated}
                     />
                 );
             case 'gamePage':
@@ -54,25 +78,21 @@ const App = () => {
                         onMainMenu={() => setCurrentPage('mainMenu')}
                         profileData={profileData}
                         setProfileData={setProfileData}
+                        onLogout={handleLogout}
                     />
                 );
-            case 'login':
-                return <Login onLoginSuccess={handleLoginSuccess} />;
-            case 'signup':
-                return <Signup onSignupSuccess={() => setCurrentPage('login')} />;
             default:
-                return (
-                    <MainMenu
-                        onPlay={() => isAuthenticated ? setCurrentPage('gamePage') : setCurrentPage('login')}
-                        onSettings={() => setSettingsOpen(true)}
-                        onProfile={() => setProfileOpen(true)}
-                    />
-                );
+                return <MainMenu onPlay={() => setCurrentPage('gamePage')} />;
         }
     };
 
     return (
-        <div>
+        <div 
+            className="min-h-screen bg-cover bg-center"
+            style={{ backgroundImage: `url(${bgImage})` }} // Use the imported background image
+        >
+            {loginOpen && renderLoginPopup()}
+            {signupOpen && renderSignupPopup()}
             {renderPage()}
             {settingsOpen && <GameSettings onClose={() => setSettingsOpen(false)} />}
             {profileOpen && (
@@ -83,6 +103,14 @@ const App = () => {
                     setProfileData={setProfileData}
                 />
             )}
+            <Slidebar 
+                isOpen={slidebarOpen}
+                toggleSlidebar={() => setSlidebarOpen(!slidebarOpen)}
+                onMainMenu={() => setCurrentPage('mainMenu')}
+                setSettingsOpen={setSettingsOpen}
+                setProfileOpen={setProfileOpen}
+                onLogout={handleLogout}
+            />
         </div>
     );
 };
