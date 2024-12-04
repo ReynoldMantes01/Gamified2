@@ -44,7 +44,7 @@ const App = () => {
     const renderLoginPopup = () => {
         return (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
-                <div className="bg-gray-800 text-white p-8 rounded w-96">
+                <div className="bg-gray-800 text-white p-8 mt-20 rounded w-100 ">
                     <Login onLoginSuccess={handleLoginSuccess} onSwitchToSignup={() => { setLoginOpen(false); setSignupOpen(true); }} />
                 </div>
             </div>
@@ -54,7 +54,7 @@ const App = () => {
     const renderSignupPopup = () => {
         return (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
-                <div className="bg-gray-800 text-white p-8 rounded w-96">
+                <div className="bg-gray-800 text-white p-8 mt-20 rounded w-100">
                     <Signup onSwitchToLogin={handleSignupSuccess} />
                 </div>
             </div>

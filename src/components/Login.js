@@ -1,22 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
+    const [showLoadingScreen, setShowLoadingScreen] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowLoadingScreen(false);
+        }, 3000);
+        return () => clearTimeout(timer); 
+    }, []);
 
     const handleLogin = (e) => {
         e.preventDefault();
-        // Mock login logic
+
         if (email === 'admin@gmail.com' && password === 'admin') {
-            onLoginSuccess();
+            onLoginSuccess(); 
         } else {
             setError('Invalid email or password');
         }
     };
 
+    if (showLoadingScreen) {
+        return (
+            <div className="fixed inset-0 flex flex-col items-center justify-center bg-black">
+                <h1 className="text-6xl font-bold text-white">Gamified</h1>
+                
+            </div>
+        ); // Render the loading animation directly in Login.js
+    }
+
     return (
-        <div>
+        <div className="w-full h-full flex flex-col items-center justify-center">
             <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
             <form onSubmit={handleLogin} className="flex flex-col">
                 <input

@@ -16,7 +16,7 @@ const GameSettings = ({ onClose }) => {
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20" onClick={onClose}>
             <div className="bg-gray-800 text-white p-8 rounded" onClick={(e) => e.stopPropagation()}>
-                <h1 className="text-4xl mb-8 text-center">Game Settings</h1>
+                <h1 className="text-4xl mb-8 text-center">Settings</h1>
                 <div className="mb-4 text-center">
                     <label className="block mb-2">Music Volume: {musicVolume}</label>
                     <input type="range" min="0" max="100" value={musicVolume} onChange={(e) => setMusicVolume(e.target.value)} className="w-64 mx-auto"/>
