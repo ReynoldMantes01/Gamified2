@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import MainMenu from './components/MainMenu';
 import GamePage from './components/GamePage';
 import GameSettings from './components/GameSettings';
@@ -6,7 +6,8 @@ import Profile from './components/Profile';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Slidebar from './components/Slidebar';
-import bgImage from './assets/bg.gif'; 
+import bgImage from './assets/bg.gif';
+import bgMusic from './assets/BG1.mp3'; // Import your music file
 
 const App = () => {
     const [currentPage, setCurrentPage] = useState('mainMenu');
@@ -22,6 +23,36 @@ const App = () => {
         gender: ''
     });
     const [slidebarOpen, setSlidebarOpen] = useState(false);
+    const audioRef = useRef(null);
+
+    useEffect(() => {
+        const playMusic = async () => {
+            try {
+                if (audioRef.current) {
+                    await audioRef.current.play();
+                }
+            } catch (error) {
+                console.error('Autoplay blocked. Waiting for user interaction.');
+            }
+        };
+
+        playMusic();
+
+        // Fallback: Play music on user interaction
+        const handleUserInteraction = () => {
+            if (audioRef.current) {
+                audioRef.current.play();
+            }
+        };
+
+        document.addEventListener('click', handleUserInteraction);
+        document.addEventListener('keydown', handleUserInteraction);
+
+        return () => {
+            document.removeEventListener('click', handleUserInteraction);
+            document.removeEventListener('keydown', handleUserInteraction);
+        };
+    }, []);
 
     const handleLoginSuccess = () => {
         setIsAuthenticated(true);
@@ -89,8 +120,11 @@ const App = () => {
     return (
         <div 
             className="min-h-screen bg-cover bg-center"
-            style={{ backgroundImage: `url(${bgImage})` }} 
+            style={{ backgroundImage: `url(${bgImage})` }}
         >
+            {/* Background Music */}
+            <audio ref={audioRef} src={bgMusic} loop preload="auto" />
+
             {loginOpen && renderLoginPopup()}
             {signupOpen && renderSignupPopup()}
             {renderPage()}
