@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Cross } from 'hamburger-react'; 
+import { Cross } from 'hamburger-react';
 import GameSettings from './GameSettings';
 import Profile from './Profile';
 import Slidebar from './Slidebar';
 import computerTerms from './computerTerms';
-import heartImage from '../assets/heart.png'; 
+import heartImage from '../assets/heart.png';
+import attackImage from '../assets/attack.png';
+import attackEnemyImage from '../assets/attack.gif'
 
-const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout}) => {
+const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
+    const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState(generateRandomLetters());
     const [definition, setDefinition] = useState('');
@@ -16,6 +19,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout}) => {
     const [slidebarOpen, setSlidebarOpen] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
+
+    // Animation State
+    const [laserActive, setLaserActive] = useState(false);
 
     function generateRandomLetters() {
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -56,6 +62,18 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout}) => {
             newGridLetters[index] = '';
         });
         setGridLetters(newGridLetters);
+
+        handleEnemyAttack(); // Trigger enemy attack on scramble
+    };
+
+    const handleEnemyAttack = () => {
+        setEnemyLaserActive(true);
+
+        // Decrease player's health after the enemy attack
+        setPlayerHearts((prev) => Math.max(0, prev - 1));
+
+        // Stop the enemy laser animation after it finishes
+        setTimeout(() => setEnemyLaserActive(false), 500); // Match the laser animation duration
     };
 
     const handleAttack = () => {
@@ -77,8 +95,14 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout}) => {
         } else {
             setDefinition('Invalid word. Please try again.');
             setPlayerHearts(Math.max(0, playerHearts - damage));
+            handleEnemyAttack(); // Trigger enemy attack on wrong answer
         }
 
+        // Trigger player laser animation for both correct and incorrect attacks
+        setLaserActive(true);
+        setTimeout(() => setLaserActive(false), 500);
+
+        // Reset the grid and selected letters
         setSelectedLetters([]);
         setEmptyIndices([]);
         setGridLetters(generateRandomLetters());
@@ -110,14 +134,13 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout}) => {
                 setSettingsOpen={setSettingsOpen}
                 setProfileOpen={setProfileOpen}
                 onLogout={onLogout}
-
             />
             <div className="top-bar absolute top-2 left-2 flex items-center z-0">
                 <div className="slidebar-icon text-2xl mr-2 cursor-pointer" onClick={toggleSlidebar}>
                     <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
                 </div>
                 <div className="player-info flex items-center bg-[#f4d9a3] p-2 border-2 border-black">
-                    <img src={profileData.image || "https://placehold.co/24x24"} alt="Player Avatar" className="rounded-full w-8 h-8 object-cover mr-2" />
+                    <img src={profileData.image || "https://64.media.tumblr.com/ea445b7825d5c355924d801b4633887f/4b78abb807e9ea7b-3b/s400x600/c4f8f149cc53b279fb69dddad35c1c0db9a56e9b.png"} alt="Player Avatar" className="rounded-full w-8 h-8 object-cover mr-2" />
                     <div className="hearts flex">
                         {[...Array(playerHearts)].map((_, i) => (
                             <img key={i} src={heartImage} alt="Heart" className="w-4 h-4 ml-1" />
@@ -127,7 +150,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout}) => {
             </div>
             <div className="top-bar absolute top-2 right-2 flex items-center">
                 <div className="player-info flex items-center bg-[#f4d9a3] p-2 border-2 border-black">
-                    <img src="https://placehold.co/150x150" alt="Enemy Avatar" className="rounded-full w-8 h-8 object-cover mr-2" />
+                    <img src="https://pbs.twimg.com/profile_images/1617590113252278277/SaQY2ovq_400x400.png" alt="Enemy Avatar" className="rounded-full w-8 h-8 object-cover mr-2" />
                     <div className="hearts flex">
                         {[...Array(enemyHearts)].map((_, i) => (
                             <img key={i} src={heartImage} alt="Heart" className="w-4 h-4 ml-1" />
@@ -136,17 +159,64 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout}) => {
                 </div>
             </div>
             <div className="game-content flex items-center justify-between w-4/5">
-                <div className="character w-36 h-36 bg-contain bg-no-repeat" style={{ backgroundImage: "url('https://placehold.co/150x150')" }}></div>
+                <div className="character-container relative">
+                    {/* Character */}
+                    <div
+                        className={`character w-72 h-72 bg-contain bg-no-repeat transition-transform duration-300 ${laserActive ? 'transform scale-110' : ''}`}
+                        style={{ backgroundImage: "url('https://64.media.tumblr.com/ea445b7825d5c355924d801b4633887f/4b78abb807e9ea7b-3b/s400x600/c4f8f149cc53b279fb69dddad35c1c0db9a56e9b.png')" }}
+                    ></div>
+
+                    {/* Player Laser Animation */}
+                    {laserActive && (
+                        <img
+                            src={attackImage}
+                            alt="Laser"
+                            className="laser absolute"
+                            style={{
+                                top: '50%',
+                                left: '100%',
+                                transform: 'translateY(-50%)',
+                                animation: 'shoot 0.5s linear forwards',
+                                height: '10rem', // Adjust the size of the laser
+                            }}
+                        />
+                    )}
+                </div>
                 <div className="word-box flex justify-center my-5">
                     {selectedLetters.map((letter, index) => (
-                        <div key={index} className="letter w-12 h-12 bg-[#f4d9a3] border-2 border-black flex items-center justify-center mx-1 text-2xl cursor-pointer hover:bg-[#e5c8a1]" onClick={() => handleSelectedLetterClick(letter, index)}>
+                        <div
+                            key={index}
+                            className="letter w-12 h-12 bg-[#f4d9a3] border-2 border-black flex items-center justify-center mx-1 text-2xl cursor-pointer hover:bg-[#e5c8a1] transform transition-transform duration-200 hover:scale-110"
+                            onClick={() => handleSelectedLetterClick(letter, index)}
+                        >
                             {letter}
                         </div>
                     ))}
                 </div>
-                <div className="enemy w-36 h-36 bg-contain bg-no-repeat" style={{ backgroundImage: "url('https://placehold.co/150x150')" }}></div>
+                
+                <div className="enemy-container relative">
+                    <div
+                        className={`enemy w-72 h-72 bg-contain bg-no-repeat transition-transform duration-300 ${laserActive ? 'transform scale-110' : ''}`}
+                        style={{ backgroundImage: "url('https://pbs.twimg.com/profile_images/1617590113252278277/SaQY2ovq_400x400.png')" }}
+                    ></div>
+                    {/* Enemy Laser Animation */}
+                    {enemyLaserActive && (
+                        <img
+                            src={attackEnemyImage}
+                            alt="Enemy Laser"
+                            className="enemy-laser absolute"
+                            style={{
+                                top: '50%',
+                                right: '100%',
+                                transform: 'translateY(-50%)',
+                                animation: 'enemyShoot 0.5s linear forwards',
+                                height: '10rem',
+                            }}
+                        />
+                    )}
+                </div>
             </div>
-            <div className="game-content flex items-center justify-between w-4/5">
+            <div className="game-content flex items-center justify-between w-4/5 mt-36">
                 <div className="description-box bg-[#f4d9a3] border-2 border-black p-2 w-72 mr-5">
                     {definition}
                 </div>
@@ -169,6 +239,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout}) => {
             {settingsOpen && <GameSettings onClose={() => setSettingsOpen(false)} />}
             {profileOpen && <Profile onClose={() => setProfileOpen(false)} onSave={() => setProfileOpen(false)} profileData={profileData} setProfileData={setProfileData} />}
         </div>
+        
     );
 };
 

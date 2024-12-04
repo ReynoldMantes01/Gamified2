@@ -7,3 +7,25 @@ body {
   background: url('https://cdn.fbsbx.com/v/t59.2708-21/466981595_1363973704581527_6459452857071688842_n.gif?_nc_cat=109&ccb=1-7&_nc_sid=cf94fc&_nc_eui2=AeHB7XhudQPt5uWzko_c58kpGFZfegAhYtcYVl96ACFi12jhjmOTTWzOFBUgqKrS_2Z5DD-_JWxEm0isCEU4ryiq&_nc_ohc=EhP1UB-b5ZYQ7kNvgGWJO2k&_nc_zt=7&_nc_ht=cdn.fbsbx.com&_nc_gid=As4BJ-NvQhcarcPSMXdCZXL&oh=03_Q7cD1QFrcS7QrtoOuEqTA1k6kPV8Kuk3UE-PPtjPXPBXLGeoSA&oe=673A073E') no-repeat center center fixed;
   background-size: cover;
 }
+  /* Attack Animation */
+@keyframes shoot {
+    0% {
+        left: 100%;
+        opacity: 5;
+    }
+    100% {
+        left: 500%;
+        opacity: 0;
+    }
+}
+/* enemy attack animation */
+@keyframes enemyShoot {
+    0% {
+        right: 100%; 
+        opacity: 5;
+    }
+    100% {
+        right: 500%; 
+        opacity: 0;
+    }
+}
