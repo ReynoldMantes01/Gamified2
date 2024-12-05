@@ -6,10 +6,7 @@ import Slidebar from './Slidebar';
 import computerTerms from './computerTerms';
 import heartImage from '../assets/heart.png';
 import attackImage from '../assets/attack.png';
-import attackEnemyImage from '../assets/attack.gif';
-
-// Import the enemy data JSON
-import enemyLibrary from '../components/enemies.json';
+import attackEnemyImage from '../assets/attack.gif'
 
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
@@ -84,7 +81,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
         } else {
             setDefinition('Invalid word. Please try again.');
             setPlayerHearts(Math.max(0, playerHearts - damage));
-            handleEnemyAttack();
+            handleEnemyAttack(); // Trigger enemy attack on wrong answer
         }
 
         setLaserActive(true);
@@ -122,141 +119,122 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
         };
     }, [handleClickOutside]);
 
-        return (
-            <div className="game-container flex flex-col items-center justify-center h-screen relative">
-                <Slidebar
-                    isOpen={slidebarOpen}
-                    toggleSlidebar={toggleSlidebar}
-                    onMainMenu={onMainMenu}
-                    setSettingsOpen={setSettingsOpen}
-                    setProfileOpen={setProfileOpen}
-                    onLogout={onLogout}
-                />
-                <div className="top-bar absolute top-2 left-2 flex items-center z-0">
-                    <div className="slidebar-icon text-2xl mr-2 cursor-pointer" onClick={toggleSlidebar}>
-                        <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
-                    </div>
-                    <div className="player-info flex items-center bg-[#f4d9a3] p-2 border-2 border-black">
-                        <img src={profileData.image || "https://64.media.tumblr.com/ea445b7825d5c355924d801b4633887f/4b78abb807e9ea7b-3b/s400x600/c4f8f149cc53b279fb69dddad35c1c0db9a56e9b.png"} alt="Player Avatar" className="rounded-full w-8 h-8 object-cover mr-2" />
-                        <div className="hearts flex">
-                            {[...Array(playerHearts)].map((_, i) => (
-                                <img key={i} src={heartImage} alt="Heart" className="w-4 h-4 ml-1" />
-                            ))}
-                        </div>
-                    </div>
+    return (
+        <div className="game-container flex flex-col items-center justify-center h-screen relative">
+            <Slidebar
+                isOpen={slidebarOpen}
+                toggleSlidebar={toggleSlidebar}
+                onMainMenu={onMainMenu}
+                setSettingsOpen={setSettingsOpen}
+                setProfileOpen={setProfileOpen}
+                onLogout={onLogout}
+            />
+            <div className="top-bar absolute top-2 left-2 flex items-center z-0">
+                <div className="slidebar-icon text-2xl mr-2 cursor-pointer" onClick={toggleSlidebar}>
+                    <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
                 </div>
-                <div className="top-bar absolute top-2 right-2 flex items-center">
-                    <div className="player-info flex items-center bg-[#f4d9a3] p-2 border-2 border-black">
-                        <img src="https://pbs.twimg.com/profile_images/1617590113252278277/SaQY2ovq_400x400.png" alt="Enemy Avatar" className="rounded-full w-8 h-8 object-cover mr-2" />
-                        <div className="hearts flex">
-                            {[...Array(enemyHearts)].map((_, i) => (
-                                <img key={i} src={heartImage} alt="Heart" className="w-4 h-4 ml-1" />
-                            ))}
-                        </div>
-                    </div>
-                </div>
-                <div className="game-content flex items-center justify-between w-4/5">
-                    <div className="character-container relative mt-44">
-                        {/* Character */}
-                        <div
-                            className={`character w-72 h-72 bg-contain bg-no-repeat transition-transform duration-300 ${laserActive ? 'transform scale-110' : ''}`}
-                            style={{ backgroundImage: "url('https://64.media.tumblr.com/ea445b7825d5c355924d801b4633887f/4b78abb807e9ea7b-3b/s400x600/c4f8f149cc53b279fb69dddad35c1c0db9a56e9b.png')" }}
-                        ></div>
-
-                        {/* Player Laser Animation */}
-                        {laserActive && (
-                            <img
-                                src={attackImage}
-                                alt="Laser"
-                                className="laser absolute"
-                                style={{
-                                    top: '50%',
-                                    left: '100%',
-                                    transform: 'translateY(-50%)',
-                                    animation: 'shoot 0.5s linear forwards',
-                                    height: '10rem', // Adjust the size of the laser
-                                }}
-                            />
-                        )}
-                    </div>
-                    <div className="word-box flex justify-center my-5">
-                        {selectedLetters.map((letter, index) => (
-                            <div
-                                key={index}
-                                className="letter w-12 h-12 bg-[#f4d9a3] border-2 border-black flex items-center justify-center mx-1 text-2xl cursor-pointer hover:bg-[#e5c8a1] transform transition-transform duration-200 hover:scale-110"
-                                onClick={() => handleSelectedLetterClick(letter, index)}
-                            >
-                                {letter}
-                            </div>
+                <div className="player-info flex items-center bg-[#f4d9a3] p-2 border-2 border-black">
+                    <img src={profileData.image || "https://64.media.tumblr.com/ea445b7825d5c355924d801b4633887f/4b78abb807e9ea7b-3b/s400x600/c4f8f149cc53b279fb69dddad35c1c0db9a56e9b.png"} alt="Player Avatar" className="rounded-full w-8 h-8 object-cover mr-2" />
+                    <div className="hearts flex">
+                        {[...Array(playerHearts)].map((_, i) => (
+                            <img key={i} src={heartImage} alt="Heart" className="w-4 h-4 ml-1" />
                         ))}
                     </div>
-                    
-                    <div className="enemy-container relative mt-56">
-                       <div
-                                className={`enemy w-72 h-72 bg-contain bg-no-repeat`}
-                                style={{ backgroundImage: `url(${require(`../assets/${currentEnemy.image}`)})` }}
-                        ></div>
-                        {/* Enemy Laser Animation */}
-                        {enemyLaserActive && (
-                            <img
-                                src={attackEnemyImage}
-                                alt="Enemy Laser"
-                                className="enemy-laser absolute"
-                                style={{
-                                    top: '50%',
-                                    right: '100%',
-                                    transform: 'translateY(-50%)',
-                                    animation: 'enemyShoot 0.5s linear forwards',
-                                    height: '10rem',
-                                }}
-                            />
-                        )}
-                    </div>
                 </div>
-                <div className="game-content flex items-center justify-between w-full mt-28 bg-red-950 h-80">
-                    <div className="description-box bg-[#f4d9a3] border-2 border-black p-2 w-96 h-full mr-80 ml-10">
-                        {definition}
-                    </div>
-                    <div className="letter-grid grid grid-cols-4 gap-1 bg-[#f4d9a3] border-2 border-black p-2 w-96 h-full">
-                        {gridLetters.map((letter, index) => (
-                            <div
-                                key={index}
-                                className="grid-letter  bg-[#f4d9a3] border-2 border-black flex items-center justify-center text-2xl cursor-pointer hover:bg-[#e5c8a1]"
-                                onClick={() => handleLetterClick(letter, index)}
-                            >
-                                {letter}
-                            </div>
-                        ))}
-                    </div>
-                    <div className="action-buttons flex flex-col gap-2">
-                        <div className="button bg-[#f4d9a3] border-2 border-black p-2 text-center text-xl cursor-pointer hover:bg-[#e5c8a1]" onClick={handleAttack}>ATTACK</div>
-                        <div className="button bg-[#f4d9a3] border-2 border-black p-2 text-center text-xl cursor-pointer hover:bg-[#e5c8a1]" onClick={handleScramble}>SCRAMBLE</div>
-                    </div>
-                    <div className="Enemy Stats flex flex-col">
-
-                    </div>
-                        <div className="enemy-stats bg-[#f4d9a3] border-2 border-black p-4 mr-10">
-                            <h3>{currentEnemy.name}</h3>
-                            <p><strong>Health:</strong> {enemyHearts}</p>
-                            <p><strong>Weakness:</strong> {currentEnemy.stats.weakness}</p>
-                            <p><strong>Strength:</strong> {currentEnemy.stats.strength}</p>
-                            <div>
-                                <strong>Abilities:</strong>
-                                <ul>
-                                    {currentEnemy.attacks.map((attack, index) => (
-                                        <li key={index}>
-                                            <strong>{attack.name}:</strong> {attack.damage} damage
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                {settingsOpen && <GameSettings onClose={() => setSettingsOpen(false)} />}
-                {profileOpen && <Profile onClose={() => setProfileOpen(false)} onSave={() => setProfileOpen(false)} profileData={profileData} setProfileData={setProfileData} />}
             </div>
-            
-        );
-    };
+            <div className="top-bar absolute top-2 right-2 flex items-center">
+                <div className="player-info flex items-center bg-[#f4d9a3] p-2 border-2 border-black">
+                    <img src="https://pbs.twimg.com/profile_images/1617590113252278277/SaQY2ovq_400x400.png" alt="Enemy Avatar" className="rounded-full w-8 h-8 object-cover mr-2" />
+                    <div className="hearts flex">
+                        {[...Array(enemyHearts)].map((_, i) => (
+                            <img key={i} src={heartImage} alt="Heart" className="w-4 h-4 ml-1" />
+                        ))}
+                    </div>
+                </div>
+            </div>
+            <div className="game-content flex items-center justify-between w-4/5">
+                <div className="character-container relative">
+                    {/* Character */}
+                    <div
+                        className={`character w-72 h-72 bg-contain bg-no-repeat transition-transform duration-300 ${laserActive ? 'transform scale-110' : ''}`}
+                        style={{ backgroundImage: "url('https://64.media.tumblr.com/ea445b7825d5c355924d801b4633887f/4b78abb807e9ea7b-3b/s400x600/c4f8f149cc53b279fb69dddad35c1c0db9a56e9b.png')" }}
+                    ></div>
+
+                    {/* Player Laser Animation */}
+                    {laserActive && (
+                        <img
+                            src={attackImage}
+                            alt="Laser"
+                            className="laser absolute"
+                            style={{
+                                top: '50%',
+                                left: '100%',
+                                transform: 'translateY(-50%)',
+                                animation: 'shoot 0.5s linear forwards',
+                                height: '10rem', // Adjust the size of the laser
+                            }}
+                        />
+                    )}
+                </div>
+                <div className="word-box flex justify-center my-5">
+                    {selectedLetters.map((letter, index) => (
+                        <div
+                            key={index}
+                            className="letter w-12 h-12 bg-[#f4d9a3] border-2 border-black flex items-center justify-center mx-1 text-2xl cursor-pointer hover:bg-[#e5c8a1] transform transition-transform duration-200 hover:scale-110"
+                            onClick={() => handleSelectedLetterClick(letter, index)}
+                        >
+                            {letter}
+                        </div>
+                    ))}
+                </div>
+                
+                <div className="enemy-container relative">
+                    <div
+                        className={`enemy w-72 h-72 bg-contain bg-no-repeat transition-transform duration-300 ${laserActive ? 'transform scale-110' : ''}`}
+                        style={{ backgroundImage: "url('https://pbs.twimg.com/profile_images/1617590113252278277/SaQY2ovq_400x400.png')" }}
+                    ></div>
+                    {/* Enemy Laser Animation */}
+                    {enemyLaserActive && (
+                        <img
+                            src={attackEnemyImage}
+                            alt="Enemy Laser"
+                            className="enemy-laser absolute"
+                            style={{
+                                top: '50%',
+                                right: '100%',
+                                transform: 'translateY(-50%)',
+                                animation: 'enemyShoot 0.5s linear forwards',
+                                height: '10rem',
+                            }}
+                        />
+                    )}
+                </div>
+            </div>
+            <div className="game-content flex items-center justify-between w-4/5 mt-36">
+                <div className="description-box bg-[#f4d9a3] border-2 border-black p-2 w-72 mr-5">
+                    {definition}
+                </div>
+                <div className="letter-grid grid grid-cols-4 gap-1 bg-[#f4d9a3] border-2 border-black p-2">
+                    {gridLetters.map((letter, index) => (
+                        <div
+                            key={index}
+                            className="grid-letter w-12 h-12 bg-[#f4d9a3] border-2 border-black flex items-center justify-center text-2xl cursor-pointer hover:bg-[#e5c8a1]"
+                            onClick={() => handleLetterClick(letter, index)}
+                        >
+                            {letter}
+                        </div>
+                    ))}
+                </div>
+                <div className="action-buttons flex flex-col gap-2">
+                    <div className="button bg-[#f4d9a3] border-2 border-black p-2 text-center text-xl cursor-pointer hover:bg-[#e5c8a1]" onClick={handleAttack}>ATTACK</div>
+                    <div className="button bg-[#f4d9a3] border-2 border-black p-2 text-center text-xl cursor-pointer hover:bg-[#e5c8a1]" onClick={handleScramble}>SCRAMBLE</div>
+                </div>
+            </div>
+            {settingsOpen && <GameSettings onClose={() => setSettingsOpen(false)} />}
+            {profileOpen && <Profile onClose={() => setProfileOpen(false)} onSave={() => setProfileOpen(false)} profileData={profileData} setProfileData={setProfileData} />}
+        </div>
+        
+    );
+};
 
     export default GamePage;
