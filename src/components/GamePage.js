@@ -5,8 +5,10 @@ import Profile from './Profile';
 import Slidebar from './Slidebar';
 import computerTerms from './computerTerms';
 import heartImage from '../assets/heart.png';
-import attackImage from '../assets/attack.png';
-import attackEnemyImage from '../assets/attack.gif'
+import attackImage from '../assets/attack.gif';
+import attackEnemyImage from '../assets/attack.png'
+import Character from '../assets/Character.png';
+import enemyOne from '../assets/enemyOne.png';
 
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
@@ -96,6 +98,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
             setDefinition('Invalid word. Please try again.');
             setPlayerHearts(Math.max(0, playerHearts - damage));
             handleEnemyAttack(); // Trigger enemy attack on wrong answer
+
         }
 
         // Trigger player laser animation for both correct and incorrect attacks
@@ -159,11 +162,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
                 </div>
             </div>
             <div className="game-content flex items-center justify-between w-4/5">
-                <div className="character-container relative">
+                <div className="character-container relative mt-44">
                     {/* Character */}
                     <div
-                        className={`character w-72 h-72 bg-contain bg-no-repeat transition-transform duration-300 ${laserActive ? 'transform scale-110' : ''}`}
-                        style={{ backgroundImage: "url('https://64.media.tumblr.com/ea445b7825d5c355924d801b4633887f/4b78abb807e9ea7b-3b/s400x600/c4f8f149cc53b279fb69dddad35c1c0db9a56e9b.png')" }}
+                        className={`character w-80 h-80 bg-contain bg-no-repeat transition-transform duration-300 ${laserActive ? 'transform scale-110' : ''}`}
+                        style={{ backgroundImage: `url(${Character})` }}
                     ></div>
 
                     {/* Player Laser Animation */}
@@ -194,10 +197,10 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
                     ))}
                 </div>
                 
-                <div className="enemy-container relative">
+                <div className="enemy-container relative mt-56">
                     <div
                         className={`enemy w-72 h-72 bg-contain bg-no-repeat transition-transform duration-300 ${laserActive ? 'transform scale-110' : ''}`}
-                        style={{ backgroundImage: "url('https://pbs.twimg.com/profile_images/1617590113252278277/SaQY2ovq_400x400.png')" }}
+                        style={{ backgroundImage: `url(${enemyOne})` }}
                     ></div>
                     {/* Enemy Laser Animation */}
                     {enemyLaserActive && (
@@ -216,7 +219,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
                     )}
                 </div>
             </div>
-            <div className="game-content flex items-center justify-between w-4/5 mt-36">
+            <div className="game-content flex items-center justify-between w-4/5 mt-24">
                 <div className="description-box bg-[#f4d9a3] border-2 border-black p-2 w-72 mr-5">
                     {definition}
                 </div>
