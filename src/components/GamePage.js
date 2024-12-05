@@ -6,8 +6,10 @@ import Slidebar from './Slidebar';
 import computerTerms from './computerTerms';
 import heartImage from '../assets/heart.png';
 import attackImage from '../assets/attack.png';
-import attackEnemyImage from '../assets/attack.gif'
-import enemyOne from '../assets/enemyOne.png'
+import attackEnemyImage from '../assets/attack.gif';
+
+// Import the enemy data JSON
+import enemyLibrary from '../components/enemies.json';
 
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
@@ -15,22 +17,17 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
     const [gridLetters, setGridLetters] = useState(generateRandomLetters());
     const [definition, setDefinition] = useState('');
     const [playerHearts, setPlayerHearts] = useState(3);
-    const [enemyHearts, setEnemyHearts] = useState(3);
+    const [currentEnemy, setCurrentEnemy] = useState(enemyLibrary.t1);
+    const [enemyHearts, setEnemyHearts] = useState(currentEnemy.health);
     const [emptyIndices, setEmptyIndices] = useState([]);
     const [slidebarOpen, setSlidebarOpen] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
-
-    // Animation State
     const [laserActive, setLaserActive] = useState(false);
 
     function generateRandomLetters() {
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        let randomLetters = [];
-        for (let i = 0; i < 16; i++) {
-            randomLetters.push(letters.charAt(Math.floor(Math.random() * letters.length)));
-        }
-        return randomLetters;
+        return Array.from({ length: 16 }, () => letters.charAt(Math.floor(Math.random() * letters.length)));
     }
 
     const handleLetterClick = (letter, index) => {
@@ -59,7 +56,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
 
     const handleScramble = () => {
         const newGridLetters = generateRandomLetters();
-        emptyIndices.forEach(index => {
+        emptyIndices.forEach((index) => {
             newGridLetters[index] = '';
         });
         setGridLetters(newGridLetters);
@@ -69,55 +66,53 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
 
     const handleEnemyAttack = () => {
         setEnemyLaserActive(true);
-
-        // Decrease player's health after the enemy attack
         setPlayerHearts((prev) => Math.max(0, prev - 1));
-
-        // Stop the enemy laser animation after it finishes
-        setTimeout(() => setEnemyLaserActive(false), 500); // Match the laser animation duration
+        setTimeout(() => setEnemyLaserActive(false), 500);
     };
 
     const handleAttack = () => {
         const word = selectedLetters.join('');
-        const wordLength = word.length;
-        let damage = 0;
-
-        if (wordLength >= 0 && wordLength <= 4) {
-            damage = 1;
-        } else if (wordLength > 4 && wordLength <= 8) {
-            damage = 2;
-        } else if (wordLength > 8) {
-            damage = 3;
-        }
+        let damage = Math.min(3, Math.ceil(word.length / 4));
 
         if (computerTerms[word.toUpperCase()]) {
             setDefinition(computerTerms[word.toUpperCase()]);
-            setEnemyHearts(Math.max(0, enemyHearts - damage));
+            const updatedHearts = Math.max(0, enemyHearts - damage);
+            setEnemyHearts(updatedHearts);
+
+            if (updatedHearts === 0) handleNextEnemy();
         } else {
             setDefinition('Invalid word. Please try again.');
             setPlayerHearts(Math.max(0, playerHearts - damage));
-            handleEnemyAttack(); // Trigger enemy attack on wrong answer
+            handleEnemyAttack();
         }
 
-        // Trigger player laser animation for both correct and incorrect attacks
         setLaserActive(true);
         setTimeout(() => setLaserActive(false), 500);
-
-        // Reset the grid and selected letters
         setSelectedLetters([]);
         setEmptyIndices([]);
         setGridLetters(generateRandomLetters());
     };
 
-    const toggleSlidebar = () => {
-        setSlidebarOpen(!slidebarOpen);
+    const handleNextEnemy = () => {
+        if (currentEnemy.next_enemy_id) {
+            const nextEnemy = enemyLibrary[currentEnemy.next_enemy_id];
+            setCurrentEnemy(nextEnemy);
+            setEnemyHearts(nextEnemy.health);
+        } else {
+            setDefinition('You defeated all enemies!');
+        }
     };
 
-    const handleClickOutside = useCallback((event) => {
-        if (slidebarOpen && !event.target.closest('.slidebar') && !event.target.closest('.slidebar-icon')) {
-            setSlidebarOpen(false);
-        }
-    }, [slidebarOpen]);
+    const toggleSlidebar = () => setSlidebarOpen(!slidebarOpen);
+
+    const handleClickOutside = useCallback(
+        (event) => {
+            if (slidebarOpen && !event.target.closest('.slidebar') && !event.target.closest('.slidebar-icon')) {
+                setSlidebarOpen(false);
+            }
+        },
+        [slidebarOpen]
+    );
 
     useEffect(() => {
         document.addEventListener('click', handleClickOutside);
@@ -196,10 +191,10 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
                 </div>
                 
                 <div className="enemy-container relative mt-56">
-                    <div
-                        className={`enemy w-72 h-72 bg-contain bg-no-repeat transition-transform duration-300 ${laserActive ? 'transform scale-110' : ''}`}
-                        style={{ backgroundImage: `url(${enemyOne})` }} 
-                    ></div>
+                        <div
+                            className={`enemy w-72 h-72 bg-contain bg-no-repeat`}
+                            style={{ backgroundImage: `url(${require(`../assets/${currentEnemy.image}`)})` }}
+                        ></div>
                     {/* Enemy Laser Animation */}
                     {enemyLaserActive && (
                         <img
@@ -217,15 +212,15 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
                     )}
                 </div>
             </div>
-            <div className="game-content flex items-center justify-between w-4/5 mt-28">
-                <div className="description-box bg-[#f4d9a3] border-2 border-black p-2 w-72 mr-5">
+            <div className="game-content flex items-center justify-between mt-28 h-full bg-[#574b34] w-full">
+                <div className="description-box bg-[#f4d9a3] border-2 border-black p-2 w-80 h-full ml-10 mr-72">
                     {definition}
                 </div>
-                <div className="letter-grid grid grid-cols-4 gap-1 bg-[#f4d9a3] border-2 border-black p-2">
+                <div className="letter-grid grid grid-cols-4 gap-1 bg-[#f4d9a3] border-2 border-black p-2 h-full w-72">
                     {gridLetters.map((letter, index) => (
                         <div
                             key={index}
-                            className="grid-letter w-12 h-12 bg-[#f4d9a3] border-2 border-black flex items-center justify-center text-2xl cursor-pointer hover:bg-[#e5c8a1]"
+                            className="grid-letter w-16 h-14 bg-[#f4d9a3] border-2 border-black flex items-center justify-center text-2xl cursor-pointer hover:bg-[#e5c8a1]"
                             onClick={() => handleLetterClick(letter, index)}
                         >
                             {letter}
@@ -236,7 +231,25 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
                     <div className="button bg-[#f4d9a3] border-2 border-black p-2 text-center text-xl cursor-pointer hover:bg-[#e5c8a1]" onClick={handleAttack}>ATTACK</div>
                     <div className="button bg-[#f4d9a3] border-2 border-black p-2 text-center text-xl cursor-pointer hover:bg-[#e5c8a1]" onClick={handleScramble}>SCRAMBLE</div>
                 </div>
-            </div>
+                <div> 
+                    <div className="enemy-stats bg-[#f4d9a3] border-2 border-black p-4 mr-10">
+                            <h3>{currentEnemy.name}</h3>
+                            <p><strong>Health:</strong> {enemyHearts}</p>
+                            <p><strong>Weakness:</strong> {currentEnemy.stats.weakness}</p>
+                            <p><strong>Strength:</strong> {currentEnemy.stats.strength}</p>
+                            <div>
+                                <strong>Attacks:</strong>
+                                <ul>
+                                    {currentEnemy.attacks.map((attack, index) => (
+                                        <li key={index}>
+                                            <strong>{attack.name}:</strong> {attack.damage} damage
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {settingsOpen && <GameSettings onClose={() => setSettingsOpen(false)} />}
             {profileOpen && <Profile onClose={() => setProfileOpen(false)} onSave={() => setProfileOpen(false)} profileData={profileData} setProfileData={setProfileData} />}
         </div>
