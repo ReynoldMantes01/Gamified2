@@ -7,6 +7,7 @@ import computerTerms from './computerTerms';
 import heartImage from '../assets/heart.png';
 import attackImage from '../assets/attack.png';
 import attackEnemyImage from '../assets/attack.gif';
+import character from '../assets/Character.png';
 
 // Import the enemy data JSON
 import enemyLibrary from '../components/enemies.json';
@@ -159,7 +160,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
                     {/* Character */}
                     <div
                         className={`character w-72 h-72 bg-contain bg-no-repeat transition-transform duration-300 ${laserActive ? 'transform scale-110' : ''}`}
-                        style={{ backgroundImage: "url('https://64.media.tumblr.com/ea445b7825d5c355924d801b4633887f/4b78abb807e9ea7b-3b/s400x600/c4f8f149cc53b279fb69dddad35c1c0db9a56e9b.png')" }}
+                        style={{ backgroundImage: `url(${character})` }}
                     ></div>
 
                     {/* Player Laser Animation */}
@@ -212,7 +213,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
                     )}
                 </div>
             </div>
-            <div className="game-content flex items-center justify-between mt-28 h-full bg-[#574b34] w-full">
+            <div className="game-content flex items-center justify-between mt-28 h-full bg-[#73654b] w-full">
                 <div className="description-box bg-[#f4d9a3] border-2 border-black p-2 w-80 h-full ml-10 mr-72">
                     {definition}
                 </div>
