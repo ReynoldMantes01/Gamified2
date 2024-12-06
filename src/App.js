@@ -1,152 +1,170 @@
-import React, { useEffect, useRef, useState } from 'react';
-import MainMenu from './components/MainMenu';
-import GamePage from './components/GamePage';
-import GameSettings from './components/GameSettings';
-import Profile from './components/Profile';
-import Login from './components/Login';
-import Signup from './components/Signup';
-import Slidebar from './components/Slidebar';
-import bgImage from './assets/bg.gif';
-import bgMusic from './assets/BG1.mp3'; // Import your music file
+import React, { useEffect, useRef, useState } from "react";
+import MainMenu from "./components/MainMenu";
+import GamePage from "./components/GamePage";
+import MapSelection from "./components/MapSelection";
+import GameSettings from "./components/GameSettings";
+import Profile from "./components/Profile";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import Slidebar from "./components/Slidebar";
+import bgImage from "./assets/bg.gif";
+import bgMusic from "./assets/BG1.mp3";
+import mapsData from "./components/maps.json"; //
 
 const App = () => {
-    const [currentPage, setCurrentPage] = useState('mainMenu');
-    const [settingsOpen, setSettingsOpen] = useState(false);
-    const [profileOpen, setProfileOpen] = useState(false);
-    const [loginOpen, setLoginOpen] = useState(true);
-    const [signupOpen, setSignupOpen] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [profileData, setProfileData] = useState({
-        image: '',
-        username: '',
-        age: '',
-        gender: ''
-    });
-    const [slidebarOpen, setSlidebarOpen] = useState(false);
-    const audioRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState("mainMenu");
+  const [selectedLevel, setSelectedLevel] = useState(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(true);
+  const [signupOpen, setSignupOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [profileData, setProfileData] = useState({
+    image: "",
+    username: "",
+    age: "",
+    gender: "",
+  });
+  const [slidebarOpen, setSlidebarOpen] = useState(false);
+  const audioRef = useRef(null);
 
-    useEffect(() => {
-        const playMusic = async () => {
-            try {
-                if (audioRef.current) {
-                    await audioRef.current.play();
-                }
-            } catch (error) {
-                console.error('Autoplay blocked. Waiting for user interaction.');
-            }
-        };
-
-        playMusic();
-
-        // Fallback: Play music on user interaction
-        const handleUserInteraction = () => {
-            if (audioRef.current) {
-                audioRef.current.play();
-            }
-        };
-
-        document.addEventListener('click', handleUserInteraction);
-        document.addEventListener('keydown', handleUserInteraction);
-
-        return () => {
-            document.removeEventListener('click', handleUserInteraction);
-            document.removeEventListener('keydown', handleUserInteraction);
-        };
-    }, []);
-
-    const handleLoginSuccess = () => {
-        setIsAuthenticated(true);
-        setLoginOpen(false);
-        setCurrentPage('mainMenu');
-    };
-
-    const handleSignupSuccess = () => {
-        setSignupOpen(false);
-        setLoginOpen(true);
-    };
-
-    const handleLogout = () => {
-        setIsAuthenticated(false);
-        setLoginOpen(true);
-        setCurrentPage('mainMenu');
-        setSlidebarOpen(false);
-    };
-
-    const renderLoginPopup = () => {
-        return (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
-                <div className="bg-gray-800 text-white p-8 mt-20 rounded w-100 ">
-                    <Login onLoginSuccess={handleLoginSuccess} onSwitchToSignup={() => { setLoginOpen(false); setSignupOpen(true); }} />
-                </div>
-            </div>
-        );
-    };
-
-    const renderSignupPopup = () => {
-        return (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
-                <div className="bg-gray-800 text-white p-8 mt-20 rounded w-100">
-                    <Signup onSwitchToLogin={handleSignupSuccess} />
-                </div>
-            </div>
-        );
-    };
-
-    const renderPage = () => {
-        switch (currentPage) {
-            case 'mainMenu':
-                return (
-                    <MainMenu
-                        onPlay={() => isAuthenticated ? setCurrentPage('gamePage') : setLoginOpen(true)}
-                        onSettings={() => setSettingsOpen(true)}
-                        onProfile={() => setProfileOpen(true)}
-                        onLogout={handleLogout}
-                    />
-                );
-            case 'gamePage':
-                return (
-                    <GamePage
-                        onMainMenu={() => setCurrentPage('mainMenu')}
-                        profileData={profileData}
-                        setProfileData={setProfileData}
-                        onLogout={handleLogout}
-                    />
-                );
-            default:
-                return <MainMenu onPlay={() => setCurrentPage('gamePage')} />;
+  useEffect(() => {
+    const playMusic = async () => {
+      try {
+        if (audioRef.current) {
+          await audioRef.current.play();
         }
+      } catch (error) {
+        console.error("Autoplay blocked. Waiting for user interaction.");
+      }
     };
 
-    return (
-        <div 
-            className="min-h-screen bg-cover bg-center"
-            style={{ backgroundImage: `url(${bgImage})` }}
-        >
-            {/* Background Music */}
-            <audio ref={audioRef} src={bgMusic} loop preload="auto" />
+    playMusic();
 
-            {loginOpen && renderLoginPopup()}
-            {signupOpen && renderSignupPopup()}
-            {renderPage()}
-            {settingsOpen && <GameSettings onClose={() => setSettingsOpen(false)} />}
-            {profileOpen && (
-                <Profile
-                    onClose={() => setProfileOpen(false)}
-                    onSave={() => setProfileOpen(false)}
-                    profileData={profileData}
-                    setProfileData={setProfileData}
-                />
-            )}
-            <Slidebar 
-                isOpen={slidebarOpen}
-                toggleSlidebar={() => setSlidebarOpen(!slidebarOpen)}
-                onMainMenu={() => setCurrentPage('mainMenu')}
-                setSettingsOpen={setSettingsOpen}
-                setProfileOpen={setProfileOpen}
-                onLogout={handleLogout}
-            />
-        </div>
-    );
+    const handleUserInteraction = () => {
+      if (audioRef.current) {
+        audioRef.current.play();
+      }
+    };
+
+    document.addEventListener("click", handleUserInteraction);
+    document.addEventListener("keydown", handleUserInteraction);
+
+    return () => {
+      document.removeEventListener("click", handleUserInteraction);
+      document.removeEventListener("keydown", handleUserInteraction);
+    };
+  }, []);
+
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
+    setLoginOpen(false);
+    setCurrentPage("mainMenu");
+  };
+
+  const handleSignupSuccess = () => {
+    setSignupOpen(false);
+    setLoginOpen(true);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setLoginOpen(true);
+    setCurrentPage("mainMenu");
+    setSlidebarOpen(false);
+  };
+
+  const handleLevelSelect = (level) => {
+    setSelectedLevel(level);
+    setCurrentPage("gamePage");
+  };
+
+  const renderLoginPopup = () => (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
+      <div className="bg-gray-800 text-white p-8 mt-20 rounded w-100 ">
+        <Login
+          onLoginSuccess={handleLoginSuccess}
+          onSwitchToSignup={() => {
+            setLoginOpen(false);
+            setSignupOpen(true);
+          }}
+        />
+      </div>
+    </div>
+  );
+
+  const renderSignupPopup = () => (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
+      <div className="bg-gray-800 text-white p-8 mt-20 rounded w-100">
+        <Signup onSwitchToLogin={handleSignupSuccess} />
+      </div>
+    </div>
+  );
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case "mainMenu":
+        return (
+          <MainMenu
+            onPlay={() => (isAuthenticated ? setCurrentPage("mapSelection") : setLoginOpen(true))}
+            onSettings={() => setSettingsOpen(true)}
+            onProfile={() => setProfileOpen(true)}
+            onLogout={handleLogout}
+          />
+        );
+      case "mapSelection":
+        return (
+          <MapSelection
+            maps={mapsData.maps} // Pass the maps data
+            onLevelSelect={handleLevelSelect} // Called when a level is clicked
+            onMainMenu={() => setCurrentPage("mainMenu")}
+          />
+        );
+      case "gamePage":
+        return (
+          <GamePage
+            onMainMenu={() => setCurrentPage("mainMenu")}
+            profileData={profileData}
+            setProfileData={setProfileData}
+            onLogout={handleLogout}
+            level={selectedLevel} // Pass the selected level
+          />
+        );
+      default:
+        return <MainMenu onPlay={() => setCurrentPage("gamePage")} />;
+    }
+  };
+
+  return (
+    <div
+      className="min-h-screen bg-cover bg-center"
+      style={{ backgroundImage: `url(${bgImage})` }}
+    >
+      {/* Background Music */}
+      <audio ref={audioRef} src={bgMusic} loop preload="auto" />
+
+      {loginOpen && renderLoginPopup()}
+      {signupOpen && renderSignupPopup()}
+      {renderPage()}
+      {settingsOpen && <GameSettings onClose={() => setSettingsOpen(false)} />}
+      {profileOpen && (
+        <Profile
+          onClose={() => setProfileOpen(false)}
+          onSave={() => setProfileOpen(false)}
+          profileData={profileData}
+          setProfileData={setProfileData}
+        />
+      )}
+      <Slidebar
+        isOpen={slidebarOpen}
+        toggleSlidebar={() => setSlidebarOpen(!slidebarOpen)}
+        onMainMenu={() => setCurrentPage("mainMenu")}
+        setSettingsOpen={setSettingsOpen}
+        setProfileOpen={setProfileOpen}
+        onLogout={handleLogout}
+      />
+    </div>
+  );
 };
 
 export default App;

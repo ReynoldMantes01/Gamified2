@@ -1,0 +1,172 @@
+{
+  "maps": [
+    {
+      "id": "map1",
+      "name": "Biology World",
+      "theme": "Biology",
+      "background": "biology_background.png",
+      "enemies": [
+        {
+          "id": "bio_t1",
+          "name": "Microbe",
+          "health": 1,
+          "attacks": [
+            {
+              "name": "Infection",
+              "damage": 0.5
+            }
+          ],
+          "stats": {
+            "weakness": "Scientific Terms",
+            "strength": "Common Words"
+          },
+          "image": "microbe.png"
+        },
+        {
+          "id": "bio_t2",
+          "name": "Toxin",
+          "health": 2,
+          "attacks": [
+            {
+              "name": "Poison Spray",
+              "damage": 0.7
+            }
+          ],
+          "stats": {
+            "weakness": "Latin Words",
+            "strength": "Short Words"
+          },
+          "image": "toxin.png"
+        },
+        {
+          "id": "bio_boss",
+          "name": "Mutant DNA",
+          "health": 5,
+          "attacks": [
+            {
+              "name": "Gene Splice",
+              "damage": 0.5
+            }
+          ],
+          "stats": {
+            "weakness": "Long Words",
+            "strength": "Technical Terms"
+          },
+          "image": "mutant_dna.png"
+        }
+      ]
+    },
+    {
+      "id": "map2",
+      "name": "Physics Realm",
+      "theme": "Physics",
+      "background": "physics_background.png",
+      "enemies": [
+        {
+          "id": "phy_t1",
+          "name": "Quark",
+          "health": 2,
+          "attacks": [
+            {
+              "name": "Quantum Jitter",
+              "damage": 0.8
+            }
+          ],
+          "stats": {
+            "weakness": "Mathematical Terms",
+            "strength": "Common Words"
+          },
+          "image": "quark.png"
+        },
+        {
+          "id": "phy_t2",
+          "name": "Graviton",
+          "health": 5,
+          "attacks": [
+            {
+              "name": "Gravity Slam",
+              "damage": 1.8
+            }
+          ],
+          "stats": {
+            "weakness": "Philosophical Words",
+            "strength": "Scientific Terms"
+          },
+          "image": "graviton.png"
+        },
+        {
+          "id": "phy_boss",
+          "name": "Black Hole",
+          "health": 12,
+          "attacks": [
+            {
+              "name": "Event Horizon",
+              "damage": 4
+            }
+          ],
+          "stats": {
+            "weakness": "Simple Words",
+            "strength": "Complex Words"
+          },
+          "image": "black_hole.png"
+        }
+      ]
+    },
+    {
+      "id": "map3",
+      "name": "Chemistry Domain",
+      "theme": "Chemistry",
+      "background": "chemistry_background.png",
+      "enemies": [
+        {
+          "id": "chem_t1",
+          "name": "Atom",
+          "health": 3,
+          "attacks": [
+            {
+              "name": "Electron Zap",
+              "damage": 1
+            }
+          ],
+          "stats": {
+            "weakness": "Chemical Names",
+            "strength": "Everyday Words"
+          },
+          "image": "atom.png"
+        },
+        {
+          "id": "chem_t2",
+          "name": "Molecule",
+          "health": 6,
+          "attacks": [
+            {
+              "name": "Bond Break",
+              "damage": 2
+            }
+          ],
+          "stats": {
+            "weakness": "Organic Chemistry Words",
+            "strength": "Non-Chemical Terms"
+          },
+          "image": "molecule.png"
+        },
+        {
+          "id": "chem_boss",
+          "name": "Reaction Master",
+          "health": 15,
+          "attacks": [
+            {
+              "name": "Catalyst Burst",
+              "damage": 5
+            }
+          ],
+          "stats": {
+            "weakness": "Physics Terms",
+            "strength": "Chemical Terms"
+          },
+          "image": "reaction_master.png"
+        }
+      ]
+    }
+  ]
+}

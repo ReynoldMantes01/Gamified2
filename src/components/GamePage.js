@@ -3,14 +3,14 @@ import { Cross } from 'hamburger-react';
 import GameSettings from './GameSettings';
 import Profile from './Profile';
 import Slidebar from './Slidebar';
-import computerTerms from './computerTerms';
+import scienceTerm from './scienceTerm';
 import heartImage from '../assets/heart.png';
 import attackImage from '../assets/attack.png';
 import attackEnemyImage from '../assets/attack.gif';
 import character from '../assets/Character.png';
 
 // Import the enemy data JSON
-import enemyLibrary from '../components/enemies.json';
+import mapLibrary from '../components/maps.json';
 
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
@@ -18,13 +18,17 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
     const [gridLetters, setGridLetters] = useState(generateRandomLetters());
     const [definition, setDefinition] = useState('');
     const [playerHearts, setPlayerHearts] = useState(3);
-    const [currentEnemy, setCurrentEnemy] = useState(enemyLibrary.t1);
-    const [enemyHearts, setEnemyHearts] = useState(currentEnemy.health);
     const [emptyIndices, setEmptyIndices] = useState([]);
     const [slidebarOpen, setSlidebarOpen] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [laserActive, setLaserActive] = useState(false);
+    const [currentMap, setCurrentMap] = useState(mapLibrary.maps[0]); 
+    const [currentEnemyIndex, setCurrentEnemyIndex] = useState(0);  
+    const [currentEnemy, setCurrentEnemy] = useState(currentMap.enemies[currentEnemyIndex]);
+    const [enemyHearts, setEnemyHearts] = useState(currentEnemy?.health || 0);  // Set enemy health if currentEnemy exists
+
+    
 
     function generateRandomLetters() {
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -75,8 +79,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
         const word = selectedLetters.join('');
         let damage = Math.min(3, Math.ceil(word.length / 4));
 
-        if (computerTerms[word.toUpperCase()]) {
-            setDefinition(computerTerms[word.toUpperCase()]);
+        if (scienceTerm[word.toUpperCase()]) {
+            setDefinition(scienceTerm[word.toUpperCase()]);
             const updatedHearts = Math.max(0, enemyHearts - damage);
             setEnemyHearts(updatedHearts);
 
@@ -94,15 +98,30 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
         setGridLetters(generateRandomLetters());
     };
 
-    const handleNextEnemy = () => {
-        if (currentEnemy.next_enemy_id) {
-            const nextEnemy = enemyLibrary[currentEnemy.next_enemy_id];
-            setCurrentEnemy(nextEnemy);
-            setEnemyHearts(nextEnemy.health);
-        } else {
-            setDefinition('You defeated all enemies!');
-        }
-    };
+            const handleNextEnemy = () => {
+                // Check if there are more enemies in the current map
+                const nextEnemyIndex = currentEnemyIndex + 1;
+                if (currentMap.enemies[nextEnemyIndex]) {
+                    const nextEnemy = currentMap.enemies[nextEnemyIndex];
+                    setCurrentEnemy(nextEnemy);
+                    setEnemyHearts(nextEnemy.health);
+                    setCurrentEnemyIndex(nextEnemyIndex);
+                } else {
+                    // No more enemies, go to the next map or end the game
+                    handleNextMap();
+                }
+            };
+
+            const handleNextMap = () => {
+            const nextMapId = currentMap.next_map_id; // Assume this field is present in your map data
+            const nextMap = mapLibrary.maps.find((map) => map.id === nextMapId);
+
+            if (nextMap) {
+                setCurrentMap(nextMap);
+                setCurrentEnemy(nextMap.enemies[0]); // Start with the first enemy of the new map
+                setEnemyHearts(nextMap.enemies[0]?.health || 0);
+            }
+        };
 
     const toggleSlidebar = () => setSlidebarOpen(!slidebarOpen);
 
@@ -234,10 +253,12 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
                 </div>
                 <div> 
                     <div className="enemy-stats bg-[#f4d9a3] border-2 border-black p-4 mr-10">
-                            <h3>{currentEnemy.name}</h3>
-                            <p><strong>Health:</strong> {enemyHearts}</p>
+                           <div className="level-info bg-[#f4d9a3] p-4">
+                            <h3>{currentMap.name}</h3>
+                            <p><strong>Enemy:</strong> {currentEnemy.name}</p>
                             <p><strong>Weakness:</strong> {currentEnemy.stats.weakness}</p>
                             <p><strong>Strength:</strong> {currentEnemy.stats.strength}</p>
+                            </div>
                             <div>
                                 <strong>Attacks:</strong>
                                 <ul>
