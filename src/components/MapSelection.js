@@ -19,7 +19,7 @@ const MapSelection = ({ maps, onLevelSelect, onMainMenu }) => {
 
   return (
     <div className="text-center p-5">
-      <h1 className="text-3xl font-bold mb-6">Select Your Level</h1>
+      <h1 className="text-3xl font-bold mb-6 text-white ">Select Your Level</h1>
       <div className="flex justify-center items-center">
         <button
           onClick={handlePrevMap}
@@ -29,8 +29,8 @@ const MapSelection = ({ maps, onLevelSelect, onMainMenu }) => {
           Previous
         </button>
         <div className="w-80 bg-cover bg-center rounded-lg shadow-lg p-4" style={{ backgroundImage: `url(${currentMap.background})` }}>
-          <h2 className="text-2xl font-semibold text-white">{currentMap.name}</h2>
-          <p className="text-gray-300">Theme: {currentMap.theme}</p>
+          <h2 className="text-2xl font-semibold text-blue-800 ">{currentMap.name}</h2>
+          <p className="text-red-900 ">Theme: {currentMap.theme}</p>
           <div className="mt-4 grid grid-cols-1 gap-4">
             {currentMap.enemies.map((level) => (
               <button
@@ -51,7 +51,7 @@ const MapSelection = ({ maps, onLevelSelect, onMainMenu }) => {
           Next
         </button>
       </div>
-      <button onClick={onMainMenu} className="mt-6 px-4 py-2 bg-red-500 text-white rounded shadow">
+      <button onClick={onMainMenu} className="mt-6 px-3 py-2 bg-red-500 text-white rounded shadow ml-16">
         Back to Main Menu
       </button>
     </div>

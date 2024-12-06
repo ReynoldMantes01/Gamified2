@@ -1,5 +1,4 @@
 const computerTerms = {
-    //Physics
     ACCELERATION: "The rate of change of an object's velocity.",
     ATOM: "The basic unit of matter, consisting of protons, neutrons, and electrons.",
     CAPACITOR: "A device used to store electrical energy in an electric field.",
@@ -73,8 +72,6 @@ const computerTerms = {
     SOLARFLARE: "A sudden burst of energy from the sun's surface.",
     TENSILESTRENGTH: "The maximum stress a material can withstand while being stretched or pulled before breaking.",
     UNIFIEDFIELDTHEORY: "A theoretical framework aiming to explain all fundamental forces of nature in a single equation.",
-    //Chemistry
-    
     ACID: "A substance that donates protons or accepts electrons in reactions.",
     BASE: "A substance that accepts protons or donates electrons.",
     CATALYST: "A substance that increases the rate of a chemical reaction without being consumed in the process.",
@@ -101,8 +98,6 @@ const computerTerms = {
     CALORIMETER: "An instrument used to measure the heat of chemical reactions.",
     CONDUCTIVITY: "A material's ability to conduct electricity or heat.",
     CONDENSATION: "The process by which a gas turns into a liquid.",
-    //Astronomy
-
     ASTRONOMICALUNIT: "A unit of distance equal to the average distance between the Earth and the Sun, approximately 93 million miles.",
     BLACKHOLE: "A region of space where the gravitational pull is so strong that not even light can escape.",
     COMET: "A small icy body that orbits the Sun and has a characteristic tail of gas and dust.",
@@ -182,8 +177,7 @@ const computerTerms = {
     ZODIAC: "The twelve constellations that lie along the Sun's apparent path through the sky over the course of a year.",
     ZENITH: "The point in the sky directly above an observer's head.",
     ZODIACALLIGHT: "A faint glow in the sky caused by sunlight reflecting off interplanetary dust particles.",
-    //biology
-
+    SUN: "sdasdas",
     CHLOROPHYLLA: "A green pigment found in the chloroplasts of plants, algae, and some bacteria, essential for photosynthesis.",
     ANTIBIOTICRESISTANCE: "The ability of bacteria or other microorganisms to resist the effects of drugs that once killed them or inhibited their growth.",
     GENETICDIVERSITY: "The total number of genetic characteristics in the genetic makeup of a species, often seen as a measure of its adaptability.",

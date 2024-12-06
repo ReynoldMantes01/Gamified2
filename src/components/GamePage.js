@@ -8,6 +8,7 @@ import heartImage from '../assets/heart.png';
 import attackImage from '../assets/attack.png';
 import attackEnemyImage from '../assets/attack.gif';
 import character from '../assets/Character.png';
+import functionBackground from '../assets/functionBackground.png';
 
 // Import the enemy data JSON
 import mapLibrary from '../components/maps.json';
@@ -16,7 +17,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState(generateRandomLetters());
-    const [definition, setDefinition] = useState('');
+    const [definition, setDefinition] = useState('Definition shows here when you enter right');
     const [playerHearts, setPlayerHearts] = useState(3);
     const [emptyIndices, setEmptyIndices] = useState([]);
     const [slidebarOpen, setSlidebarOpen] = useState(false);
@@ -27,6 +28,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
     const [currentEnemyIndex, setCurrentEnemyIndex] = useState(0);  
     const [currentEnemy, setCurrentEnemy] = useState(currentMap.enemies[currentEnemyIndex]);
     const [enemyHearts, setEnemyHearts] = useState(currentEnemy?.health || 0);  // Set enemy health if currentEnemy exists
+    const isValidWord = selectedLetters.length > 0 && scienceTerm[selectedLetters.join('').toUpperCase()];
 
     
 
@@ -232,11 +234,12 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
                     )}
                 </div>
             </div>
-            <div className="game-content flex items-center justify-between mt-28 h-full bg-[#73654b] w-full">
-                <div className="description-box bg-[#f4d9a3] border-2 border-black p-2 w-80 h-full ml-10 mr-72">
+            <div className="game-content flex items-center justify-between mt-14 h-full w-full border-4 border-black p-5"
+            style={{ backgroundImage: `url(${functionBackground})` }}>
+                <div className="description-box bg-[#f4d9a3] border-2 border-black p-2 w-80 h-full ml-10 mr-72 mb-5">
                     {definition}
                 </div>
-                <div className="letter-grid grid grid-cols-4 gap-1 bg-[#f4d9a3] border-2 border-black p-2 h-full w-72">
+                <div className="letter-grid grid grid-cols-4 gap-1 bg-[#f4d9a3] border-2 border-black p-2 h-full w-72 mb-5">
                     {gridLetters.map((letter, index) => (
                         <div
                             key={index}
@@ -248,11 +251,24 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
                     ))}
                 </div>
                 <div className="action-buttons flex flex-col gap-2">
-                    <div className="button bg-[#f4d9a3] border-2 border-black p-2 text-center text-xl cursor-pointer hover:bg-[#e5c8a1]" onClick={handleAttack}>ATTACK</div>
-                    <div className="button bg-[#f4d9a3] border-2 border-black p-2 text-center text-xl cursor-pointer hover:bg-[#e5c8a1]" onClick={handleScramble}>SCRAMBLE</div>
+                    <button
+                        className={`button bg-[#f4d9a3] border-2 border-black p-2 text-center text-xl cursor-pointer hover:bg-[#e5c8a1] ${
+                            !isValidWord ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                        onClick={handleAttack}
+                        disabled={!isValidWord} // Disable when there's no valid word
+                    >
+                        ATTACK
+                    </button>
+                    <div
+                        className="button bg-[#f4d9a3] border-2 border-black p-2 text-center text-xl cursor-pointer hover:bg-[#e5c8a1]"
+                        onClick={handleScramble}
+                    >
+                        SCRAMBLE
+                    </div>
                 </div>
                 <div> 
-                    <div className="enemy-stats bg-[#f4d9a3] border-2 border-black p-4 mr-10">
+                    <div className="enemy-stats bg-[#f4d9a3] border-2 border-black mr-10 p-10 ">
                            <div className="level-info bg-[#f4d9a3] p-4">
                             <h3>{currentMap.name}</h3>
                             <p><strong>Enemy:</strong> {currentEnemy.name}</p>
