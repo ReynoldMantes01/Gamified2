@@ -9,11 +9,14 @@ import attackImage from '../assets/attack.png';
 import attackEnemyImage from '../assets/attack.gif';
 import character from '../assets/Character.png';
 import functionBackground from '../assets/functionBackground.png';
+import dialogueBox from '../assets/dialogueBox.png'
 
 // Import the enemy data JSON
 import mapLibrary from '../components/maps.json';
 
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
+
+    
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState(generateRandomLetters());
@@ -29,6 +32,17 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
     const [currentEnemy, setCurrentEnemy] = useState(currentMap.enemies[currentEnemyIndex]);
     const [enemyHearts, setEnemyHearts] = useState(currentEnemy?.health || 0);  // Set enemy health if currentEnemy exists
     const isValidWord = selectedLetters.length > 0 && scienceTerm[selectedLetters.join('').toUpperCase()];
+    const [dialogVisible, setDialogVisible] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
+    const closeDialog = () => {setDialogVisible(false)};
+
+        useEffect(() => {
+        // Show dialog for the first enemy when the game starts
+        if (currentEnemy) {
+            setDialogMessage(currentEnemy.dialog); // Set the dialog message    
+            setDialogVisible(true); // Show the dialog
+        }
+    }, [currentEnemy]);
 
     
 
@@ -108,6 +122,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
                     setCurrentEnemy(nextEnemy);
                     setEnemyHearts(nextEnemy.health);
                     setCurrentEnemyIndex(nextEnemyIndex);
+                    setDialogMessage(nextEnemy.dialog); // Set the dialog message
+                    setDialogVisible(true); // Show the dialog
                 } else {
                     // No more enemies, go to the next map or end the game
                     handleNextMap();
@@ -145,6 +161,27 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
 
     return (
         <div className="game-container flex flex-col items-center justify-center h-screen relative">
+                {dialogVisible && ( // DIALOG BOX
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-[#f4d9a3] border-2 border-black p-5 rounded-lg text-center">
+                            {/* Add the image above the text */}
+                            {currentEnemy && (
+                                <img
+                                    src={require(`../assets/${currentEnemy.image}`)} // Use the current enemy's image
+                                    alt={currentEnemy.name}
+                                    className="w-24 h-24 mb-4 mx-auto" // Adjust size and margin as needed
+                                />
+                            )}
+                            <p>{dialogMessage}</p>
+                            <button
+                                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                onClick={closeDialog}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                )}
             <Slidebar
                 isOpen={slidebarOpen}
                 toggleSlidebar={toggleSlidebar}

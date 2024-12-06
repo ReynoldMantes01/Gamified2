@@ -17,14 +17,15 @@
             }
           ],
           "stats": {
-            "weakness": "Scientific Terms",
-            "strength": "Common Words"
+            "weakness": "Soap",
+            "strength": "Dirty Places"
           },
-          "image": "microbe.png"
+          "image": "microbe.png",
+          "dialog": "OH NO! THE MICROBES, Microbes are tiny living organisms, such as bacteria, viruses, fungi, and protozoa, that are too small to be seen with the naked eye. They exist everywhere, play essential roles in ecosystems, and can be beneficial (like in digestion) or harmful (causing diseases). "
         },
         {
           "id": "bio_t2",
-          "name": "Toxin",
+          "name": "Toxic Crawler",
           "health": 2,
           "attacks": [
             {
@@ -33,10 +34,11 @@
             }
           ],
           "stats": {
-            "weakness": "Latin Words",
-            "strength": "Short Words"
+            "weakness": "Antidotes",
+            "strength": "Polluted Areas"
           },
-          "image": "toxin.png"
+          "image": "toxin.png",
+          "dialog": "TOXIC CRAWLER! after we defeat MICROBES there is more dangerous Enemy, but did you know that Toxic refers to something harmful or poisonous to living organisms, potentially causing damage, illness, or death when absorbed, inhaled, or ingested. So stay out of it's Poison Spray."
         },
         {
           "id": "bio_boss",
@@ -49,10 +51,11 @@
             }
           ],
           "stats": {
-            "weakness": "Long Words",
-            "strength": "Technical Terms"
+            "weakness": "Electric Fields",
+            "strength": "Absorbing Traits"
           },
-          "image": "mutant_dna.png"
+          "image": "mutant_dna.png",
+          "dialog": "PHEW! we manage to survive againts that TOXIC CRAWLERS......!!!!!! OH NO! What happen to you? Mr.DNA? (Mutant DNA refers to DNA that has undergone a change or mutation in its sequence, altering its normal genetic information. This can occur naturally or be induced, potentially affecting how genes function and leading to variations, diseases, or adaptations.)"
         }
       ]
     },
