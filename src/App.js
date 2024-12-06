@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import MainMenu from "./components/MainMenu";
 import GamePage from "./components/GamePage";
 import MapSelection from "./components/MapSelection";
@@ -9,7 +10,8 @@ import Signup from "./components/Signup";
 import Slidebar from "./components/Slidebar";
 import bgImage from "./assets/bg.gif";
 import bgMusic from "./assets/BG1.mp3";
-import mapsData from "./components/maps.json"; //
+import mapsData from "./components/maps.json";
+
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState("mainMenu");
@@ -60,7 +62,33 @@ const App = () => {
     setIsAuthenticated(true);
     setLoginOpen(false);
     setCurrentPage("mainMenu");
+    
+    // Persist authentication state
+    localStorage.setItem('isAuthenticated', 'true');
+    
+    // Update profile data with user info if available
+    const userEmail = localStorage.getItem('userEmail');
+    const userName = localStorage.getItem('userName');
+    if (userName) {
+      setProfileData(prev => ({
+        ...prev,
+        username: userName
+      }));
+    }
+    
+    // Log authentication success
+    console.log('Login successful, navigating to main menu');
   };
+
+  // Check for existing authentication on component mount
+  useEffect(() => {
+    const authState = localStorage.getItem('isAuthenticated');
+    if (authState === 'true') {
+      setIsAuthenticated(true);
+      setLoginOpen(false);
+      setCurrentPage("mainMenu");
+    }
+  }, []);
 
   const handleSignupSuccess = () => {
     setSignupOpen(false);
@@ -72,6 +100,13 @@ const App = () => {
     setLoginOpen(true);
     setCurrentPage("mainMenu");
     setSlidebarOpen(false);
+    
+    // Clear authentication state and user data
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userName');
+    
+    console.log('Logged out successfully');
   };
 
   const handleLevelSelect = (level) => {
@@ -81,7 +116,7 @@ const App = () => {
 
   const renderLoginPopup = () => (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
-      <div className="bg-gray-800 text-white p-8 mt-20 rounded w-100 ">
+      <div className="bg-gray-800 text-white p-6 rounded-lg max-w-sm w-11/12 sm:w-96">
         <Login
           onLoginSuccess={handleLoginSuccess}
           onSwitchToSignup={() => {
@@ -95,7 +130,7 @@ const App = () => {
 
   const renderSignupPopup = () => (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
-      <div className="bg-gray-800 text-white p-8 mt-20 rounded w-100">
+      <div className="bg-gray-800 text-white p-6 rounded-lg max-w-sm w-11/12 sm:w-96">
         <Signup onSwitchToLogin={handleSignupSuccess} />
       </div>
     </div>
@@ -115,8 +150,8 @@ const App = () => {
       case "mapSelection":
         return (
           <MapSelection
-            maps={mapsData.maps} // Pass the maps data
-            onLevelSelect={handleLevelSelect} // Called when a level is clicked
+            maps={mapsData.maps}
+            onLevelSelect={handleLevelSelect}
             onMainMenu={() => setCurrentPage("mainMenu")}
           />
         );
@@ -127,7 +162,7 @@ const App = () => {
             profileData={profileData}
             setProfileData={setProfileData}
             onLogout={handleLogout}
-            level={selectedLevel} // Pass the selected level
+            level={selectedLevel}
           />
         );
       default:
@@ -136,34 +171,33 @@ const App = () => {
   };
 
   return (
-    <div
-      className="min-h-screen bg-cover bg-center"
-      style={{ backgroundImage: `url(${bgImage})` }}
-    >
-      {/* Background Music */}
-      <audio ref={audioRef} src={bgMusic} loop preload="auto" />
+    <GoogleOAuthProvider clientId="157299428708-eraakaj5sblugtout401ailphf12j81n.apps.googleusercontent.com">
+      <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: `url(${bgImage})` }}>
+        {/* Background Music */}
+        <audio ref={audioRef} src={bgMusic} loop preload="auto" />
 
-      {loginOpen && renderLoginPopup()}
-      {signupOpen && renderSignupPopup()}
-      {renderPage()}
-      {settingsOpen && <GameSettings onClose={() => setSettingsOpen(false)} />}
-      {profileOpen && (
-        <Profile
-          onClose={() => setProfileOpen(false)}
-          onSave={() => setProfileOpen(false)}
-          profileData={profileData}
-          setProfileData={setProfileData}
+        {loginOpen && renderLoginPopup()}
+        {signupOpen && renderSignupPopup()}
+        {renderPage()}
+        {settingsOpen && <GameSettings onClose={() => setSettingsOpen(false)} />}
+        {profileOpen && (
+          <Profile
+            onClose={() => setProfileOpen(false)}
+            onSave={() => setProfileOpen(false)}
+            profileData={profileData}
+            setProfileData={setProfileData}
+          />
+        )}
+        <Slidebar
+          isOpen={slidebarOpen}
+          toggleSlidebar={() => setSlidebarOpen(!slidebarOpen)}
+          onMainMenu={() => setCurrentPage("mainMenu")}
+          setSettingsOpen={setSettingsOpen}
+          setProfileOpen={setProfileOpen}
+          onLogout={handleLogout}
         />
-      )}
-      <Slidebar
-        isOpen={slidebarOpen}
-        toggleSlidebar={() => setSlidebarOpen(!slidebarOpen)}
-        onMainMenu={() => setCurrentPage("mainMenu")}
-        setSettingsOpen={setSettingsOpen}
-        setProfileOpen={setProfileOpen}
-        onLogout={handleLogout}
-      />
-    </div>
+      </div>
+    </GoogleOAuthProvider>
   );
 };
 
