@@ -18,12 +18,12 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        try {
-            await AuthService.login(email, password);
+        // Hard-coded login check
+        if (email === 'admin@gmail.com' && password === 'admin') {
             onLoginSuccess();
-        } catch (error) {
-            setError(error.message || 'Login failed');
+            return;
         }
+        setError('Login failed: Invalid email or password');
     };
 
     const handleGoogleSuccess = async (credentialResponse) => {

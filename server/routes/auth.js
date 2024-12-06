@@ -3,6 +3,22 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+// Middleware to verify JWT token
+const verifyToken = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.userId = decoded.userId;
+        next();
+    } catch (error) {
+        return res.status(401).json({ message: 'Invalid token' });
+    }
+};
+
 // Register new user
 router.post('/signup', async (req, res) => {
     try {
@@ -79,6 +95,42 @@ router.post('/login', async (req, res) => {
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ message: 'Error logging in' });
+    }
+});
+
+// Update user profile
+router.put('/profile', verifyToken, async (req, res) => {
+    try {
+        const { username, age, gender, profilePicture } = req.body;
+        const userId = req.userId;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Update user profile
+        if (username) user.username = username;
+        if (age) user.age = age;
+        if (gender) user.gender = gender;
+        if (profilePicture) user.profilePicture = profilePicture;
+
+        await user.save();
+
+        res.json({
+            user: {
+                id: user._id,
+                email: user.email,
+                name: user.name,
+                username: user.username,
+                age: user.age,
+                gender: user.gender,
+                profilePicture: user.profilePicture
+            }
+        });
+    } catch (error) {
+        console.error('Profile update error:', error);
+        res.status(500).json({ message: 'Error updating profile' });
     }
 });
 
