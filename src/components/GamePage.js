@@ -7,7 +7,7 @@ import scienceTerm from './scienceTerm';
 import heartImage from '../assets/heart.png';
 import attackImage from '../assets/attack.png';
 import attackEnemyImage from '../assets/attack.gif';
-import character froms '../assets/Character.png';
+import character from '../assets/Character.png';
 import functionBackground from '../assets/functionBackground.png';
 // import dialogueBox from '../assets/dialogueBox.png';
 import mapLibrary from '../components/maps.json';
@@ -91,11 +91,15 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
         handleEnemyAttack(); // Trigger enemy attack on scramble
     };
 
-    const handleEnemyAttack = () => {
-        setEnemyLaserActive(true);
-        setPlayerHearts((prev) => Math.max(0, prev - 1));
-        setTimeout(() => setEnemyLaserActive(false), 500);
-    };
+        const handleEnemyAttack = () => {
+            if (enemyLaserActive) return; // Prevent re-triggering if already active
+            setEnemyLaserActive(true);
+
+            setTimeout(() => {
+                setPlayerHearts((prev) => Math.max(0, prev - 1));
+                setEnemyLaserActive(false);
+            }, 500); // Ensure the timing matches the animation duration
+        };
 
             const handleAttack = () => {
                 const word = selectedLetters.join('');
@@ -142,17 +146,32 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
         }
     };
 
-            const handleNextMap = () => {
-                const nextMapId = currentMap.next_map_id; // Ensure this field exists in your map data
-                const nextMap = mapLibrary.maps.find((map) => map.id === nextMapId);
+        const handleNextMap = () => {
+            const nextMapId = currentMap.next_map_id;
+            if (!nextMapId) {
+                console.log("Game Over or Victory! No more maps.");
+                return;  // End the game or show victory message
+            }
 
-                if (nextMap) {
-                    setCurrentMap(nextMap);
-                    setCurrentEnemy(nextMap.enemies[0]); // Start with the first enemy of the new map
-                    setEnemyHearts(nextMap.enemies[0]?.health || 0);
-                }
-            };
+            const nextMap = mapLibrary.maps.find(map => map.id === nextMapId);
+            if (nextMap) {
+                setCurrentMap(nextMap);
+                setCurrentEnemy(nextMap.enemies[0]); // Start with the first enemy
+                setEnemyHearts(nextMap.enemies[0]?.health || 0);
+                setCurrentEnemyIndex(0);
 
+                // Reset word selection and grid
+                setGridLetters(generateRandomLetters());
+                setSelectedLetters([]);
+                setEmptyIndices([]);
+                setDefinition('Definition shows here when you enter right');
+
+                // Show the first enemy's dialog
+                setDialogMessage(nextMap.enemies[0]?.dialog || '');
+                setDialogVisible(true);
+            }
+        };
+        
     const toggleSlidebar = () => setSlidebarOpen(!slidebarOpen);
 
     const handleClickOutside = useCallback(

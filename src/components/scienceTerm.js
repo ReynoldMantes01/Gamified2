@@ -1,4 +1,4 @@
-const computerTerms = {
+const scienceTerms = {
     ACCELERATION: "The rate of change of an object's velocity.",
     ATOM: "The basic unit of matter, consisting of protons, neutrons, and electrons.",
     CAPACITOR: "A device used to store electrical energy in an electric field.",
@@ -206,4 +206,4 @@ const computerTerms = {
     ANTIBODYPRODUCTION: "The process by which the immune system produces antibodies in response to the presence of pathogens.",
 };
 
-export default computerTerms;
+export default scienceTerms;
