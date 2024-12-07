@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-const MapSelection = ({ maps, onLevelSelect, onMainMenu }) => {
-  const [currentMapIndex, setCurrentMapIndex] = useState(0);
+const MapSelection = ({ maps, onLevelSelect, onMainMenu, startingMapIndex = 0 }) => {
+  const [currentMapIndex, setCurrentMapIndex] = useState(startingMapIndex);
 
   const handleNextMap = () => {
     if (currentMapIndex < maps.length - 1) {
@@ -19,7 +19,7 @@ const MapSelection = ({ maps, onLevelSelect, onMainMenu }) => {
 
   return (
     <div className="text-center p-5">
-      <h1 className="text-3xl font-bold mb-6 text-white ">Select Your Level</h1>
+      <h1 className="text-3xl font-bold mb-6 text-white">Select Your Level</h1>
       <div className="flex justify-center items-center">
         <button
           onClick={handlePrevMap}
@@ -29,8 +29,8 @@ const MapSelection = ({ maps, onLevelSelect, onMainMenu }) => {
           Previous
         </button>
         <div className="w-80 bg-cover bg-center rounded-lg shadow-lg p-4" style={{ backgroundImage: `url(${currentMap.background})` }}>
-          <h2 className="text-2xl font-semibold text-blue-800 ">{currentMap.name}</h2>
-          <p className="text-red-900 ">Theme: {currentMap.theme}</p>
+          <h2 className="text-2xl font-semibold text-blue-800">{currentMap.name}</h2>
+          <p className="text-red-900">Theme: {currentMap.theme}</p>
           <div className="mt-4 grid grid-cols-1 gap-4">
             {currentMap.enemies.map((level) => (
               <button

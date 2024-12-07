@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import MainMenu from "./components/MainMenu";
 import GamePage from "./components/GamePage";
-import MapSelection from "./components/MapSelection";
+import MapSelection from "./components/mapSelection";
 import GameSettings from "./components/GameSettings";
 import Profile from "./components/Profile";
 import Login from "./components/Login";
@@ -149,11 +149,12 @@ const App = () => {
         );
       case "mapSelection":
         return (
-          <MapSelection
-            maps={mapsData.maps}
-            onLevelSelect={handleLevelSelect}
-            onMainMenu={() => setCurrentPage("mainMenu")}
-          />
+            <MapSelection
+              maps={mapsData.maps}
+              onLevelSelect={handleLevelSelect}
+              onMainMenu={() => setCurrentPage("mainMenu")}
+              startingMapIndex={0} // Change this to the desired starting index
+            />
         );
       case "gamePage":
         return (

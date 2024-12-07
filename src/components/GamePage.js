@@ -7,16 +7,12 @@ import scienceTerm from './scienceTerm';
 import heartImage from '../assets/heart.png';
 import attackImage from '../assets/attack.png';
 import attackEnemyImage from '../assets/attack.gif';
-import character from '../assets/Character.png';
+import character froms '../assets/Character.png';
 import functionBackground from '../assets/functionBackground.png';
-import dialogueBox from '../assets/dialogueBox.png'
-
-// Import the enemy data JSON
+// import dialogueBox from '../assets/dialogueBox.png';
 import mapLibrary from '../components/maps.json';
 
-const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
-
-    
+const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingMap }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState(generateRandomLetters());
@@ -27,25 +23,35 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [laserActive, setLaserActive] = useState(false);
-    const [currentMap, setCurrentMap] = useState(mapLibrary.maps[0]); 
-    const [currentEnemyIndex, setCurrentEnemyIndex] = useState(0);  
+    
+    // Ensure startingMap is valid, otherwise fallback to the first map
+    const initialMap = startingMap || mapLibrary.maps[0];
+    const [currentMap, setCurrentMap] = useState(initialMap);
+    
+    const [currentEnemyIndex, setCurrentEnemyIndex] = useState(0);
     const [currentEnemy, setCurrentEnemy] = useState(currentMap.enemies[currentEnemyIndex]);
-    const [enemyHearts, setEnemyHearts] = useState(currentEnemy?.health || 0);  // Set enemy health if currentEnemy exists
+    const [enemyHearts, setEnemyHearts] = useState(currentEnemy?.health || 0);
+
     const isValidWord = selectedLetters.length > 0 && scienceTerm[selectedLetters.join('').toUpperCase()];
     const [dialogVisible, setDialogVisible] = useState(false);
     const [dialogMessage, setDialogMessage] = useState('');
-    const closeDialog = () => {setDialogVisible(false)};
+    const closeDialog = () => { setDialogVisible(false) };
 
-        useEffect(() => {
+    useEffect(() => {
         // Show dialog for the first enemy when the game starts
         if (currentEnemy) {
-            setDialogMessage(currentEnemy.dialog); // Set the dialog message    
-            setDialogVisible(true); // Show the dialog
+            setDialogMessage(currentEnemy.dialog);
+            setDialogVisible(true);
         }
     }, [currentEnemy]);
 
-    
-
+    useEffect(() => {
+        // Initialize the enemy when the current map changes
+        if (currentMap) {
+            setCurrentEnemy(currentMap.enemies[0]);
+            setEnemyHearts(currentMap.enemies[0]?.health || 0);
+        }
+    }, [currentMap]);
     function generateRandomLetters() {
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         return Array.from({ length: 16 }, () => letters.charAt(Math.floor(Math.random() * letters.length)));
@@ -91,55 +97,61 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout }) => {
         setTimeout(() => setEnemyLaserActive(false), 500);
     };
 
-    const handleAttack = () => {
-        const word = selectedLetters.join('');
-        let damage = Math.min(3, Math.ceil(word.length / 4));
+            const handleAttack = () => {
+                const word = selectedLetters.join('');
+                let damage = Math.min(3, Math.ceil(word.length / 4));
 
-        if (scienceTerm[word.toUpperCase()]) {
-            setDefinition(scienceTerm[word.toUpperCase()]);
-            const updatedHearts = Math.max(0, enemyHearts - damage);
-            setEnemyHearts(updatedHearts);
+                if (scienceTerm[word.toUpperCase()]) {
+                    setDefinition(scienceTerm[word.toUpperCase()]);
+                    const updatedHearts = Math.max(0, enemyHearts - damage);
+                    setEnemyHearts(updatedHearts);
 
-            if (updatedHearts === 0) handleNextEnemy();
-        } else {
-            setDefinition('Invalid word. Please try again.');
-            setPlayerHearts(Math.max(0, playerHearts - damage));
-            handleEnemyAttack();
-        }
-
-        setLaserActive(true);
-        setTimeout(() => setLaserActive(false), 500);
-        setSelectedLetters([]);
-        setEmptyIndices([]);
-        setGridLetters(generateRandomLetters());
-    };
-
-            const handleNextEnemy = () => {
-                // Check if there are more enemies in the current map
-                const nextEnemyIndex = currentEnemyIndex + 1;
-                if (currentMap.enemies[nextEnemyIndex]) {
-                    const nextEnemy = currentMap.enemies[nextEnemyIndex];
-                    setCurrentEnemy(nextEnemy);
-                    setEnemyHearts(nextEnemy.health);
-                    setCurrentEnemyIndex(nextEnemyIndex);
-                    setDialogMessage(nextEnemy.dialog); // Set the dialog message
-                    setDialogVisible(true); // Show the dialog
+                    // Check if the current enemy is defeated
+                    if (updatedHearts === 0) {
+                        if (currentEnemyIndex === currentMap.enemies.length - 1) {
+                            // If the current enemy is the last one (the boss), go to the next map
+                            handleNextMap();
+                        } else {
+                            handleNextEnemy();
+                        }
+                    }
                 } else {
-                    // No more enemies, go to the next map or end the game
-                    handleNextMap();
+                    setDefinition('Invalid word. Please try again.');
+                    setPlayerHearts(Math.max(0, playerHearts - damage));
+                    handleEnemyAttack();
                 }
+
+                setLaserActive(true);
+                setTimeout(() => setLaserActive(false), 500);
+                setSelectedLetters([]);
+                setEmptyIndices([]);
+                setGridLetters(generateRandomLetters());
             };
 
-            const handleNextMap = () => {
-            const nextMapId = currentMap.next_map_id; // Assume this field is present in your map data
-            const nextMap = mapLibrary.maps.find((map) => map.id === nextMapId);
+    const handleNextEnemy = () => {
+        const nextEnemyIndex = currentEnemyIndex + 1;
+        if (currentMap.enemies[nextEnemyIndex]) {
+            const nextEnemy = currentMap.enemies[nextEnemyIndex];
+            setCurrentEnemy(nextEnemy);
+            setEnemyHearts(nextEnemy.health);
+            setCurrentEnemyIndex(nextEnemyIndex);
+            setDialogMessage(nextEnemy.dialog);
+            setDialogVisible(true);
+        } else {
+            handleNextMap(); // This should be called if there are no more enemies
+        }
+    };
 
-            if (nextMap) {
-                setCurrentMap(nextMap);
-                setCurrentEnemy(nextMap.enemies[0]); // Start with the first enemy of the new map
-                setEnemyHearts(nextMap.enemies[0]?.health || 0);
-            }
-        };
+            const handleNextMap = () => {
+                const nextMapId = currentMap.next_map_id; // Ensure this field exists in your map data
+                const nextMap = mapLibrary.maps.find((map) => map.id === nextMapId);
+
+                if (nextMap) {
+                    setCurrentMap(nextMap);
+                    setCurrentEnemy(nextMap.enemies[0]); // Start with the first enemy of the new map
+                    setEnemyHearts(nextMap.enemies[0]?.health || 0);
+                }
+            };
 
     const toggleSlidebar = () => setSlidebarOpen(!slidebarOpen);
 
