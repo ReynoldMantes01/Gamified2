@@ -2,35 +2,20 @@ import React, { useState } from "react";
 
 const MapSelection = ({ maps, onLevelSelect, onMainMenu, startingMapIndex = 0 }) => {
   const [currentMapIndex, setCurrentMapIndex] = useState(startingMapIndex);
-  const [selectedEnemy, setSelectedEnemy] = useState(null); // State for selected enemy
 
   const handleNextMap = () => {
     if (currentMapIndex < maps.length - 1) {
       setCurrentMapIndex(currentMapIndex + 1);
-      setSelectedEnemy(null); // Reset selected enemy when changing maps
     }
   };
 
   const handlePrevMap = () => {
     if (currentMapIndex > 0) {
       setCurrentMapIndex(currentMapIndex - 1);
-      setSelectedEnemy(null); // Reset selected enemy when changing maps
     }
   };
 
   const currentMap = maps[currentMapIndex];
-
-  const handleEnemySelect = (enemy) => {
-    setSelectedEnemy(enemy); // Update selected enemy
-  };
-
-  const handleStartLevel = () => {
-    if (selectedEnemy) {
-      onLevelSelect(selectedEnemy); // Pass the selected enemy to the parent
-    } else {
-      alert("Please select an enemy before starting the level.");
-    }
-  };
 
   return (
     <div className="text-center p-5">
@@ -47,13 +32,13 @@ const MapSelection = ({ maps, onLevelSelect, onMainMenu, startingMapIndex = 0 })
           <h2 className="text-2xl font-semibold text-blue-800">{currentMap.name}</h2>
           <p className="text-red-900">Theme: {currentMap.theme}</p>
           <div className="mt-4 grid grid-cols-1 gap-4">
-            {currentMap.enemies.map((enemy) => (
+            {currentMap.enemies.map((level) => (
               <button
-                key={enemy.id}
-                onClick={() => handleEnemySelect(enemy)}
-                className={`px-4 py-2 rounded shadow ${selectedEnemy?.id === enemy.id ? 'bg-green-500' : 'bg-blue-500'} text-white hover:bg-blue-600`}
+                key={level.id}
+                onClick={() => onLevelSelect(level)}
+                className="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
               >
-                {enemy.name}
+                {level.name}
               </button>
             ))}
           </div>
@@ -66,9 +51,6 @@ const MapSelection = ({ maps, onLevelSelect, onMainMenu, startingMapIndex = 0 })
           Next
         </button>
       </div>
-      <button onClick={handleStartLevel} className="mt-6 px-3 py-2 bg-red-500 text-white rounded shadow ml-16">
-        Start Level
-      </button>
       <button onClick={onMainMenu} className="mt-6 px-3 py-2 bg-red-500 text-white rounded shadow ml-16">
         Back to Main Menu
       </button>
