@@ -8,10 +8,10 @@ import Profile from "./components/Profile";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Slidebar from "./components/Slidebar";
-import Almanac from "./components/Almanac"; // Import Almanac component
 import bgImage from "./assets/bg.gif";
 import bgMusic from "./assets/BG1.mp3";
 import mapsData from "./components/maps.json";
+
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState("mainMenu");
@@ -62,10 +62,10 @@ const App = () => {
     setIsAuthenticated(true);
     setLoginOpen(false);
     setCurrentPage("mainMenu");
-
+    
     // Persist authentication state
     localStorage.setItem('isAuthenticated', 'true');
-
+    
     // Update profile data with user info if available
     const userEmail = localStorage.getItem('userEmail');
     const userName = localStorage.getItem('userName');
@@ -75,10 +75,12 @@ const App = () => {
         username: userName
       }));
     }
-
+    
+    // Log authentication success
     console.log('Login successful, navigating to main menu');
   };
 
+  // Check for existing authentication on component mount
   useEffect(() => {
     const authState = localStorage.getItem('isAuthenticated');
     if (authState === 'true') {
@@ -98,12 +100,12 @@ const App = () => {
     setLoginOpen(true);
     setCurrentPage("mainMenu");
     setSlidebarOpen(false);
-
+    
     // Clear authentication state and user data
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userName');
-
+    
     console.log('Logged out successfully');
   };
 
@@ -142,18 +144,17 @@ const App = () => {
             onPlay={() => (isAuthenticated ? setCurrentPage("mapSelection") : setLoginOpen(true))}
             onSettings={() => setSettingsOpen(true)}
             onProfile={() => setProfileOpen(true)}
-            onAlmanac={() => setCurrentPage("almanac")} // Navigate to Almanac
             onLogout={handleLogout}
           />
         );
       case "mapSelection":
         return (
-          <MapSelection
-            maps={mapsData.maps}
-            onLevelSelect={handleLevelSelect}
-            onMainMenu={() => setCurrentPage("mainMenu")}
-            startingMapIndex={0}
-          />
+            <MapSelection
+              maps={mapsData.maps}
+              onLevelSelect={handleLevelSelect}
+              onMainMenu={() => setCurrentPage("mainMenu")}
+              startingMapIndex={0} // Change this to the desired starting index
+            />
         );
       case "gamePage":
         return (
@@ -165,8 +166,6 @@ const App = () => {
             level={selectedLevel}
           />
         );
-      case "almanac":
-        return <Almanac onMainMenu={() => setCurrentPage("mainMenu")} />;
       default:
         return <MainMenu onPlay={() => setCurrentPage("gamePage")} />;
     }

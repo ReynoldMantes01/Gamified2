@@ -57,8 +57,7 @@
           "image": "mutant_dna.png",
           "dialog": "PHEW! we manage to survive againts that TOXIC CRAWLERS......!!!!!! OH NO! What happen to you? Mr.DNA? (Mutant DNA refers to DNA that has undergone a change or mutation in its sequence, altering its normal genetic information. This can occur naturally or be induced, potentially affecting how genes function and leading to variations, diseases, or adaptations.)"
         }
-      ],
-      "next_map_id": "map2"
+      ]
     },
     {
       "id": "map2",
@@ -114,8 +113,7 @@
           },
           "image": "black_hole.png"
         }
-      ],
-      "next_map_id": "map3"
+      ]
     },
     {
       "id": "map3",
@@ -171,8 +169,7 @@
           },
           "image": "reaction_master.png"
         }
-      ],
-      "next_map_id": null
+      ]
     }
   ]
 }
