@@ -1,9 +1,14 @@
 const scienceTerms = {
+<<<<<<< HEAD
     A: "ADMIN POWER!!!!!!!!!!!!!!!",
     E: "ADMIN POWER!!!!!!!!!!!!!!!",
     I: "ADMIN POWER!!!!!!!!!!!!!!!",
     O: "ADMIN POWER!!!!!!!!!!!!!!!",
     U: "ADMIN POWER!!!!!!!!!!!!!!!",
+=======
+    A: "fg",
+    E: "df",
+>>>>>>> dbe334a9c4e54cd59b8755d3c4c761be49966910
     ACCELERATION: "The rate of change of an object's velocity.",
     ATOM: "The basic unit of matter, consisting of protons, neutrons, and electrons.",
     CAPACITOR: "A device used to store electrical energy in an electric field.",
@@ -208,7 +213,7 @@ const scienceTerms = {
     BLOODPRESSURECONTROL: "The regulation of the force exerted by circulating blood on the walls of blood vessels, crucial for maintaining cardiovascular health.",
     CELLDIVISIONCYCLE: "The series of events that take place in a eukaryotic cell as it grows and divides to form daughter cells.",
     MOLECULARBIOLOGY: "The branch of biology that deals with the molecular basis of biological activity, focusing on DNA, RNA, and protein synthesis.",
-    ANTIBODYPRODUCTION: "The process by which the immune system produces antibodies in response to the presence of pathogens.",
+    ANTIBODYPRODUCTION: "The process by which the immune system produces antibodies in response to the presence of pathogens.",   
 };
 
 export default scienceTerms;

@@ -90,11 +90,22 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
 
     const handleScramble = () => {
         const newGridLetters = generateRandomLetters();
-        emptyIndices.forEach((index) => {
-            newGridLetters[index] = '';
+        
+        // Restore the selected letters back to the grid
+        selectedLetters.forEach((letter, index) => {
+            const emptyIndex = emptyIndices[index]; // Get the index where the letter was selected
+            if (emptyIndex !== undefined) {
+                newGridLetters[emptyIndex] = letter; // Place the selected letter back in the grid
+            }
         });
+    
+        // Clear empty indices
+        emptyIndices.forEach((index) => {
+            newGridLetters[index] = ''; // Keep empty indices as empty
+        });
+    
         setGridLetters(newGridLetters);
-        handleEnemyAttack();
+        handleEnemyAttack(); // Call enemy attack after scrambling
     };
 
         const handleHint = () => {
@@ -219,11 +230,13 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
         const handleTryAgain = () => {
             setPlayerHearts(3);
             setEnemyHearts(currentMap.enemies[0]?.health || 0);
-            setSelectedLetters([]);
-            setGridLetters(generateRandomLetters());
+            setSelectedLetters([]); // Reset selected letters
+            setGridLetters(generateRandomLetters()); // Generate new random letters
+            setEmptyIndices([]); // Reset empty indices
             setDefeatVisible(false);
+            setHint(''); // Optionally reset hint as well
         };
-
+        
         // Function to handle proceeding to the next level
         const handleNextLevel = () => {
             handleNextEnemy();
