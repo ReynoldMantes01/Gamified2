@@ -11,7 +11,7 @@ import character from '../assets/Character.png';
 import functionBackground from '../assets/functionBackground.png';
 import mapLibrary from '../components/maps.json';
 
-const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingMap }) => {
+const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingMap, }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState(generateRandomLetters());
@@ -35,7 +35,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
 
     const isValidWord = selectedLetters.length > 0 && scienceTerm[selectedLetters.join('').toUpperCase()];
 
-    
+    const [victoryVisible, setVictoryVisible] = useState(false);
+    const [defeatVisible, setDefeatVisible] = useState(false);
     
 
     useEffect(() => {
@@ -114,11 +115,19 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
         setEnemyLaserActive(true);
 
         setTimeout(() => {
-            setPlayerHearts((prev) => Math.max(0, prev - 1));
+            // Deduct one heart and check if player is defeated
+            setPlayerHearts((prev) => {
+                const newHeartCount = Math.max(0, prev - 1);
+                if (newHeartCount === 0) {
+                    setDefeatVisible(true); // Trigger defeat dialog if player has 0 hearts
+                }
+                return newHeartCount;
+            });
             setEnemyLaserActive(false);
         }, 500);
     };
 
+    // Handle player's attack logic
     const handleAttack = () => {
         const word = selectedLetters.join('');
         let damage = Math.min(3, Math.ceil(word.length / 4));
@@ -129,45 +138,50 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
             setEnemyHearts(updatedHearts);
 
             if (updatedHearts === 0) {
-                if (currentEnemyIndex === currentMap.enemies.length - 1) {
-                    handleNextMap();
-                } else {
-                    handleNextEnemy();
-                }
+                setVictoryVisible(true); // Show victory dialog if enemy's hearts reach 0
             }
         } else {
             setDefinition('Invalid word. Please try again.');
-            setPlayerHearts(Math.max(0, playerHearts - damage));
-            handleEnemyAttack();
+            const updatedPlayerHearts = Math.max(0, playerHearts - damage);
+            setPlayerHearts(updatedPlayerHearts);
+
+            handleEnemyAttack(); // Handle enemy attack after invalid word
+
+            // Ensure defeat dialog shows when player hearts are 0
+            if (updatedPlayerHearts === 0) {
+                setDefeatVisible(true); // Show defeat dialog
+            }
         }
 
-        setLaserActive(true);
-        setTimeout(() => setLaserActive(false), 500);
-        setSelectedLetters([]);
-        setEmptyIndices([]);
-        setGridLetters(generateRandomLetters());
-    };
 
-    const handleNextEnemy = () => {
-        const nextEnemyIndex = currentEnemyIndex + 1;
-        if (currentMap.enemies[nextEnemyIndex]) {
-            const nextEnemy = currentMap.enemies[nextEnemyIndex];
-            setCurrentEnemy(nextEnemy);
-            setEnemyHearts(nextEnemy.health);
-            setCurrentEnemyIndex(nextEnemyIndex);
-            setDialogMessage(nextEnemy.dialog);
-            setDialogVisible(true);
-        } else {
-            handleNextMap();
-        }
-    };
 
-    const handleNextMap = () => {
-        const nextMapId = currentMap.next_map_id;
-        if (!nextMapId) {
-            console.log("Game Over or Victory! No more maps.");
-            return;
-        }
+            setLaserActive(true);
+            setTimeout(() => setLaserActive(false), 500);
+            setSelectedLetters([]);
+            setEmptyIndices([]);
+            setGridLetters(generateRandomLetters());
+        };
+
+        const handleNextEnemy = () => {
+            const nextEnemyIndex = currentEnemyIndex + 1;
+            if (currentMap.enemies[nextEnemyIndex]) {
+                const nextEnemy = currentMap.enemies[nextEnemyIndex];
+                setCurrentEnemy(nextEnemy);
+                setEnemyHearts(nextEnemy.health);
+                setCurrentEnemyIndex(nextEnemyIndex);
+                setDialogMessage(nextEnemy.dialog);
+                setDialogVisible(true);
+            } else {
+                handleNextMap();
+            }
+        };
+
+        const handleNextMap = () => {
+            const nextMapId = currentMap.next_map_id;
+            if (!nextMapId) {
+                console.log("Game Over or Victory! No more maps.");
+                return;
+            }
 
         const nextMap = mapLibrary.maps.find(map => map.id === nextMapId);
         if (nextMap) {
@@ -180,35 +194,95 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
             setEmptyIndices([]);
             setDefinition('Definition shows here when you enter right');
             setDialogMessage(nextMap.enemies[0]?.dialog || '');
-            setDialogVisible(true);
-        }
-    };
-
-    const toggleSlidebar = () => setSlidebarOpen(!slidebarOpen);
- 
-    const handleClickOutside = useCallback(
-        (event) => {
-            if (slidebarOpen && !event.target.closest('.slidebar') && !event.target.closest('.slidebar-icon')) {
-                setSlidebarOpen(false);
+                setDialogVisible(true);
             }
-        },
-        [slidebarOpen]
-    );
-
-    useEffect(() => {
-        document.addEventListener('click', handleClickOutside);
-        return () => {
-            document.removeEventListener('click', handleClickOutside);
         };
-    }, [handleClickOutside]);
+
+        const toggleSlidebar = () => setSlidebarOpen(!slidebarOpen);
+    
+        const handleClickOutside = useCallback(
+            (event) => {
+                if (slidebarOpen && !event.target.closest('.slidebar') && !event.target.closest('.slidebar-icon')) {
+                    setSlidebarOpen(false);
+                }
+            },
+            [slidebarOpen]
+        );
+
+        useEffect(() => {
+            document.addEventListener('click', handleClickOutside);
+            return () => {
+                document.removeEventListener('click', handleClickOutside);
+            };
+        }, [handleClickOutside]);
+
+        const handleTryAgain = () => {
+            setPlayerHearts(3);
+            setEnemyHearts(currentMap.enemies[0]?.health || 0);
+            setSelectedLetters([]);
+            setGridLetters(generateRandomLetters());
+            setDefeatVisible(false);
+        };
+
+        // Function to handle proceeding to the next level
+        const handleNextLevel = () => {
+            handleNextEnemy();
+            setVictoryVisible(false);
+        };
 
 
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    return (
-            <div className="game-container flex flex-col items-center justify-center min-h-screen min-w-full overflow-hidden relative">
-                {/* Dialog Box */}
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        return (
+                <div className="game-container flex flex-col items-center justify-center min-h-screen min-w-full overflow-hidden relative">
+                {/* Victory Dialog */}
+                {victoryVisible && (<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-[#f4d9a3] border-2 border-black p-5 rounded-lg text-center max-w-sm w-full sm:max-w-md">
+                            <h2 className="text-2xl font-bold">Victory!</h2>
+                            <p>You defeated {currentEnemy.name}!</p>
+                            <button
+                                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                onClick={handleNextLevel}
+                            >
+                            Next Level
+                        </button>
+                        <button
+                            className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                            onClick={() => {
+                                setVictoryVisible(false);
+                                onMainMenu(); // Go back to main menu
+                            }}
+                        >
+                            Back to Main Menu
+                        </button>
+                    </div>
+                </div>
+             )}
+            {/* Defeat Dialog */}
+            {defeatVisible && (<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-[#f4d9a3] border-2 border-black p-5 rounded-lg text-center max-w-sm w-full sm:max-w-md">
+                    <h2 className="text-2xl font-bold">Defeat!</h2>
+                    <p>You have been defeated!</p>
+                    <button
+                        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        onClick={handleTryAgain}
+                    >
+                        Try Again
+                    </button>
+                    <button
+                        className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                        onClick={() => {
+                            setDefeatVisible(false);
+                            onMainMenu(); // Go back to main menu
+                        }}
+                    >
+                        Back to Main Menu
+                    </button>
+                </div>
+            </div>
+        )}
+            
+                        {/* Dialog Box */}
+            
                 {dialogVisible && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                         <div className="bg-[#f4d9a3] border-2 border-black p-5 rounded-lg text-center max-w-sm w-full sm:max-w-md">
