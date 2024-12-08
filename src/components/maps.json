@@ -1,175 +1,175 @@
-{
-  "maps": [
-    {
-      "id": "map1",
-      "name": "Biology World",
-      "theme": "Biology",
-      "background": "biology_background.png",
-      "enemies": [
-        {
-          "id": "bio_t1",
-          "name": "Microbe",
-          "health": 1,
-          "attacks": [
-            {
-              "name": "Infection",
-              "damage": 0.5
-            }
-          ],
-          "stats": {
-            "weakness": "Soap",
-            "strength": "Dirty Places"
+  {
+    "maps": [
+      {
+        "id": "map1",
+        "name": "Biology World",
+        "theme": "Biology",
+        "background": "biology_background.png",
+        "enemies": [
+          {
+            "id": "bio_t1",
+            "name": "Microbe",
+            "health": 1,
+            "attacks": [
+              {
+                "name": "Infection",
+                "damage": 0.5
+              }
+            ],
+            "stats": {
+              "weakness": "Soap",
+              "strength": "Dirty Places"
+            },
+            "image": "microbe.gif",
+            "dialog": "OH NO! THE MICROBES, Microbes are tiny living organisms, such as bacteria, viruses, fungi, and protozoa, that are too small to be seen with the naked eye. They exist everywhere, play essential roles in ecosystems, and can be beneficial (like in digestion) or harmful (causing diseases). "
           },
-          "image": "microbe.png",
-          "dialog": "OH NO! THE MICROBES, Microbes are tiny living organisms, such as bacteria, viruses, fungi, and protozoa, that are too small to be seen with the naked eye. They exist everywhere, play essential roles in ecosystems, and can be beneficial (like in digestion) or harmful (causing diseases). "
-        },
-        {
-          "id": "bio_t2",
-          "name": "Toxic Crawler",
-          "health": 2,
-          "attacks": [
-            {
-              "name": "Poison Spray",
-              "damage": 0.7
-            }
-          ],
-          "stats": {
-            "weakness": "Antidotes",
-            "strength": "Polluted Areas"
+          {
+            "id": "bio_t2",
+            "name": "Toxic Crawler",
+            "health": 2,
+            "attacks": [
+              {
+                "name": "Poison Spray",
+                "damage": 0.7
+              }
+            ],
+            "stats": {
+              "weakness": "Antidotes",
+              "strength": "Polluted Areas"
+            },
+            "image": "toxin.gif",
+            "dialog": "TOXIC CRAWLER! after we defeat MICROBES there is more dangerous Enemy, but did you know that Toxic refers to something harmful or poisonous to living organisms, potentially causing damage, illness, or death when absorbed, inhaled, or ingested. So stay out of it's Poison Spray."
           },
-          "image": "toxin.png",
-          "dialog": "TOXIC CRAWLER! after we defeat MICROBES there is more dangerous Enemy, but did you know that Toxic refers to something harmful or poisonous to living organisms, potentially causing damage, illness, or death when absorbed, inhaled, or ingested. So stay out of it's Poison Spray."
-        },
-        {
-          "id": "bio_boss",
-          "name": "Mutant DNA",
-          "health": 5,
-          "attacks": [
-            {
-              "name": "Gene Splice",
-              "damage": 0.5
-            }
-          ],
-          "stats": {
-            "weakness": "Electric Fields",
-            "strength": "Absorbing Traits"
+          {
+            "id": "bio_boss",
+            "name": "Mutant DNA",
+            "health": 5,
+            "attacks": [
+              {
+                "name": "Gene Splice",
+                "damage": 0.5
+              }
+            ],
+            "stats": {
+              "weakness": "Electric Fields",
+              "strength": "Absorbing Traits"
+            },
+            "image": "mutant_dna.gif",
+            "dialog": "PHEW! we manage to survive againts that TOXIC CRAWLERS!!!!!!....... OH NO! What happen to you? Mr.DNA? (Mutant DNA refers to DNA that has undergone a change or mutation in its sequence, altering its normal genetic information. This can occur naturally or be induced, potentially affecting how genes function and leading to variations, diseases, or adaptations.)"
+          }
+        ]
+      },
+      {
+        "id": "map2",
+        "name": "Physics Realm",
+        "theme": "Physics",
+        "background": "physics_background.png",
+        "enemies": [
+          {
+            "id": "phy_t1",
+            "name": "Quark",
+            "health": 2,
+            "attacks": [
+              {
+                "name": "Quantum Jitter",
+                "damage": 0.8
+              }
+            ],
+            "stats": {
+              "weakness": "Mathematical Terms",
+              "strength": "Common Words"
+            },
+            "image": "quark.png"
           },
-          "image": "mutant_dna.png",
-          "dialog": "PHEW! we manage to survive againts that TOXIC CRAWLERS......!!!!!! OH NO! What happen to you? Mr.DNA? (Mutant DNA refers to DNA that has undergone a change or mutation in its sequence, altering its normal genetic information. This can occur naturally or be induced, potentially affecting how genes function and leading to variations, diseases, or adaptations.)"
-        }
-      ]
-    },
-    {
-      "id": "map2",
-      "name": "Physics Realm",
-      "theme": "Physics",
-      "background": "physics_background.png",
-      "enemies": [
-        {
-          "id": "phy_t1",
-          "name": "Quark",
-          "health": 2,
-          "attacks": [
-            {
-              "name": "Quantum Jitter",
-              "damage": 0.8
-            }
-          ],
-          "stats": {
-            "weakness": "Mathematical Terms",
-            "strength": "Common Words"
+          {
+            "id": "phy_t2",
+            "name": "Graviton",
+            "health": 5,
+            "attacks": [
+              {
+                "name": "Gravity Slam",
+                "damage": 1.8
+              }
+            ],
+            "stats": {
+              "weakness": "Philosophical Words",
+              "strength": "Scientific Terms"
+            },
+            "image": "graviton.png"
           },
-          "image": "quark.png"
-        },
-        {
-          "id": "phy_t2",
-          "name": "Graviton",
-          "health": 5,
-          "attacks": [
-            {
-              "name": "Gravity Slam",
-              "damage": 1.8
-            }
-          ],
-          "stats": {
-            "weakness": "Philosophical Words",
-            "strength": "Scientific Terms"
+          {
+            "id": "phy_boss",
+            "name": "Black Hole",
+            "health": 12,
+            "attacks": [
+              {
+                "name": "Event Horizon",
+                "damage": 4
+              }
+            ],
+            "stats": {
+              "weakness": "Simple Words",
+              "strength": "Complex Words"
+            },
+            "image": "black_hole.png"
+          }
+        ]
+      },
+      {
+        "id": "map3",
+        "name": "Chemistry Domain",
+        "theme": "Chemistry",
+        "background": "chemistry_background.png",
+        "enemies": [
+          {
+            "id": "chem_t1",
+            "name": "Atom",
+            "health": 3,
+            "attacks": [
+              {
+                "name": "Electron Zap",
+                "damage": 1
+              }
+            ],
+            "stats": {
+              "weakness": "Chemical Names",
+              "strength": "Everyday Words"
+            },
+            "image": "atom.png"
           },
-          "image": "graviton.png"
-        },
-        {
-          "id": "phy_boss",
-          "name": "Black Hole",
-          "health": 12,
-          "attacks": [
-            {
-              "name": "Event Horizon",
-              "damage": 4
-            }
-          ],
-          "stats": {
-            "weakness": "Simple Words",
-            "strength": "Complex Words"
+          {
+            "id": "chem_t2",
+            "name": "Molecule",
+            "health": 6,
+            "attacks": [
+              {
+                "name": "Bond Break",
+                "damage": 2
+              }
+            ],
+            "stats": {
+              "weakness": "Organic Chemistry Words",
+              "strength": "Non-Chemical Terms"
+            },
+            "image": "molecule.png"
           },
-          "image": "black_hole.png"
-        }
-      ]
-    },
-    {
-      "id": "map3",
-      "name": "Chemistry Domain",
-      "theme": "Chemistry",
-      "background": "chemistry_background.png",
-      "enemies": [
-        {
-          "id": "chem_t1",
-          "name": "Atom",
-          "health": 3,
-          "attacks": [
-            {
-              "name": "Electron Zap",
-              "damage": 1
-            }
-          ],
-          "stats": {
-            "weakness": "Chemical Names",
-            "strength": "Everyday Words"
-          },
-          "image": "atom.png"
-        },
-        {
-          "id": "chem_t2",
-          "name": "Molecule",
-          "health": 6,
-          "attacks": [
-            {
-              "name": "Bond Break",
-              "damage": 2
-            }
-          ],
-          "stats": {
-            "weakness": "Organic Chemistry Words",
-            "strength": "Non-Chemical Terms"
-          },
-          "image": "molecule.png"
-        },
-        {
-          "id": "chem_boss",
-          "name": "Reaction Master",
-          "health": 15,
-          "attacks": [
-            {
-              "name": "Catalyst Burst",
-              "damage": 5
-            }
-          ],
-          "stats": {
-            "weakness": "Physics Terms",
-            "strength": "Chemical Terms"
-          },
-          "image": "reaction_master.png"
-        }
-      ]
-    }
-  ]
-}
+          {
+            "id": "chem_boss",
+            "name": "Reaction Master",
+            "health": 15,
+            "attacks": [
+              {
+                "name": "Catalyst Burst",
+                "damage": 5
+              }
+            ],
+            "stats": {
+              "weakness": "Physics Terms",
+              "strength": "Chemical Terms"
+            },
+            "image": "reaction_master.png"
+          }
+        ]
+      }
+    ]
+  }

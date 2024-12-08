@@ -9,7 +9,6 @@ import attackImage from '../assets/attack.png';
 import attackEnemyImage from '../assets/attack.gif';
 import character from '../assets/Character.png';
 import functionBackground from '../assets/functionBackground.png';
-// import dialogueBox from '../assets/dialogueBox.png';
 import mapLibrary from '../components/maps.json';
 
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingMap }) => {
@@ -23,22 +22,23 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [laserActive, setLaserActive] = useState(false);
-    
-    // Ensure startingMap is valid, otherwise fallback to the first map
+    const [dialogVisible, setDialogVisible] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
+    const closeDialog = () => setDialogVisible(false);
+    const [hint, setHint] = useState(''); // Store the current hint
+
     const initialMap = startingMap || mapLibrary.maps[0];
     const [currentMap, setCurrentMap] = useState(initialMap);
-    
     const [currentEnemyIndex, setCurrentEnemyIndex] = useState(0);
     const [currentEnemy, setCurrentEnemy] = useState(currentMap.enemies[currentEnemyIndex]);
     const [enemyHearts, setEnemyHearts] = useState(currentEnemy?.health || 0);
 
     const isValidWord = selectedLetters.length > 0 && scienceTerm[selectedLetters.join('').toUpperCase()];
-    const [dialogVisible, setDialogVisible] = useState(false);
-    const [dialogMessage, setDialogMessage] = useState('');
-    const closeDialog = () => { setDialogVisible(false) };
+
+    
+    
 
     useEffect(() => {
-        // Show dialog for the first enemy when the game starts
         if (currentEnemy) {
             setDialogMessage(currentEnemy.dialog);
             setDialogVisible(true);
@@ -46,17 +46,23 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
     }, [currentEnemy]);
 
     useEffect(() => {
-        // Initialize the enemy when the current map changes
         if (currentMap) {
             setCurrentEnemy(currentMap.enemies[0]);
             setEnemyHearts(currentMap.enemies[0]?.health || 0);
         }
     }, [currentMap]);
+
+    //Word Box
     function generateRandomLetters() {
-        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        return Array.from({ length: 16 }, () => letters.charAt(Math.floor(Math.random() * letters.length)));
+        const vowels = 'AEIOU';
+        const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
+        return Array.from({ length: 20 }, () => Math.random() < 0.6
+            ? vowels.charAt(Math.floor(Math.random() * vowels.length))
+            : consonants.charAt(Math.floor(Math.random() * consonants.length))
+    );
     }
 
+    //Word Inside Box
     const handleLetterClick = (letter, index) => {
         if (letter) {
             setSelectedLetters([...selectedLetters, letter]);
@@ -87,50 +93,60 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
             newGridLetters[index] = '';
         });
         setGridLetters(newGridLetters);
-
-        handleEnemyAttack(); // Trigger enemy attack on scramble
+        handleEnemyAttack();
     };
 
-        const handleEnemyAttack = () => {
-            if (enemyLaserActive) return; // Prevent re-triggering if already active
-            setEnemyLaserActive(true);
+        const handleHint = () => {
+        const gridLettersString = gridLetters.join('');
+        const possibleWords = Object.keys(scienceTerm).filter((word) =>
+            word.split('').every((char) => gridLettersString.includes(char))
+        );
+        if (possibleWords.length > 0) {
+            const hintWord = possibleWords[0];
+            setHint(`Hint: Try forming the word "${hintWord.substring(0, 2)}..."`);
+        } else {
+            setHint('No hints available.');
+        }
+    };
 
-            setTimeout(() => {
-                setPlayerHearts((prev) => Math.max(0, prev - 1));
-                setEnemyLaserActive(false);
-            }, 500); // Ensure the timing matches the animation duration
-        };
+    const handleEnemyAttack = () => {
+        if (enemyLaserActive) return;
+        setEnemyLaserActive(true);
 
-            const handleAttack = () => {
-                const word = selectedLetters.join('');
-                let damage = Math.min(3, Math.ceil(word.length / 4));
+        setTimeout(() => {
+            setPlayerHearts((prev) => Math.max(0, prev - 1));
+            setEnemyLaserActive(false);
+        }, 500);
+    };
 
-                if (scienceTerm[word.toUpperCase()]) {
-                    setDefinition(scienceTerm[word.toUpperCase()]);
-                    const updatedHearts = Math.max(0, enemyHearts - damage);
-                    setEnemyHearts(updatedHearts);
+    const handleAttack = () => {
+        const word = selectedLetters.join('');
+        let damage = Math.min(3, Math.ceil(word.length / 4));
 
-                    // Check if the current enemy is defeated
-                    if (updatedHearts === 0) {
-                        if (currentEnemyIndex === currentMap.enemies.length - 1) {
-                            // If the current enemy is the last one (the boss), go to the next map
-                            handleNextMap();
-                        } else {
-                            handleNextEnemy();
-                        }
-                    }
+        if (scienceTerm[word.toUpperCase()]) {
+            setDefinition(scienceTerm[word.toUpperCase()]);
+            const updatedHearts = Math.max(0, enemyHearts - damage);
+            setEnemyHearts(updatedHearts);
+
+            if (updatedHearts === 0) {
+                if (currentEnemyIndex === currentMap.enemies.length - 1) {
+                    handleNextMap();
                 } else {
-                    setDefinition('Invalid word. Please try again.');
-                    setPlayerHearts(Math.max(0, playerHearts - damage));
-                    handleEnemyAttack();
+                    handleNextEnemy();
                 }
+            }
+        } else {
+            setDefinition('Invalid word. Please try again.');
+            setPlayerHearts(Math.max(0, playerHearts - damage));
+            handleEnemyAttack();
+        }
 
-                setLaserActive(true);
-                setTimeout(() => setLaserActive(false), 500);
-                setSelectedLetters([]);
-                setEmptyIndices([]);
-                setGridLetters(generateRandomLetters());
-            };
+        setLaserActive(true);
+        setTimeout(() => setLaserActive(false), 500);
+        setSelectedLetters([]);
+        setEmptyIndices([]);
+        setGridLetters(generateRandomLetters());
+    };
 
     const handleNextEnemy = () => {
         const nextEnemyIndex = currentEnemyIndex + 1;
@@ -142,38 +158,34 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
             setDialogMessage(nextEnemy.dialog);
             setDialogVisible(true);
         } else {
-            handleNextMap(); // This should be called if there are no more enemies
+            handleNextMap();
         }
     };
 
-        const handleNextMap = () => {
-            const nextMapId = currentMap.next_map_id;
-            if (!nextMapId) {
-                console.log("Game Over or Victory! No more maps.");
-                return;  // End the game or show victory message
-            }
+    const handleNextMap = () => {
+        const nextMapId = currentMap.next_map_id;
+        if (!nextMapId) {
+            console.log("Game Over or Victory! No more maps.");
+            return;
+        }
 
-            const nextMap = mapLibrary.maps.find(map => map.id === nextMapId);
-            if (nextMap) {
-                setCurrentMap(nextMap);
-                setCurrentEnemy(nextMap.enemies[0]); // Start with the first enemy
-                setEnemyHearts(nextMap.enemies[0]?.health || 0);
-                setCurrentEnemyIndex(0);
+        const nextMap = mapLibrary.maps.find(map => map.id === nextMapId);
+        if (nextMap) {
+            setCurrentMap(nextMap);
+            setCurrentEnemy(nextMap.enemies[0]);
+            setEnemyHearts(nextMap.enemies[0]?.health || 0);
+            setCurrentEnemyIndex(0);
+            setGridLetters(generateRandomLetters());
+            setSelectedLetters([]);
+            setEmptyIndices([]);
+            setDefinition('Definition shows here when you enter right');
+            setDialogMessage(nextMap.enemies[0]?.dialog || '');
+            setDialogVisible(true);
+        }
+    };
 
-                // Reset word selection and grid
-                setGridLetters(generateRandomLetters());
-                setSelectedLetters([]);
-                setEmptyIndices([]);
-                setDefinition('Definition shows here when you enter right');
-
-                // Show the first enemy's dialog
-                setDialogMessage(nextMap.enemies[0]?.dialog || '');
-                setDialogVisible(true);
-            }
-        };
-        
     const toggleSlidebar = () => setSlidebarOpen(!slidebarOpen);
-
+ 
     const handleClickOutside = useCallback(
         (event) => {
             if (slidebarOpen && !event.target.closest('.slidebar') && !event.target.closest('.slidebar-icon')) {
@@ -190,17 +202,21 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
         };
     }, [handleClickOutside]);
 
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     return (
-        <div className="game-container flex flex-col items-center justify-center h-screen relative">
-                {dialogVisible && ( // DIALOG BOX
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-[#f4d9a3] border-2 border-black p-5 rounded-lg text-center">
-                            {/* Add the image above the text */}
+            <div className="game-container flex flex-col items-center justify-center min-h-screen min-w-full overflow-hidden relative">
+                {/* Dialog Box */}
+                {dialogVisible && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-[#f4d9a3] border-2 border-black p-5 rounded-lg text-center max-w-sm w-full sm:max-w-md">
                             {currentEnemy && (
                                 <img
-                                    src={require(`../assets/${currentEnemy.image}`)} // Use the current enemy's image
+                                    src={require(`../assets/${currentEnemy.image}`)}
                                     alt={currentEnemy.name}
-                                    className="w-24 h-24 mb-4 mx-auto" // Adjust size and margin as needed
+                                    className="w-24 h-24 mb-4 mx-auto"
                                 />
                             )}
                             <p>{dialogMessage}</p>
@@ -213,20 +229,28 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
                         </div>
                     </div>
                 )}
-            <Slidebar
-                isOpen={slidebarOpen}
-                toggleSlidebar={toggleSlidebar}
-                onMainMenu={onMainMenu}
-                setSettingsOpen={setSettingsOpen}
-                setProfileOpen={setProfileOpen}
-                onLogout={onLogout}
-            />
-            <div className="top-bar absolute top-2 left-2 flex items-center z-0">
+
+                {/* Sidebar */}
+                <Slidebar
+                    isOpen={slidebarOpen}
+                    toggleSlidebar={toggleSlidebar}
+                    onMainMenu={onMainMenu}
+                    setSettingsOpen={setSettingsOpen}
+                    setProfileOpen={setProfileOpen}
+                    onLogout={onLogout}
+                />
+
+            {/* Top Bars */}
+            <div className="top-bar absolute top-2 left-2 flex items-center z-10">
                 <div className="slidebar-icon text-2xl mr-2 cursor-pointer" onClick={toggleSlidebar}>
                     <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
                 </div>
                 <div className="player-info flex items-center bg-[#f4d9a3] p-2 border-2 border-black">
-                    <img src={profileData.image || "https://64.media.tumblr.com/ea445b7825d5c355924d801b4633887f/4b78abb807e9ea7b-3b/s400x600/c4f8f149cc53b279fb69dddad35c1c0db9a56e9b.png"} alt="Player Avatar" className="rounded-full w-8 h-8 object-cover mr-2" />
+                    <img
+                        src={profileData.image || "https://64.media.tumblr.com/ea445b7825d5c355924d801b4633887f/4b78abb807e9ea7b-3b/s400x600/c4f8f149cc53b279fb69dddad35c1c0db9a56e9b.png"}
+                        alt="Player Avatar"
+                        className="rounded-full w-8 h-8 object-cover mr-2"
+                    />
                     <div className="hearts flex">
                         {[...Array(playerHearts)].map((_, i) => (
                             <img key={i} src={heartImage} alt="Heart" className="w-4 h-4 ml-1" />
@@ -234,9 +258,14 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
                     </div>
                 </div>
             </div>
+
             <div className="top-bar absolute top-2 right-2 flex items-center">
                 <div className="player-info flex items-center bg-[#f4d9a3] p-2 border-2 border-black">
-                    <img src="https://pbs.twimg.com/profile_images/1617590113252278277/SaQY2ovq_400x400.png" alt="Enemy Avatar" className="rounded-full w-8 h-8 object-cover mr-2" />
+                    <img
+                        src="https://pbs.twimg.com/profile_images/1617590113252278277/SaQY2ovq_400x400.png"
+                        alt="Enemy Avatar"
+                        className="rounded-full w-8 h-8 object-cover mr-2"
+                    />
                     <div className="hearts flex">
                         {[...Array(enemyHearts)].map((_, i) => (
                             <img key={i} src={heartImage} alt="Heart" className="w-4 h-4 ml-1" />
@@ -244,35 +273,40 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
                     </div>
                 </div>
             </div>
-            <div className="game-content flex items-center justify-between w-4/5">
-                <div className="character-container relative mt-44">
-                    {/* Character */}
-                    <div
-                        className={`character w-72 h-72 bg-contain bg-no-repeat transition-transform duration-300 ${laserActive ? 'transform scale-110' : ''}`}
-                        style={{ backgroundImage: `url(${character})` }}
-                    ></div>
+            
+        {/* Main Content */}
+        <div className="game-content flex flex-col lg:flex-row items-center justify-between w-full max-w-7xl mt-16 lg:mt-8">
+            {/* Player Character */}
+            <div className="character-container relative mb-8 lg:mb-0">
+                <div
+                    className={`character w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-contain bg-no-repeat transition-transform duration-300 ${
+                        laserActive ? "transform scale-110" : ""
+                    }`}
+                    style={{ backgroundImage: `url(${character})` }}
+                ></div>
+                {laserActive && (
+                    <img
+                        src={attackImage}
+                        alt="Laser"
+                        className="laser absolute"
+                        style={{
+                            top: "50%",
+                            left: "100%",
+                            transform: "translateY(-50%)",
+                            animation: "shoot 0.5s linear forwards",
+                            height: "10rem", // Adjust the size for responsiveness
+                        }}
+                    />
+                )}
 
-                    {/* Player Laser Animation */}
-                    {laserActive && (
-                        <img
-                            src={attackImage}
-                            alt="Laser"
-                            className="laser absolute"
-                            style={{
-                                top: '50%',
-                                left: '100%',
-                                transform: 'translateY(-50%)',
-                                animation: 'shoot 0.5s linear forwards',
-                                height: '10rem', // Adjust the size of the laser
-                            }}
-                        />
-                    )}
-                </div>
-                <div className="word-box flex justify-center my-5">
+            </div>
+
+                {/* Word Box */}
+                <div className="word-box flex flex-wrap justify-center gap-2">
                     {selectedLetters.map((letter, index) => (
                         <div
                             key={index}
-                            className="letter w-12 h-12 bg-[#f4d9a3] border-2 border-black flex items-center justify-center mx-1 text-2xl cursor-pointer hover:bg-[#e5c8a1] transform transition-transform duration-200 hover:scale-110"
+                            className="letter w-10 h-10 sm:w-12 sm:h-12 bg-[#f4d9a3] border-2 border-black flex items-center justify-center text-xl cursor-pointer hover:bg-[#e5c8a1] transform transition-transform duration-200 hover:scale-110"
                             onClick={() => handleSelectedLetterClick(letter, index)}
                         >
                             {letter}
@@ -280,60 +314,81 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
                     ))}
                 </div>
                 
-                <div className="enemy-container relative mt-56">
-                        <div
-                            className={`enemy w-72 h-72 bg-contain bg-no-repeat`}
-                            style={{ backgroundImage: `url(${require(`../assets/${currentEnemy.image}`)})` }}
-                        ></div>
-                    {/* Enemy Laser Animation */}
+                {/* Enemy Character */}
+                <div className="enemy-container relative mt-36">
+                    <div
+                        className={`enemy w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-contain bg-no-repeat`}
+                        style={{ backgroundImage: `url(${require(`../assets/${currentEnemy.image}`)})` }}
+                    ></div>
                     {enemyLaserActive && (
                         <img
                             src={attackEnemyImage}
                             alt="Enemy Laser"
                             className="enemy-laser absolute"
                             style={{
-                                top: '50%',
-                                right: '100%',
-                                transform: 'translateY(-50%)',
-                                animation: 'enemyShoot 0.5s linear forwards',
-                                height: '10rem',
+                                top: "50%",
+                                right: "100%",
+                                transform: "translateY(-50%)",
+                                animation: "enemyShoot 0.5s linear forwards",
+                                height: "10rem",
                             }}
                         />
                     )}
                 </div>
             </div>
+
+              {/* Bottom Content */}
             <div className="game-content flex items-center justify-between mt-14 h-full w-full border-4 border-black p-5"
             style={{ backgroundImage: `url(${functionBackground})` }}>
+
+                {/* Description Box */}
                 <div className="description-box bg-[#f4d9a3] border-2 border-black p-2 w-80 h-full ml-10 mr-72 mb-5">
                     {definition}
                 </div>
-                <div className="letter-grid grid grid-cols-4 gap-1 bg-[#f4d9a3] border-2 border-black p-2 h-full w-72 mb-5">
+                <div className="letter-grid grid grid-cols-4 gap-2 bg-[#f4d9a3] border-2 border-black p-2 h-full w-full sm:w-72">
                     {gridLetters.map((letter, index) => (
                         <div
                             key={index}
-                            className="grid-letter w-16 h-14 bg-[#f4d9a3] border-2 border-black flex items-center justify-center text-2xl cursor-pointer hover:bg-[#e5c8a1]"
+                            className="grid-letter w-12 h-12 sm:w-16 sm:h-16 bg-[#f4d9a3] border-2 border-black flex items-center justify-center text-lg sm:text-xl cursor-pointer hover:bg-[#e5c8a1]]"
                             onClick={() => handleLetterClick(letter, index)}
                         >
                             {letter}
                         </div>
                     ))}
                 </div>
+
+                {/* Action Buttons */}
                 <div className="action-buttons flex flex-col gap-2">
+
+                    {/* ATTACK */}
                     <button
-                        className={`button bg-[#f4d9a3] border-2 border-black p-2 text-center text-xl cursor-pointer hover:bg-[#e5c8a1] ${
-                            !isValidWord ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                        onClick={handleAttack}
-                        disabled={!isValidWord} // Disable when there's no valid word
-                    >
-                        ATTACK
+                    className={`bg-[#f4d9a3] border-2 border-black p-2 text-center text-lg cursor-pointer hover:bg-[#e5c8a1] ${
+                        !isValidWord ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                    onClick={handleAttack}
+                    disabled={!isValidWord}
+                >
+                    ATTACK
                     </button>
-                    <div
-                        className="button bg-[#f4d9a3] border-2 border-black p-2 text-center text-xl cursor-pointer hover:bg-[#e5c8a1]"
+
+                    {/* HINT */}
+                <div className="hint-box bg-[#ffebc4] border-2 border-black w-80 p-2 text-center">
+                    {hint || 'Press "Hint" for help!'}
+                </div>
+                    <button
+                        className="hint-button bg-[#f4d9a3] border-2 border-black p-2 text-lg cursor-pointer hover:bg-[#e5c8a1]"
+                        onClick={handleHint}
+                    >
+                        HINT
+                    </button>
+
+                    {/* SCRAMBLE */}
+                    <button
+                        className="scramble-button bg-[#f4d9a3] border-2 border-black p-2 text-center text-xl cursor-pointer hover:bg-[#e5c8a1]"
                         onClick={handleScramble}
                     >
                         SCRAMBLE
-                    </div>
+                    </button>
                 </div>
                 <div> 
                     <div className="enemy-stats bg-[#f4d9a3] border-2 border-black mr-10 p-10 ">
