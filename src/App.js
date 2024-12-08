@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import MainMenu from "./components/MainMenu";
 import GamePage from "./components/GamePage";
-import MapSelection from "./components/mapSelection";
+import MapSelection from "./components/MapSelection";
 import GameSettings from "./components/GameSettings";
 import Profile from "./components/Profile";
 import Login from "./components/Login";
@@ -108,9 +108,9 @@ const App = () => {
   };
 
   const handleLevelSelect = (level) => {
-    setSelectedLevel(level);
-    setCurrentPage("gamePage");
-  };
+      setSelectedLevel(level);
+      setCurrentPage("gamePage");
+    };
 
   const renderLoginPopup = () => (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
@@ -158,11 +158,12 @@ const App = () => {
       case "gamePage":
         return (
           <GamePage
+            level={selectedLevel}
             onMainMenu={() => setCurrentPage("mainMenu")}
+            backgroundImage={selectedLevel?.background || "defaultBackground.jpg"}
             profileData={profileData}
             setProfileData={setProfileData}
-            onLogout={handleLogout}
-            level={selectedLevel}
+            onLogout={handleLogout} 
           />
         );
       case "almanac":

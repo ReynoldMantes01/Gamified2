@@ -1,7 +1,7 @@
 import React from 'react';
 import { Cross } from 'hamburger-react';
 
-const Slidebar = ({ isOpen, toggleSlidebar, onMainMenu, setSettingsOpen, setProfileOpen, onLogout }) => {
+const Slidebar = ({ isOpen, toggleSlidebar, onMainMenu, setSettingsOpen, setProfileOpen, onLogout, onMapSelection }) => {
     return (
         <div
             className={`slidebar fixed top-1/2 left-1/2 w-96 h-auto max-h-screen bg-gray-900 text-white rounded-xl shadow-2xl 
@@ -38,6 +38,11 @@ const Slidebar = ({ isOpen, toggleSlidebar, onMainMenu, setSettingsOpen, setProf
                         Logout
                     </button>
                 </li>
+                {/* <li className="p-4 border-b border-gray-700 hover:bg-gray-700 rounded-md transition duration-300">
+                    <button className="text-white text-lg block w-full text-left" onClick={onMapSelection}>
+                        Map Selection
+                    </button>
+                </li> */}
             </ul>
         </div>
     );

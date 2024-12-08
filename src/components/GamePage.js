@@ -10,6 +10,7 @@ import attackEnemyImage from '../assets/attack.gif';
 import character from '../assets/Character.png';
 import functionBackground from '../assets/functionBackground.png';
 import mapLibrary from '../components/maps.json';
+import mapData from './maps.json';
 
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingMap, }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
@@ -27,8 +28,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
     const closeDialog = () => setDialogVisible(false);
     const [hint, setHint] = useState(''); // Store the current hint
 
-    const initialMap = startingMap || mapLibrary.maps[0];
-    const [currentMap, setCurrentMap] = useState(initialMap);
+    const [currentMap, setCurrentMap] = useState(mapData.maps[0]); // Default to first map
     const [currentEnemyIndex, setCurrentEnemyIndex] = useState(0);
     const [currentEnemy, setCurrentEnemy] = useState(currentMap.enemies[currentEnemyIndex]);
     const [enemyHearts, setEnemyHearts] = useState(currentEnemy?.health || 0);
@@ -130,7 +130,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
     // Handle player's attack logic
     const handleAttack = () => {
         const word = selectedLetters.join('');
-        let damage = Math.min(3, Math.ceil(word.length / 4));
+        let damage = Math.min(3, Math.ceil(word.length / 1000000000000000));
 
         if (scienceTerm[word.toUpperCase()]) {
             setDefinition(scienceTerm[word.toUpperCase()]);
@@ -183,17 +183,17 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
                 return;
             }
 
-        const nextMap = mapLibrary.maps.find(map => map.id === nextMapId);
-        if (nextMap) {
-            setCurrentMap(nextMap);
-            setCurrentEnemy(nextMap.enemies[0]);
-            setEnemyHearts(nextMap.enemies[0]?.health || 0);
-            setCurrentEnemyIndex(0);
-            setGridLetters(generateRandomLetters());
-            setSelectedLetters([]);
-            setEmptyIndices([]);
-            setDefinition('Definition shows here when you enter right');
-            setDialogMessage(nextMap.enemies[0]?.dialog || '');
+            const nextMap = mapLibrary.maps.find(map => map.id === nextMapId);
+            if (nextMap) {
+                setCurrentMap(nextMap);
+                setCurrentEnemy(nextMap.enemies[0]);
+                setEnemyHearts(nextMap.enemies[0]?.health || 0);
+                setCurrentEnemyIndex(0);
+                setGridLetters(generateRandomLetters());
+                setSelectedLetters([]);
+                setEmptyIndices([]);
+                setDefinition('Definition shows here when you enter right');
+                setDialogMessage(nextMap.enemies[0]?.dialog || '');
                 setDialogVisible(true);
             }
         };
@@ -233,7 +233,14 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         return (
-                <div className="game-container flex flex-col items-center justify-center min-h-screen min-w-full overflow-hidden relative">
+                <div
+                className="game-container flex flex-col items-center justify-center min-h-screen w-full relative"
+                style={{
+                    backgroundImage: `url(${require(`../assets/${currentMap.background}`)})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                }}
+                >
                 {/* Victory Dialog */}
                 {victoryVisible && (<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                         <div className="bg-[#f4d9a3] border-2 border-black p-5 rounded-lg text-center max-w-sm w-full sm:max-w-md">

@@ -29,3 +29,6 @@ body {
         opacity: 0;
     }
 }
+.game-container {
+  transition: background-image 0.5s ease-in-out;
+}
