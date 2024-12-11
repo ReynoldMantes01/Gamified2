@@ -7,7 +7,7 @@ import scienceTerm from './scienceTerm';
 import heartImage from '../assets/heart.png';
 import attackImage from '../assets/attack.png';
 import attackEnemyImage from '../assets/attack.gif';
-import character from '../assets/Character.png';
+import character from '../assets/newchar.gif';
 import functionBackground from '../assets/functionBackground.png';
 import mapLibrary from '../components/maps.json';
 import mapData from './maps.json';
@@ -376,11 +376,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout,musicVolum
             </div>
             
         {/* Main Content */}
-        <div className="game-content flex flex-col lg:flex-row items-center justify-between w-full max-w-7xl mt-16 lg:mt-8">
+        <div className="game-content flex flex-col lg:flex-row items-center justify-between w-full max-w-7xl mt-16 lg:mt-40">
             {/* Player Character */}
             <div className="character-container relative mb-8 lg:mb-0">
                 <div
-                    className={`character w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-contain bg-no-repeat transition-transform duration-300 ${
+                    className={`character w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 bg-contain bg-no-repeat transition-transform duration-300 ${
                         laserActive ? "transform scale-110" : ""
                     }`}
                     style={{ backgroundImage: `url(${character})` }}
@@ -407,7 +407,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout,musicVolum
                     {selectedLetters.map((letter, index) => (
                         <div
                             key={index}
-                            className="letter w-10 h-10 sm:w-12 sm:h-12 bg-[#f4d9a3] border-2 border-black flex items-center justify-center text-xl cursor-pointer hover:bg-[#e5c8a1] transform transition-transform duration-200 hover:scale-110"
+                            className="letter w-14 h-14 sm:w-16 sm:h-16 bg-[#f4d9a3] border-2 border-black flex items-center justify-center text-xl cursor-pointer hover:bg-[#e5c8a1] transform transition-transform duration-200 hover:scale-110"
                             onClick={() => handleSelectedLetterClick(letter, index)}
                         >
                             {letter}
@@ -416,7 +416,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout,musicVolum
                 </div>
                 
                 {/* Enemy Character */}
-                <div className="enemy-container relative mt-36">
+                <div className="enemy-container relative mt-35">
                     <div
                         className={`enemy w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-contain bg-no-repeat`}
                         style={{ backgroundImage: `url(${require(`../assets/${currentEnemy.image}`)})` }}

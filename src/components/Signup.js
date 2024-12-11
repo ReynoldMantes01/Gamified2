@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AuthService from '../services/auth.service';
+
 
 const Signup = ({ onSwitchToLogin }) => {
     const [email, setEmail] = useState('');
@@ -16,7 +16,7 @@ const Signup = ({ onSwitchToLogin }) => {
         }
         
         try {
-            await AuthService.signup(email, password, name);
+
             onSwitchToLogin();
         } catch (error) {
             setError(error.message || 'Signup failed');

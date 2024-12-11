@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode';
-import AuthService from '../services/auth.service';
+
 
 const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
     const [email, setEmail] = useState('');
@@ -28,7 +27,7 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
 
     const handleGoogleSuccess = async (credentialResponse) => {
         try {
-            await AuthService.googleLogin(credentialResponse.credential);
+          
             onLoginSuccess();
         } catch (error) {
             console.error('Google login error:', error);

@@ -4,7 +4,7 @@
       "id": "map1",
       "name": "Biology World",
       "theme": "Biology",
-      "background": "biology_background.png",
+      "background": "Bio_World.gif",
       "enemies": [
         {
           "id": "bio_t1",
