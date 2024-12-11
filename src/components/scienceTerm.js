@@ -1,14 +1,11 @@
 const scienceTerms = {
-<<<<<<< HEAD
+
     A: "ADMIN POWER!!!!!!!!!!!!!!!",
     E: "ADMIN POWER!!!!!!!!!!!!!!!",
     I: "ADMIN POWER!!!!!!!!!!!!!!!",
     O: "ADMIN POWER!!!!!!!!!!!!!!!",
     U: "ADMIN POWER!!!!!!!!!!!!!!!",
-=======
-    A: "fg",
-    E: "df",
->>>>>>> dbe334a9c4e54cd59b8755d3c4c761be49966910
+
     ACCELERATION: "The rate of change of an object's velocity.",
     ATOM: "The basic unit of matter, consisting of protons, neutrons, and electrons.",
     CAPACITOR: "A device used to store electrical energy in an electric field.",

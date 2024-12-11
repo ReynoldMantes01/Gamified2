@@ -12,7 +12,7 @@ import functionBackground from '../assets/functionBackground.png';
 import mapLibrary from '../components/maps.json';
 import mapData from './maps.json';
 
-const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingMap, }) => {
+const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout,musicVolume, setMusicVolume, startingMap, }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState(generateRandomLetters());
@@ -37,7 +37,14 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
 
     const [victoryVisible, setVictoryVisible] = useState(false);
     const [defeatVisible, setDefeatVisible] = useState(false);
-    
+    const handleSettingsSave = (newMusicVolume) => {
+    setMusicVolume(newMusicVolume); // Update the music volume
+    setSettingsOpen(false); // Close the settings modal
+    };
+
+    const handleSettingsReset = () => {
+    setMusicVolume(50); // Reset music volume to default
+    };
 
     useEffect(() => {
         if (currentEnemy) {
@@ -505,7 +512,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, startingM
                         </div>
                     </div>
                 </div>
-            {settingsOpen && <GameSettings onClose={() => setSettingsOpen(false)} />}
+                {settingsOpen && (<GameSettings onClose={() => setSettingsOpen(false)} onSave={handleSettingsSave} onReset={handleSettingsReset} musicVolume={musicVolume} /> )}
             {profileOpen && <Profile onClose={() => setProfileOpen(false)} onSave={() => setProfileOpen(false)} profileData={profileData} setProfileData={setProfileData} />}
         </div>
         

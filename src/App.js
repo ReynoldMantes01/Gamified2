@@ -28,16 +28,23 @@ const App = () => {
     gender: "",
   });
   const [slidebarOpen, setSlidebarOpen] = useState(false);
+  const [musicVolume, setMusicVolume] = useState(50);
   const audioRef = useRef(null);
 
   useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = musicVolume / 100;
+    }
+  }, [musicVolume]);
+
+  useEffect(() => {
     const playMusic = async () => {
-      try {
-        if (audioRef.current) {
+      if (audioRef.current) {
+        try {
           await audioRef.current.play();
+        } catch (error) {
+          console.error("Autoplay blocked. Waiting for user interaction.");
         }
-      } catch (error) {
-        console.error("Autoplay blocked. Waiting for user interaction.");
       }
     };
 
@@ -58,6 +65,15 @@ const App = () => {
     };
   }, []);
 
+  const handleSettingsSave = (newMusicVolume) => {
+    setMusicVolume(newMusicVolume);
+    setSettingsOpen(false);
+  };
+
+  const handleSettingsReset = () => {
+    setMusicVolume(50);
+  };
+
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
     setLoginOpen(false);
@@ -66,8 +82,6 @@ const App = () => {
     // Persist authentication state
     localStorage.setItem('isAuthenticated', 'true');
 
-    // Update profile data with user info if available
-    const userEmail = localStorage.getItem('userEmail');
     const userName = localStorage.getItem('userName');
     if (userName) {
       setProfileData(prev => ({
@@ -164,6 +178,8 @@ const App = () => {
             profileData={profileData}
             setProfileData={setProfileData}
             onLogout={handleLogout} 
+            musicVolume={musicVolume}
+            setMusicVolume={setMusicVolume}
           />
         );
       case "almanac":
@@ -182,7 +198,14 @@ const App = () => {
         {loginOpen && renderLoginPopup()}
         {signupOpen && renderSignupPopup()}
         {renderPage()}
-        {settingsOpen && <GameSettings onClose={() => setSettingsOpen(false)} />}
+        {settingsOpen && (
+          <GameSettings 
+            onClose={() => setSettingsOpen(false)}
+            onSave={handleSettingsSave}
+            onReset={handleSettingsReset}
+            musicVolume={musicVolume}
+          />
+        )}
         {profileOpen && (
           <Profile
             onClose={() => setProfileOpen(false)}
@@ -198,6 +221,7 @@ const App = () => {
           setSettingsOpen={setSettingsOpen}
           setProfileOpen={setProfileOpen}
           onLogout={handleLogout}
+          musicVolume={musicVolume}
         />
       </div>
     </GoogleOAuthProvider>
