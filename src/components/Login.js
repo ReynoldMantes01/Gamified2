@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleLogin } from '@react-oauth/google';
-
+import { auth } from '../firebase/config';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
     const [email, setEmail] = useState('');
@@ -12,32 +12,30 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
         const timer = setTimeout(() => {
             setShowLoadingScreen(false);
         }, 3000);
-        return () => clearTimeout(timer); 
+        return () => clearTimeout(timer);
     }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        // Hard-coded login check
-        if (email === 'admin@gmail.com' && password === 'admin') {
-            onLoginSuccess();
-            return;
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            onLoginSuccess(user);
+        } catch (error) {
+            setError(error.message);
         }
-        setError('Login failed: Invalid email or password');
     };
 
-    const handleGoogleSuccess = async (credentialResponse) => {
+    const handleGoogleLogin = async () => {
         try {
-          
-            onLoginSuccess();
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            onLoginSuccess(user);
         } catch (error) {
             console.error('Google login error:', error);
             setError(error.message || 'Failed to process Google login');
         }
-    };
-
-    const handleGoogleError = () => {
-        console.error('Google login failed');
-        setError('Google login failed - please try again');
     };
 
     if (showLoadingScreen) {
@@ -58,7 +56,7 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="mb-4 p-2 border border-gray-300 rounded text-black" 
+                        className="mb-4 p-2 border border-gray-300 rounded text-black"
                         required
                     />
                     <input
@@ -66,7 +64,7 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="mb-4 p-2 border border-gray-300 rounded text-black" 
+                        className="mb-4 p-2 border border-gray-300 rounded text-black"
                         required
                     />
                     {error && <p className="text-red-500 text-center text-sm mb-4">{error}</p>}
@@ -76,11 +74,17 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                     <span>or</span>
                 </div>
                 <div className="flex justify-center mt-4">
-                    <GoogleLogin
-                        onSuccess={handleGoogleSuccess}
-                        onError={handleGoogleError}
-                        useOneTap
-                    />
+                    <button
+                        onClick={handleGoogleLogin}
+                        className="flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 rounded-lg px-6 py-2 hover:bg-gray-50"
+                    >
+                        <img
+                            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                            alt="Google"
+                            className="w-5 h-5"
+                        />
+                        Sign in with Google
+                    </button>
                 </div>
                 <p className="mt-4 text-center">New Here? <button onClick={onSwitchToSignup} className="text-blue-500 hover:text-blue-600">Sign Up</button></p>
             </div>

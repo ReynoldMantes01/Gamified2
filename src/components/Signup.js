@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-
+import { auth } from '../firebase/config';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 
 const Signup = ({ onSwitchToLogin }) => {
     const [email, setEmail] = useState('');
@@ -7,6 +8,7 @@ const Signup = ({ onSwitchToLogin }) => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [name, setName] = useState('');
     const [error, setError] = useState(null);
+    const [verificationSent, setVerificationSent] = useState(false);
 
     const handleSignup = async (e) => {
         e.preventDefault();
@@ -16,12 +18,37 @@ const Signup = ({ onSwitchToLogin }) => {
         }
         
         try {
+            // Create user with email and password
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
 
-            onSwitchToLogin();
+            // Send verification email
+            await sendEmailVerification(user);
+            setVerificationSent(true);
+
+            // Store the name in the database (you can add this later)
+            // For now, we'll just show the verification message
+
         } catch (error) {
             setError(error.message || 'Signup failed');
         }
     };
+
+    if (verificationSent) {
+        return (
+            <div className="text-center">
+                <h2 className="text-2xl font-bold mb-4">Verify Your Email</h2>
+                <p className="mb-4">A verification link has been sent to {email}.</p>
+                <p className="mb-4">Please check your email and click the link to verify your account.</p>
+                <button 
+                    onClick={onSwitchToLogin}
+                    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                >
+                    Go to Login
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div>
