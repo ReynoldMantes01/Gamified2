@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { getDatabase, ref, set, get, onValue } from 'firebase/database';
 import MainMenu from "./components/MainMenu";
 import GamePage from "./components/GamePage";
 import MapSelection from "./components/MapSelection";
@@ -28,14 +29,100 @@ const App = () => {
     gender: "",
   });
   const [slidebarOpen, setSlidebarOpen] = useState(false);
-  const [musicVolume, setMusicVolume] = useState(50);
+  const [musicVolume, setMusicVolume] = useState(() => {
+    // Try to get saved volume from localStorage first
+    const savedVolume = localStorage.getItem('musicVolume');
+    return savedVolume ? parseInt(savedVolume) : 50;
+  });
   const audioRef = useRef(null);
+  const db = getDatabase();
 
+  // Update audio volume whenever musicVolume changes
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = musicVolume / 100;
+      // Save to localStorage for immediate persistence
+      localStorage.setItem('musicVolume', musicVolume.toString());
     }
   }, [musicVolume]);
+
+  // Setup real-time listener for music volume when user is authenticated
+  useEffect(() => {
+    if (profileData?.uid) {
+      const settingsRef = ref(db, `users/${profileData.uid}/settings`);
+      
+      // First load the initial value
+      get(settingsRef).then((snapshot) => {
+        if (snapshot.exists() && snapshot.val().musicVolume !== undefined) {
+          const savedVolume = snapshot.val().musicVolume;
+          setMusicVolume(savedVolume);
+          localStorage.setItem('musicVolume', savedVolume.toString());
+        } else {
+          // If no saved volume in database, save the current volume
+          set(settingsRef, {
+            musicVolume: musicVolume
+          });
+        }
+      }).catch((error) => {
+        console.error('Error loading initial volume:', error);
+      });
+
+      // Then set up real-time listener for future changes
+      const unsubscribe = onValue(settingsRef, (snapshot) => {
+        if (snapshot.exists() && snapshot.val().musicVolume !== undefined) {
+          const savedVolume = snapshot.val().musicVolume;
+          setMusicVolume(savedVolume);
+          localStorage.setItem('musicVolume', savedVolume.toString());
+        }
+      }, (error) => {
+        console.error('Error loading settings:', error);
+      });
+
+      return () => unsubscribe();
+    }
+  }, [db, profileData]);
+
+  // Save music volume to database
+  const handleSettingsSave = async (newMusicVolume) => {
+    if (profileData?.uid) {
+      try {
+        const settingsRef = ref(db, `users/${profileData.uid}/settings`);
+        await set(settingsRef, {
+          musicVolume: newMusicVolume
+        });
+        setMusicVolume(newMusicVolume);
+        localStorage.setItem('musicVolume', newMusicVolume.toString());
+        console.log('Music volume saved successfully');
+      } catch (error) {
+        console.error('Error saving music volume:', error);
+      }
+    } else {
+      // If not logged in, just save to localStorage
+      setMusicVolume(newMusicVolume);
+      localStorage.setItem('musicVolume', newMusicVolume.toString());
+    }
+  };
+
+  const handleSettingsReset = async () => {
+    const defaultVolume = 50;
+    if (profileData?.uid) {
+      try {
+        const settingsRef = ref(db, `users/${profileData.uid}/settings`);
+        await set(settingsRef, {
+          musicVolume: defaultVolume
+        });
+        setMusicVolume(defaultVolume);
+        localStorage.setItem('musicVolume', defaultVolume.toString());
+        console.log('Music volume reset successfully');
+      } catch (error) {
+        console.error('Error resetting music volume:', error);
+      }
+    } else {
+      // If not logged in, just save to localStorage
+      setMusicVolume(defaultVolume);
+      localStorage.setItem('musicVolume', defaultVolume.toString());
+    }
+  };
 
   useEffect(() => {
     const playMusic = async () => {
@@ -65,22 +152,10 @@ const App = () => {
     };
   }, []);
 
-  const handleSettingsSave = (newMusicVolume) => {
-    setMusicVolume(newMusicVolume);
-    setSettingsOpen(false);
-  };
-
-  const handleSettingsReset = () => {
-    setMusicVolume(50);
-  };
-
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
     setLoginOpen(false);
     setCurrentPage("mainMenu");
-
-    // Persist authentication state
-    localStorage.setItem('isAuthenticated', 'true');
 
     const userName = localStorage.getItem('userName');
     if (userName) {
@@ -113,7 +188,6 @@ const App = () => {
     setCurrentPage("mainMenu");
     setSlidebarOpen(false);
 
-    // Clear authentication state and user data
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userName');
@@ -122,9 +196,9 @@ const App = () => {
   };
 
   const handleLevelSelect = (level) => {
-      setSelectedLevel(level);
-      setCurrentPage("gamePage");
-    };
+    setSelectedLevel(level);
+    setCurrentPage("gamePage");
+  };
 
   const renderLoginPopup = () => (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">

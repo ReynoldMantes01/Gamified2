@@ -11,6 +11,8 @@ import character from '../assets/newchar.gif';
 import functionBackground from '../assets/functionBackground.png';
 import mapLibrary from '../components/maps.json';
 import mapData from './maps.json';
+import { auth } from '../firebase/config';
+import { getDatabase, ref, onValue } from 'firebase/database';
 
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
@@ -29,6 +31,26 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [hint, setHint] = useState('');
     const [hintsRemaining, setHintsRemaining] = useState(2);
     const [highlightedIndices, setHighlightedIndices] = useState([]);
+    const [currentAvatar, setCurrentAvatar] = useState(profileData?.selectedAvatar);
+
+    // Add real-time listener for profile updates
+    useEffect(() => {
+        if (auth.currentUser) {
+            const db = getDatabase();
+            const profileRef = ref(db, `users/${auth.currentUser.uid}/profile`);
+            
+            const unsubscribe = onValue(profileRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    if (data.selectedAvatar) {
+                        setCurrentAvatar(data.selectedAvatar);
+                    }
+                }
+            });
+
+            return () => unsubscribe();
+        }
+    }, []);
 
     const [currentEnemy, setCurrentEnemy] = useState(level?.enemy);
     const [enemyHearts, setEnemyHearts] = useState(level?.enemy?.health || 0);
@@ -520,7 +542,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     </div>
                     <div className="player-info flex items-center bg-[#f4d9a3] p-2 border-2 border-black rounded-lg">
                         <img
-                            src={profileData.image || "https://64.media.tumblr.com/ea445b7825d5c355924d801b4633887f/4b78abb807e9ea7b-3b/s400x600/c4f8f149cc53b279fb69dddad35c1c0db9a56e9b.png"}
+                            src={currentAvatar}
                             alt="Player Avatar"
                             className="w-8 h-8 rounded-full object-cover mr-2"
                         />
@@ -715,9 +737,16 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             {settingsOpen && (
                 <GameSettings
                     onClose={() => setSettingsOpen(false)}
-                    onSave={handleSettingsSave}
-                    onReset={handleSettingsReset}
+                    onSave={(volume) => {
+                        setMusicVolume(volume);
+                        setSettingsOpen(false);
+                    }}
+                    onReset={() => {
+                        setMusicVolume(50);
+                        setSettingsOpen(false);
+                    }}
                     musicVolume={musicVolume}
+                    profileData={profileData}
                 />
             )}
             {profileOpen && (

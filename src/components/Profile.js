@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase/config';
 import { getDatabase, ref, set, get } from 'firebase/database';
+import alienAvatar from '../assets/avatar/ALIEN AVATAR.jpg';
+import astronautAvatar from '../assets/avatar/ASTRONOUT AVATAR.jpg';
+import geishaAvatar from '../assets/avatar/GEISHA AVATAR.jpg';
+import AvatarSelectionPopup from './AvatarSelectionPopup';
 
 const Profile = ({ onClose, profileData, setProfileData }) => {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showAvatarPopup, setShowAvatarPopup] = useState(false);
 
     // Load saved profile data when component mounts
     useEffect(() => {
@@ -27,8 +32,17 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                         ...prevData,
                         username: data.username,
                         age: data.age,
-                        gender: data.gender
+                        gender: data.gender,
+                        selectedAvatar: data.selectedAvatar || alienAvatar // Set alien as initial avatar only if no avatar is set
                     }));
+
+                    // If no avatar is set, save the initial avatar
+                    if (!data.selectedAvatar) {
+                        await set(profileRef, {
+                            ...data,
+                            selectedAvatar: alienAvatar
+                        });
+                    }
                 }
             } catch (err) {
                 console.error('Error loading profile:', err);
@@ -41,19 +55,11 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
         loadProfileData();
     }, [setProfileData]);
 
-    const handleImageUpload = (e) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            // Only update the image in local state
-            setProfileData(prevData => ({
-                ...prevData,
-                image: reader.result
-            }));
-        };
-        if (file) {
-            reader.readAsDataURL(file);
-        }
+    const handleAvatarSelect = (avatarSrc) => {
+        setProfileData(prevData => ({
+            ...prevData,
+            selectedAvatar: avatarSrc
+        }));
     };
 
     const handleInputChange = (e) => {
@@ -95,12 +101,14 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                 username: profileData.username,
                 age: profileData.age ? Number(profileData.age) : null,
                 gender: profileData.gender || null,
+                selectedAvatar: profileData.selectedAvatar || alienAvatar,
                 updatedAt: new Date().toISOString()
             });
 
             onClose();
         } catch (err) {
-            setError(err.message);
+            console.error('Error saving profile:', err);
+            setError('Failed to save profile data');
         } finally {
             setSaving(false);
         }
@@ -118,19 +126,30 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20" onClick={onClose}>
-            <div className="bg-gray-800 text-white p-8 rounded w-96" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-gray-800 text-white p-8 rounded w-[450px]" onClick={(e) => e.stopPropagation()}>
                 <h1 className="text-4xl mb-8 text-center">Profile</h1>
-                <div className="mb-4 text-center">
-                    <div className="w-24 h-24 rounded-full bg-gray-500 mx-auto mb-4 cursor-pointer" onClick={() => document.getElementById('fileInput').click()}>
-                        {profileData.image ? (
-                            <img src={profileData.image} alt="Profile" className="w-full h-full rounded-full object-cover" />
-                        ) : (
-                            <span className="block w-full h-full rounded-full flex items-center justify-center text-gray-700">No Profile Yet</span>
-                        )}
+                
+                {/* Avatar Display and Selection Button */}
+                <div className="mb-6 text-center">
+                    <label className="block mb-4">Avatar</label>
+                    <div 
+                        className="w-32 h-32 mx-auto mb-2 cursor-pointer rounded-lg border-2 border-gray-600 hover:border-gray-500 overflow-hidden"
+                        onClick={() => setShowAvatarPopup(true)}
+                    >
+                        <img 
+                            src={profileData.selectedAvatar || alienAvatar} 
+                            alt="Selected Avatar"
+                            className="w-full h-full object-cover"
+                        />
                     </div>
-                    <input type="file" id="fileInput" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                    <p className="text-sm text-gray-400">Image will be stored locally only</p>
+                    <button
+                        className="text-sm text-blue-400 hover:text-blue-300"
+                        onClick={() => setShowAvatarPopup(true)}
+                    >
+                        Change Avatar
+                    </button>
                 </div>
+
                 <div className="mb-4 text-center">
                     <label className="block mb-2">Username</label>
                     <input 
@@ -138,11 +157,12 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                         name="username" 
                         value={profileData.username || ''} 
                         onChange={handleInputChange} 
-                        className="w-64 mx-auto p-2 text-black" 
+                        className="w-80 mx-auto p-2 text-black rounded" 
                         placeholder="Enter Username"
                         required 
                     />
                 </div>
+
                 <div className="mb-4 text-center">
                     <label className="block mb-2">Age</label>
                     <input 
@@ -150,26 +170,30 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                         name="age" 
                         value={profileData.age || ''} 
                         onChange={handleInputChange} 
-                        className="w-64 mx-auto p-2 text-black" 
+                        className="w-80 mx-auto p-2 text-black rounded" 
                         placeholder="Enter Age"
                         min="1"
                     />
                 </div>
+
                 <div className="mb-4 text-center">
                     <label className="block mb-2">Gender</label>
                     <select 
                         name="gender" 
                         value={profileData.gender || ''} 
                         onChange={handleGenderChange} 
-                        className="w-64 mx-auto p-2 text-black" 
+                        className="w-80 mx-auto p-2 text-black rounded" 
                         disabled={!!profileData.gender}
                     >
                         <option value="">Select Gender</option>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
+                        <option value="other">Other</option>
                     </select>
                 </div>
+
                 {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
                 <div className="flex space-x-4 mb-4 justify-center">
                     <button 
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50" 
@@ -186,6 +210,15 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                     </button>
                 </div>
             </div>
+
+            {/* Avatar Selection Popup */}
+            {showAvatarPopup && (
+                <AvatarSelectionPopup
+                    onClose={() => setShowAvatarPopup(false)}
+                    onSelect={handleAvatarSelect}
+                    selectedAvatar={profileData.selectedAvatar}
+                />
+            )}
         </div>
     );
 };

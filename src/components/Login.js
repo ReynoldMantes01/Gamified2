@@ -48,15 +48,15 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center">
-            <div className="max-w-sm w-11/12">
-                <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
-                <form onSubmit={handleLogin} className="flex flex-col">
+            <div className="max-w-lg w-11/12">
+                <h2 className="text-3xl font-bold text-center mb-8">Login</h2>
+                <form onSubmit={handleLogin} className="flex flex-col space-y-4">
                     <input
                         type="email"
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="mb-4 p-2 border border-gray-300 rounded text-black"
+                        className="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-black"
                         required
                     />
                     <input
@@ -64,29 +64,36 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="mb-4 p-2 border border-gray-300 rounded text-black"
+                        className="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-black"
                         required
                     />
-                    {error && <p className="text-red-500 text-center text-sm mb-4">{error}</p>}
-                    <button type="submit" className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Login</button>
+                    {error && <p className="text-red-500 text-center text-sm">{error}</p>}
+                    <button type="submit" className="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors">Login</button>
                 </form>
-                <div className="mt-4 text-center">
-                    <span>or</span>
+                <div className="my-6 flex items-center justify-center">
+                    <div className="border-t border-gray-300 flex-grow"></div>
+                    <span className="px-4 text-gray-500">or</span>
+                    <div className="border-t border-gray-300 flex-grow"></div>
                 </div>
-                <div className="flex justify-center mt-4">
+                <div className="flex justify-center">
                     <button
                         onClick={handleGoogleLogin}
-                        className="flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 rounded-lg px-6 py-2 hover:bg-gray-50"
+                        className="flex items-center justify-center gap-3 border-2 border-gray-300 rounded-lg px-6 py-3 hover:border-blue-500 transition-colors"
                     >
                         <img
                             src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                             alt="Google"
                             className="w-5 h-5"
                         />
-                        Sign in with Google
+                        Google
                     </button>
                 </div>
-                <p className="mt-4 text-center">New Here? <button onClick={onSwitchToSignup} className="text-blue-500 hover:text-blue-600">Sign Up</button></p>
+                <p className="mt-6 text-center">
+                    New Here? 
+                    <button onClick={onSwitchToSignup} className="text-blue-500 hover:text-blue-600 transition-colors ml-2">
+                        Sign Up
+                    </button>
+                </p>
             </div>
         </div>
     );
