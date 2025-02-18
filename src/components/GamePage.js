@@ -27,6 +27,10 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [laserActive, setLaserActive] = useState(false);
     const [dialogVisible, setDialogVisible] = useState(false);
     const [dialogMessage, setDialogMessage] = useState('');
+    const [dialogSequence, setDialogSequence] = useState([]);
+    const [currentDialogIndex, setCurrentDialogIndex] = useState(0);
+    const [showTutorial, setShowTutorial] = useState(true);
+    const [tutorialStep, setTutorialStep] = useState(0);
     const closeDialog = () => setDialogVisible(false);
     const [hint, setHint] = useState('');
     const [hintsRemaining, setHintsRemaining] = useState(2);
@@ -88,8 +92,23 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         if (level?.enemy) {
             setCurrentEnemy(level.enemy);
             setEnemyHearts(level.enemy.health);
-            setDialogMessage(level.enemy.dialog);
-            setDialogVisible(true);
+            
+            // Set dialog sequence based on level
+            if (level.levelNumber === 1) {
+                setShowTutorial(true);
+                setTutorialStep(0);
+                setDialogVisible(true);
+            } else {
+                const enemyDialogs = [
+                    `Ah, a new challenger approaches! I am ${level.enemy.name}, master of ${level.enemy.stats.strength}!`,
+                    level.enemy.dialog,
+                    "Prepare yourself for a battle of scientific wit!"
+                ];
+                setDialogSequence(enemyDialogs);
+                setCurrentDialogIndex(0);
+                setDialogVisible(true);
+            }
+            
             // Reset hints for new level
             setHintsRemaining(2);
             setHighlightedIndices([]);
@@ -305,7 +324,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             const usedEffects = selectedLetters.map((_, i) => letterEffects[emptyIndices[i]]);
             
             // Apply effects from used letters
-            usedEffects.forEach(effect => {
+            usedEffects.forEach((effect, i) => {
                 if (effect) {
                     switch(effect) {
                         case 'poison':
@@ -325,6 +344,10 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                             setEnemyStatusEffects(prev => ({ ...prev, blind: prev.blind + 2 }));
                             break;
                     }
+                    // Clear the effect after using it
+                    const newEffects = [...letterEffects];
+                    newEffects[emptyIndices[i]] = null;
+                    setLetterEffects(newEffects);
                 }
             });
 
@@ -392,7 +415,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         const newGridLetters = generateRandomLetters(gridLetters, letterEffects);
         
         // Reset game state but keep letter effects
-        setPlayerHearts(3);
+        setPlayerHearts(prev => Math.min(prev + 1, 5)); // Increase hearts by 1, max of 5
         setSelectedLetters([]);
         setEmptyIndices([]);
         setGridLetters(newGridLetters);
@@ -430,6 +453,53 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         }
     };
 
+    const handleNextDialog = () => {
+        if (showTutorial) {
+            if (tutorialStep < tutorialSteps.length - 1) {
+                setTutorialStep(prev => prev + 1);
+            } else {
+                setShowTutorial(false);
+                setDialogVisible(false);
+            }
+        } else if (currentDialogIndex < dialogSequence.length - 1) {
+            setCurrentDialogIndex(prev => prev + 1);
+        } else {
+            setDialogVisible(false);
+            setCurrentDialogIndex(0);
+        }
+    };
+
+    const tutorialSteps = [
+        {
+            message: "Welcome to Science Quest! I'm Professor Nova, and I'll be your guide in this adventure of scientific discovery!",
+            highlight: null
+        },
+        {
+            message: "Your mission is to defeat enemies by forming scientific words. The longer and more complex the word, the more damage you'll deal!",
+            highlight: "letter-grid"
+        },
+        {
+            message: "Click on letters to form words. Each correct scientific term will launch an attack!",
+            highlight: "word-box"
+        },
+        {
+            message: "Some letters have special effects! Hover over them to see what they do.",
+            highlight: null
+        },
+        {
+            message: "Use HINTS when you're stuck, but use them wisely - you only have 2 per level!",
+            highlight: "hint-button"
+        },
+        {
+            message: "If you can't find any words, use SCRAMBLE to get new letters.",
+            highlight: "scramble-button"
+        },
+        {
+            message: "Ready to begin your scientific journey? Let's go!",
+            highlight: null
+        }
+    ];
+
     const toggleSlidebar = () => setSlidebarOpen(!slidebarOpen);
 
     const handleClickOutside = useCallback(
@@ -449,13 +519,17 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     }, [handleClickOutside]);
 
     const handleTryAgain = () => {
-        setPlayerHearts(3);
-        setEnemyHearts(level.enemy.health);
-        setSelectedLetters([]); // Reset selected letters
-        setGridLetters(generateRandomLetters()); // Generate new random letters
-        setEmptyIndices([]); // Reset empty indices
         setDefeatVisible(false);
-        setHint(''); // Optionally reset hint as well
+        setPlayerHearts(3);
+        setEnemyHearts(level?.enemy?.health || 0);
+        setSelectedLetters([]);
+        setEmptyIndices([]);
+        setGridLetters(generateRandomLetters());
+        setLetterEffects(Array(20).fill(null));
+        setHintsRemaining(2); // Reset hints to 2
+        setHighlightedIndices([]); // Clear highlights
+        setHint(''); // Clear hint message
+        setDefinition('Form a word to see its definition!');
     };
 
     const handleSettingsSave = (newMusicVolume) => {
@@ -465,6 +539,15 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     const handleSettingsReset = () => {
         setMusicVolume(50); 
+    };
+
+    // Add effect descriptions
+    const effectDescriptions = {
+        poison: "Poison: Deals damage over time for 3 turns",
+        bleed: "Bleed: Increases damage taken by 20% per stack",
+        exhaust: "Exhaust: Reduces damage dealt by 50% for 2 turns",
+        burn: "Burn: Deals fire damage for 5 seconds",
+        blind: "Blind: 75% chance to miss attacks for 2 turns"
     };
 
     //Word Box
@@ -574,7 +657,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 {/* Player Character */}
                 <div className="character-container relative w-full md:w-1/3">
                     <div
-                        className={`character w-32 h-32 md:w-48 md:h-48 lg:w-64 lg:h-64 bg-contain bg-no-repeat transition-transform duration-300 mx-auto ${
+                        className={`character w-40 h-40 md:w-72 md:h-72 lg:w-96 lg:h-96 bg-contain bg-no-repeat transition-transform duration-300 mx-auto ${
                             laserActive ? "transform scale-110" : ""
                         }`}
                         style={{ backgroundImage: `url(${character})` }}
@@ -586,7 +669,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                 className="absolute top-1/2 left-full transform -translate-y-1/2"
                                 style={{
                                     animation: "shoot 0.5s linear forwards",
-                                    height: "6rem",
+                                    height: "8rem",
                                     width: "auto"
                                 }}
                             />
@@ -596,21 +679,31 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
                 {/* Word Box */}
                 <div className="word-box flex flex-wrap justify-center gap-2 w-full md:w-1/3">
-                    {selectedLetters.map((letter, index) => (
-                        <div
-                            key={index}
-                            className="w-12 h-12 bg-[#f4d9a3] border-2 border-black flex items-center justify-center text-2xl font-bold rounded-lg cursor-pointer hover:bg-[#e5c8a1]"
-                            onClick={() => handleSelectedLetterClick(letter, index)}
-                        >
-                            {letter}
-                        </div>
-                    ))}
+                    {selectedLetters.map((letter, index) => {
+                        const effect = letterEffects[emptyIndices[index]];
+                        return (
+                            <div
+                                key={index}
+                                className={`relative w-12 h-12 border-2 border-black flex items-center justify-center text-2xl font-bold rounded-lg cursor-pointer hover:bg-[#e5c8a1] ${
+                                    effect ? effectStyles[effect] : 'bg-[#f4d9a3]'
+                                }`}
+                                onClick={() => handleSelectedLetterClick(letter, index)}
+                            >
+                                {letter}
+                                {effect && (
+                                    <div className="absolute opacity-0 hover:opacity-100 bg-black text-white text-xs rounded py-1 px-2 w-40 -top-10 left-1/2 transform -translate-x-1/2 pointer-events-none transition-opacity duration-200 z-10">
+                                        {effectDescriptions[effect]}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
 
                 {/* Enemy Character */}
                 <div className="enemy-container relative w-full md:w-1/3">
                     <div
-                        className={`enemy w-32 h-32 md:w-48 md:h-48 lg:w-64 lg:h-64 bg-contain bg-no-repeat mx-auto`}
+                        className={`enemy w-40 h-40 md:w-72 md:h-72 lg:w-96 lg:h-96 bg-contain bg-no-repeat mx-auto`}
                         style={{ 
                             backgroundImage: currentEnemy?.image ? 
                                 `url(${require(`../assets/${currentEnemy.image}`)})` : 
@@ -625,7 +718,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                 className="absolute top-1/2 right-full transform -translate-y-1/2 rotate-180"
                                 style={{
                                     animation: "enemyShoot 0.5s linear forwards",
-                                    height: "6rem",
+                                    height: "8rem",
                                     width: "auto"
                                 }}
                             />
@@ -664,12 +757,17 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     {gridLetters.map((letter, index) => (
                         <div
                             key={index}
-                            className={`grid-letter w-10 h-10 md:w-12 md:h-12 border-2 border-black flex items-center justify-center text-lg md:text-xl font-bold cursor-pointer transition-all duration-300 rounded-lg
+                            className={`relative grid-letter w-10 h-10 md:w-12 md:h-12 border-2 border-black flex items-center justify-center text-lg md:text-xl font-bold cursor-pointer transition-all duration-300 rounded-lg
                                 ${highlightedIndices.includes(index) ? 'bg-yellow-300 scale-110' : 'hover:bg-[#e5c8a1]'}
                                 ${letterEffects[index] ? effectStyles[letterEffects[index]] : 'bg-[#f4d9a3]'}`}
                             onClick={() => handleLetterClick(letter, index)}
                         >
                             {letter}
+                            {letterEffects[index] && (
+                                <div className="absolute opacity-0 hover:opacity-100 bg-black text-white text-xs rounded py-1 px-2 w-40 -top-10 left-1/2 transform -translate-x-1/2 pointer-events-none transition-opacity duration-200 z-10">
+                                    {effectDescriptions[letterEffects[index]]}
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
@@ -815,21 +913,45 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             {/* Dialog Box */}
             {dialogVisible && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-[#f4d9a3] border-4 border-black p-6 rounded-lg text-center max-w-sm w-full">
-                        {currentEnemy?.image && (
-                            <img
-                                src={require(`../assets/${currentEnemy.image}`)}
-                                alt={currentEnemy.name}
-                                className="w-32 h-32 object-contain mx-auto mb-4"
-                            />
+                    <div className="bg-[#f4d9a3] border-4 border-black p-6 rounded-lg text-center max-w-md w-full">
+                        {showTutorial ? (
+                            <>
+                                <h2 className="text-2xl font-bold mb-4">Tutorial</h2>
+                                <p className="text-lg mb-4">{tutorialSteps[tutorialStep].message}</p>
+                                {tutorialStep < tutorialSteps.length - 1 ? (
+                                    <button
+                                        className="bg-blue-500 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-blue-600 transition-colors"
+                                        onClick={handleNextDialog}
+                                    >
+                                        Next
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="bg-green-500 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-green-600 transition-colors"
+                                        onClick={handleNextDialog}
+                                    >
+                                        Start Game
+                                    </button>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                {currentEnemy?.image && (
+                                    <img
+                                        src={require(`../assets/${currentEnemy.image}`)}
+                                        alt={currentEnemy.name}
+                                        className="w-32 h-32 object-contain mx-auto mb-4"
+                                    />
+                                )}
+                                <p className="text-lg mb-4">{dialogSequence[currentDialogIndex]}</p>
+                                <button
+                                    className="bg-blue-500 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-blue-600 transition-colors"
+                                    onClick={handleNextDialog}
+                                >
+                                    {currentDialogIndex < dialogSequence.length - 1 ? "Next" : "Begin Battle"}
+                                </button>
+                            </>
                         )}
-                        <p className="text-lg mb-4">{dialogMessage}</p>
-                        <button
-                            className="bg-blue-500 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-blue-600 transition-colors"
-                            onClick={closeDialog}
-                        >
-                            Close
-                        </button>
                     </div>
                 </div>
             )}

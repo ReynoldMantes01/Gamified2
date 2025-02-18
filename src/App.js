@@ -9,7 +9,9 @@ import Profile from "./components/Profile";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Slidebar from "./components/Slidebar";
-import Almanac from "./components/Almanac"; // Import Almanac component
+import Almanac from "./components/Almanac";
+import MiniGame from "./components/MiniGame";
+import Scoreboard from "./components/Scoreboard"; // Import Scoreboard component
 import bgImage from "./assets/bg.gif";
 import bgMusic from "./assets/BG1.mp3";
 import mapsData from "./components/maps.json";
@@ -22,6 +24,7 @@ const App = () => {
   const [loginOpen, setLoginOpen] = useState(true);
   const [signupOpen, setSignupOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [scoreboardOpen, setScoreboardOpen] = useState(false); // Add scoreboardOpen state
   const [profileData, setProfileData] = useState({
     image: "",
     username: "",
@@ -227,11 +230,13 @@ const App = () => {
       case "mainMenu":
         return (
           <MainMenu
-            onPlay={() => (isAuthenticated ? setCurrentPage("mapSelection") : setLoginOpen(true))}
+            onPlay={() => setCurrentPage("mapSelection")}
             onSettings={() => setSettingsOpen(true)}
             onProfile={() => setProfileOpen(true)}
-            onAlmanac={() => setCurrentPage("almanac")} // Navigate to Almanac
+            onAlmanac={() => setCurrentPage("almanac")}
             onLogout={handleLogout}
+            onMiniGame={() => setCurrentPage("miniGame")}
+            onScoreboard={() => setScoreboardOpen(true)} // Add onScoreboard handler
           />
         );
       case "mapSelection":
@@ -258,6 +263,8 @@ const App = () => {
         );
       case "almanac":
         return <Almanac onMainMenu={() => setCurrentPage("mainMenu")} />;
+      case "miniGame":
+        return <MiniGame onMainMenu={() => setCurrentPage("mainMenu")} />;
       default:
         return <MainMenu onPlay={() => setCurrentPage("gamePage")} />;
     }
@@ -287,6 +294,9 @@ const App = () => {
             profileData={profileData}
             setProfileData={setProfileData}
           />
+        )}
+        {scoreboardOpen && (
+          <Scoreboard onMainMenu={() => setScoreboardOpen(false)} />
         )}
         <Slidebar
           isOpen={slidebarOpen}
