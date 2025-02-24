@@ -120,7 +120,6 @@ Cytoplasm: "The fluid within a cell that surrounds the nucleus and contains orga
 Digestion: "The process of breaking down food into simpler molecules for absorption.",
 Diploid: "A cell or organism containing two sets of homologous chromosomes.",
 Division: "A taxonomic rank used in the classification of plants, equivalent to a phylum in animals.",
-DNA: "Deoxyribonucleic Acid (DNA) The molecule that carries genetic information in living organisms.",
 Dominant: "A genetic trait that is expressed even when only one copy of the allele is present.",
 Dorsal: "Relating to the back or upper side of an organism.",
 Ecosystem: "A community of organisms interacting with each other and their environment.",
@@ -197,7 +196,6 @@ Quadriceps: "A large muscle group at the front of the thigh, responsible for ext
 Reproduction: "The biological process by which new organisms are produced.",
 Respiration: "The process of breaking down glucose to release energy.",
 Ribosome: "A cell structure that synthesizes proteins.",
-RNA: "Ribonucleic Acid (RNA) A molecule involved in protein synthesis and gene expression.",
 Saliva: "A digestive fluid produced in the mouth that helps break down food.",
 SkeletalSystem: "The system of bones that supports and protects the body.",
 Species: "A group of similar organisms capable of interbreeding and producing fertile offspring.",
@@ -227,7 +225,6 @@ Zooplankton: "Microscopic aquatic animals that drift in water and serve as food 
 
 // Chemnistry Dictionary
 
-ACID: 'A substance that releases hydrogen ions in water, tastes sour, is corrosive, has a pH below 7, and turns litmus paper red.',
 ALCOHOL:'A flammable liquid (C₂H₅OH) made by fermenting sugars, used in drinks, solvents, and chemical production.',
 ALKALI: 'A base that dissolves in water.',
 /* ALKALI METAL: A highly reactive metal from Group 1 of the periodic table (e.g., lithium, sodium, potassium).
@@ -239,24 +236,23 @@ ALLOY: 'A mixture of metals (or metals with nonmetals) with different properties
  */ANALYSIS: 'Breaking a substance into its components to identify and measure them.',
 ANION: "A negatively charged ion; an ion that is attracted to the anode during electrolysis.",
 ANODE: "The positive electrode in an electrolytic cell.",
-ATOM: "The smallest quantity of an element that can take part in a chemical reaction.",
 ATOMICMASS: "The mass of an isotope of an element in atomic mass units.",
 ATOMICNUMBER: "The number of protons in the nucleus of an atom of an element.",
-BASE: "The main ingredient of a mixture.",
+/* BASE: "The main ingredient of a mixture."
 /* BOILING POINT: "The temperature at which a liquid boils at a given pressure, usually atmospheric pressure at sea level.",
- */BOND: "Something that binds, fastens, or holds together, such as a chemical linkage between atoms.",
+ *//* BOND: "Something that binds, fastens, or holds together, such as a chemical linkage between atoms." */
 /* BROWNIAN MOTION: "Random movement of microscopic particles suspended in a fluid, caused by bombardment of the particles by molecules of the fluid."
  */CARBOHYDRATE: "A large group of organic compounds, including sugars and polysaccharides, that serve as an important source of food and energy for animals.",
-CATALYST: "A substance that increases the rate of a chemical reaction without itself suffering any permanent chemical change.",
-CATHODE: "The negative electrode in an electrolytic cell.",
+/* CATALYST: "A substance that increases the rate of a chemical reaction without itself suffering any permanent chemical change.",
+ */CATHODE: "The negative electrode in an electrolytic cell.",
 CATION: "A positively charged ion; an ion that is attracted to the cathode during electrolysis.",
 CHAIN: "Two or more atoms or groups bonded together in a sequence.",
 CHEMICALEQUATION: "A representation of a chemical reaction using symbols of the elements to indicate the amount of substance involved.",
 CHAINREACTION: "A process in which a neutron colliding with an atomic nucleus causes fission, leading to a self-sustaining series of reactions.",
 CHROMATOGRAPHY: "A technique for separating and analyzing the components of a mixture based on differential adsorption.",
 COMBUSTION: "A chemical process in which a substance reacts with oxygen to produce heat and light.",
-COMPOUND: "A substance that contains atoms of two or more chemical elements held together by chemical bonds.",
-CONCENTRATED: "Having had water removed to increase concentration.",
+/* COMPOUND: "A substance that contains atoms of two or more chemical elements held together by chemical bonds.",
+ */CONCENTRATED: "Having had water removed to increase concentration.",
 CONDENSATION: "A reaction in which two organic molecules combine to form a larger molecule along with a simple byproduct such as water.",
 CORROSION: "A process in which a solid, especially a metal, is eaten away and changed by a chemical action, as in the oxidation of iron.",
 /* COVALENT BOND: "A type of chemical bond involving the sharing of electrons between atoms in a molecule."
@@ -267,10 +263,10 @@ DILUTE: "A solution that has a low concentration of solute or has been reduced i
 DISTILLATION: "The process of evaporating or boiling a liquid and condensing its vapor to separate components.",
 ELECTRODE: "An element in a semiconducting device that emits, collects, or controls the movemt of electrons.",
 ELECTROLYSIS: "The conduction of electricity by a solution or melt, inducing chemical changes.",
-ELECTRON: "A stable elementary particle with a negative charge, found in all atoms and orbiting the nucleus.",
-ELECTROVALENCY: "The valency of a substance in forming ions, equal to the number of electrons gained or lost.",
-ELEMENT: "Any of the 118 known substances consisting of atoms with the same number of protons in their nuclei.",
-EMULSION: "A light-sensitive coating on a base, such as paper or film, containing fine grains of silver bromide suspended in gelatin.",
+/* ELECTRON: "A stable elementary particle with a negative charge, found in all atoms and orbiting the nucleus.",
+ */ELECTROVALENCY: "The valency of a substance in forming ions, equal to the number of electrons gained or lost.",
+/* ELEMENT: "Any of the 118 known substances consisting of atoms with the same number of protons in their nuclei.",
+ */EMULSION: "A light-sensitive coating on a base, such as paper or film, containing fine grains of silver bromide suspended in gelatin.",
 ESTER: "A compound produced by the reaction between acids and alcohols with the elimination of water, often having a fragrant odor.",
 ETHER: "A colorless volatile highly flammable liquid with a characteristic sweetish odor, used as a solvent and anesthetic.",
 EVAPORATION: "The change of a liquid to a vapor, caused by an increase in temperature or a decrease in pressure.",
@@ -280,17 +276,17 @@ FISSION: "The act or process of splitting or breaking into parts, such as nuclea
 GAS: "A substance that expands indefinitely to fill any container, with particles in rapid motion.",
 HYDROCARBON: "An organic compound containing only carbon and hydrogen.",
 ION: "An electrically charged atom or group of atoms formed by the loss or gain of electrons.",
-MOLECULE: "The simplest unit of a chemical compound that can exist independently.",
-NEUTRON: "A neutral elementary particle found in atomic nuclei.",
-NUCLEUS: "The central part of an atom, containing protons and neutrons.",
+/* MOLECULE: "The simplest unit of a chemical compound that can exist independently.",
+NEUTRON: "A neutral elementary particle found in atomic nuclei.", */
+/* NUCLEUS: "The central part of an atom, containing protons and neutrons.", */
 OXIDATION: "A process in which a substance combines with oxygen, often producing energy.",
 PERIODICTABLE: "A table of elements arranged in order of increasing atomic number, highlighting their chemical properties.",
 PH: "A measure of the acidity or alkalinity of a solution, where 7 is neutral, lower values are acidic, and higher values are alkaline.",
 POLYMER: "A large molecule composed of repeating structural units.",
-PROTON: "A stable, positively charged elementary particle found in atomic nuclei.",
+/* PROTON: "A stable, positively charged elementary particle found in atomic nuclei.", */
 RADIOACTIVITY: "The spontaneous emission of radiation from atomic nuclei.",
 SATURATED: "Containing the maximum amount of solute that can be dissolved at a given temperature and pressure.",
-SOLUTION: "A homogeneous mixture of two or more substances.",
+/* SOLUTION: "A homogeneous mixture of two or more substances.", */
 SOLVENT: "A liquid capable of dissolving another substance.",
 VALENCY: "The ability of an atom to combine with other atoms, determined by the number of electrons it can lose, gain, or share." ,
 };
