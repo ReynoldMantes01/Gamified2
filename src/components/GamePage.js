@@ -12,12 +12,13 @@ import functionBackground from '../assets/functionBackground.png';
 import mapLibrary from '../components/maps.json';
 import mapData from './maps.json';
 import { auth } from '../firebase/config';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { getDatabase, ref, onValue, set, get } from 'firebase/database';
 
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
-    const [gridLetters, setGridLetters] = useState(generateRandomLetters());
+    const [gridLetters, setGridLetters] = useState([]);
+    const [userProgress, setUserProgress] = useState(null);
     const [definition, setDefinition] = useState('Definition shows here when you enter right');
     const [emptyIndices, setEmptyIndices] = useState([]);
     const [slidebarOpen, setSlidebarOpen] = useState(false);
@@ -36,6 +37,19 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [hintsRemaining, setHintsRemaining] = useState(2);
     const [highlightedIndices, setHighlightedIndices] = useState([]);
     const [currentAvatar, setCurrentAvatar] = useState(profileData?.selectedAvatar);
+
+    // Enemy progression order
+    const enemyProgressionOrder = [
+        "microbe",
+        "toxic_crawler",
+        "virus",
+        "bacteria",
+        "parasite",
+        "infection"
+    ];
+
+    // World unlocking conditions (3 enemies per world)
+    const enemiesPerWorld = 3;
 
     // Add real-time listener for profile updates
     useEffect(() => {
@@ -379,10 +393,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             }
 
             if (updatedHearts === 0) {
-                setVictoryVisible(true);
-                setHintsRemaining(2);
-                setHighlightedIndices([]);
-                setHint('');
+                handleVictory();
             }
         } else {
             setDefinition('Invalid word. Please try again.');
@@ -548,6 +559,146 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         exhaust: "Exhaust: Reduces damage dealt by 50% for 2 turns",
         burn: "Burn: Deals fire damage for 5 seconds",
         blind: "Blind: 75% chance to miss attacks for 2 turns"
+    };
+
+    useEffect(() => {
+        const fetchUserProgress = async () => {
+            const user = auth.currentUser;
+            if (user) {
+                const db = getDatabase();
+                const userRef = ref(db, `users/${user.uid}`);
+                
+                onValue(userRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        setUserProgress(data);
+                    } else {
+                        // Initialize user data if it doesn't exist
+                        set(userRef, {
+                            email: user.email,
+                            currentLevel: 1,
+                            unlockedLevels: [1],
+                            experience: 0,
+                            createdAt: new Date().toISOString(),
+                            lastUpdated: new Date().toISOString()
+                        });
+                    }
+                });
+            }
+        };
+        
+        fetchUserProgress();
+    }, []);
+
+    const isEnemyLocked = (enemyName) => {
+        if (!userProgress?.unlockedEnemies) return true;
+        return !userProgress.unlockedEnemies.includes(enemyName);
+    };
+
+    const updateUserProgress = async (defeatedEnemy) => {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const db = getDatabase();
+        const userRef = ref(db, `users/${user.uid}`);
+
+        try {
+            // Get current user data
+            const snapshot = await get(userRef);
+            if (!snapshot.exists()) return;
+
+            const userData = snapshot.val();
+            const defeatedEnemyName = defeatedEnemy.name.toLowerCase().replace(' ', '_');
+
+            // Add defeated enemy to list if not already there
+            const defeatedEnemies = userData.defeatedEnemies || [];
+            if (!defeatedEnemies.includes(defeatedEnemyName)) {
+                defeatedEnemies.push(defeatedEnemyName);
+            }
+
+            // Find next enemy to unlock
+            const currentEnemyIndex = enemyProgressionOrder.indexOf(defeatedEnemyName);
+            const nextEnemyName = enemyProgressionOrder[currentEnemyIndex + 1];
+
+            // Update unlocked enemies
+            const unlockedEnemies = userData.unlockedEnemies || [];
+            if (nextEnemyName && !unlockedEnemies.includes(nextEnemyName)) {
+                unlockedEnemies.push(nextEnemyName);
+            }
+
+            // Check if we need to unlock next world
+            const currentWorld = parseInt(userData.currentWorld) || 1;
+            const defeatedCount = defeatedEnemies.length;
+            const newWorldNumber = Math.floor(defeatedCount / enemiesPerWorld) + 1;
+            const unlockedWorlds = userData.unlockedWorlds || ["map1"];
+            
+            if (newWorldNumber > currentWorld) {
+                const newWorldId = `map${newWorldNumber}`;
+                if (!unlockedWorlds.includes(newWorldId)) {
+                    unlockedWorlds.push(newWorldId);
+                }
+            }
+
+            // Update user data in Firebase
+            await set(userRef, {
+                ...userData,
+                defeatedEnemies,
+                unlockedEnemies,
+                unlockedWorlds,
+                currentWorld: Math.max(currentWorld, newWorldNumber),
+                lastUpdated: new Date().toISOString()
+            });
+
+        } catch (error) {
+            console.error("Error updating user progress:", error);
+        }
+    };
+
+    const handleVictory = async () => {
+        setVictoryVisible(true);
+        // Update user progress when enemy is defeated
+        await updateUserProgress(currentEnemy);
+    };
+
+    const handleGameOver = async (isVictory) => {
+        if (isVictory) {
+            await handleVictory();
+        }
+        // ... rest of your existing handleGameOver logic
+    };
+
+    const updateLevelProgress = async (completedLevel) => {
+        const user = auth.currentUser;
+        if (user && userProgress) {
+            const db = getDatabase();
+            const userRef = ref(db, `users/${user.uid}`);
+            const nextLevel = completedLevel + 1;
+            
+            // Only update if this is the highest level completed
+            if (!userProgress.unlockedLevels.includes(nextLevel)) {
+                const updatedUnlockedLevels = [...userProgress.unlockedLevels, nextLevel];
+                await set(userRef, {
+                    ...userProgress,
+                    currentLevel: nextLevel,
+                    unlockedLevels: updatedUnlockedLevels,
+                    lastUpdated: new Date().toISOString()
+                });
+            }
+        }
+    };
+
+    const handleLevelComplete = async () => {
+        if (level) {
+            await updateLevelProgress(level);
+            // Show success message
+            setDialogMessage("Level Complete! Next level unlocked!");
+            setDialogVisible(true);
+        }
+    };
+
+    const isLevelLocked = (levelNumber) => {
+        if (!userProgress) return true;
+        return !userProgress.unlockedLevels.includes(levelNumber);
     };
 
     //Word Box

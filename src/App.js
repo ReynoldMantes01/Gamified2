@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { getDatabase, ref, set, get, onValue } from 'firebase/database';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import MainMenu from "./components/MainMenu";
 import GamePage from "./components/GamePage";
 import MapSelection from "./components/MapSelection";
@@ -25,6 +26,7 @@ const App = () => {
   const [signupOpen, setSignupOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [scoreboardOpen, setScoreboardOpen] = useState(false); // Add scoreboardOpen state
+  const [userProgress, setUserProgress] = useState(null);
   const [profileData, setProfileData] = useState({
     image: "",
     username: "",
@@ -84,6 +86,51 @@ const App = () => {
       return () => unsubscribe();
     }
   }, [db, profileData]);
+
+  // Add useEffect to fetch user progress
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in
+        const db = getDatabase();
+        const userRef = ref(db, `users/${user.uid}`);
+        
+        onValue(userRef, (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            setUserProgress(data);
+            setIsAuthenticated(true);
+          }
+        });
+      } else {
+        // User is signed out
+        setUserProgress(null);
+        setIsAuthenticated(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Function to handle level selection
+  const handleLevelSelect = (levelData) => {
+    // Always allow microbe in first map
+    if (levelData.selectedMap.id === "map1" && levelData.enemy.name.toLowerCase() === "microbe") {
+      setSelectedLevel(levelData);
+      setCurrentPage("gamePage");
+      return;
+    }
+
+    // Check if user has required progress
+    if (userProgress?.unlockedEnemies?.includes(levelData.enemy.name.toLowerCase().replace(' ', '_'))) {
+      setSelectedLevel(levelData);
+      setCurrentPage("gamePage");
+    } else {
+      // Show error message or handle locked level
+      alert("This level is locked! Complete previous levels to unlock.");
+    }
+  };
 
   // Save music volume to database
   const handleSettingsSave = async (newMusicVolume) => {
@@ -196,11 +243,6 @@ const App = () => {
     localStorage.removeItem('userName');
 
     console.log('Logged out successfully');
-  };
-
-  const handleLevelSelect = (level) => {
-    setSelectedLevel(level);
-    setCurrentPage("gamePage");
   };
 
   const renderLoginPopup = () => (

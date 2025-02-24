@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { auth } from '../firebase/config';
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { getDatabase, ref, set } from 'firebase/database';
 
 const Signup = ({ onSwitchToLogin }) => {
     const [email, setEmail] = useState('');
@@ -9,6 +10,25 @@ const Signup = ({ onSwitchToLogin }) => {
     const [name, setName] = useState('');
     const [error, setError] = useState(null);
     const [verificationSent, setVerificationSent] = useState(false);
+
+    const initializeUserProfile = async (user) => {
+        const db = getDatabase();
+        const userRef = ref(db, `users/${user.uid}`);
+        
+        // Initialize new user profile with only first map and enemy unlocked
+        await set(userRef, {
+            email: user.email,
+            name: name,
+            currentLevel: 1,
+            currentWorld: 1,
+            unlockedWorlds: ["map1"],  // Only first world unlocked
+            unlockedEnemies: ["microbe"],  // Only first enemy unlocked
+            defeatedEnemies: [],
+            experience: 0,
+            createdAt: new Date().toISOString(),
+            lastUpdated: new Date().toISOString()
+        });
+    };
 
     const handleSignup = async (e) => {
         e.preventDefault();
@@ -22,12 +42,12 @@ const Signup = ({ onSwitchToLogin }) => {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
+            // Initialize user profile with only first map and enemy unlocked
+            await initializeUserProfile(user);
+
             // Send verification email
             await sendEmailVerification(user);
             setVerificationSent(true);
-
-            // Store the name in the database (you can add this later)
-            // For now, we'll just show the verification message
 
         } catch (error) {
             setError(error.message || 'Signup failed');

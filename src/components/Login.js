@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase/config';
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getDatabase, ref, set, get } from 'firebase/database';
 
 const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
     const [email, setEmail] = useState('');
@@ -15,11 +16,34 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
         return () => clearTimeout(timer);
     }, []);
 
+    const initializeUserProfile = async (user) => {
+        const db = getDatabase();
+        const userRef = ref(db, `users/${user.uid}`);
+        
+        // Check if user profile exists
+        const snapshot = await get(userRef);
+        if (!snapshot.exists()) {
+            // Initialize new user profile with only first map and enemy unlocked
+            await set(userRef, {
+                email: user.email,
+                currentLevel: 1,
+                currentWorld: 1,
+                unlockedWorlds: ["map1"],  // Only first world unlocked
+                unlockedEnemies: ["microbe"],  // Only first enemy unlocked
+                defeatedEnemies: [],
+                experience: 0,
+                createdAt: new Date().toISOString(),
+                lastUpdated: new Date().toISOString()
+            });
+        }
+    };
+
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
+            await initializeUserProfile(user);
             onLoginSuccess(user);
         } catch (error) {
             setError(error.message);
@@ -31,6 +55,7 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
+            await initializeUserProfile(user);
             onLoginSuccess(user);
         } catch (error) {
             console.error('Google login error:', error);
