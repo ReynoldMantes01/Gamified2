@@ -80,8 +80,8 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
   };
 
   return (
-    <div className="text-center p-5">
-      <h1 className="text-3xl font-bold mb-6 text-white">Select Your Level</h1>
+    <div className="text-center p-5 min-h-screen flex flex-col items-center justify-center">
+      <h1 className="text-4xl font-bold mb-6 text-white drop-shadow-[4px_4px_0px_black]">Select Your Level</h1>
       
       {/* Map Selection */}
       <div className="flex justify-center items-center mb-8">
