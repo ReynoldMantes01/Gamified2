@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase/config';
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
 import { getDatabase, ref, set, get } from 'firebase/database';
 
 const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
@@ -63,6 +63,19 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
         }
     };
 
+    const handleFacebookLogin = async () => {
+        try {
+            const provider = new FacebookAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            await initializeUserProfile(user);
+            onLoginSuccess(user);
+        } catch (error) {
+            console.error('Facebook login error:', error);
+            setError(error.message || 'Failed to process Facebook login');
+        }
+    };
+
     if (showLoadingScreen) {
         return (
             <div className="fixed inset-0 flex flex-col items-center justify-center bg-black">
@@ -100,7 +113,7 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                     <span className="px-4 text-gray-500">or</span>
                     <div className="border-t border-gray-300 flex-grow"></div>
                 </div>
-                <div className="flex justify-center">
+                <div className="flex justify-center gap-4">
                     <button
                         onClick={handleGoogleLogin}
                         className="flex items-center justify-center gap-3 border-2 border-gray-300 rounded-lg px-6 py-3 hover:border-blue-500 transition-colors"
@@ -108,9 +121,20 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                         <img
                             src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                             alt="Google"
-                            className="w-5 h-5"
+                            className="w-4 h-5"
                         />
                         Google
+                    </button>
+                    <button
+                        onClick={handleFacebookLogin}
+                        className="flex items-center justify-center gap-3 border-2 border-gray-300 rounded-lg px-6 py-3 hover:border-blue-500 transition-colors"
+                    >
+                        <img
+                            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/facebook.svg"
+                            alt="Facebook"
+                            className="w-4 h-5"
+                        />
+                        Facebook
                     </button>
                 </div>
                 <p className="mt-6 text-center">
