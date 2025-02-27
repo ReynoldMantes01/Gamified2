@@ -9,7 +9,7 @@ const transformedTerms = Object.entries(scienceTerms).map(([word, definition]) =
   definition: definition
 }));
 
-const ITEMS_PER_PAGE = 5; // Number of terms to show per page
+const ITEMS_PER_PAGE = 3; // Number of terms to show per page
 
 const Almanac = ({ onMainMenu }) => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -32,9 +32,9 @@ const Almanac = ({ onMainMenu }) => {
   };
 
   return (
-    <div className="p-6 text-center relative min-h-screen">
-      <h1 className="text-4xl font-bold mb-4">Almanac</h1>
-      <p className="mb-6">Welcome to the Almanac! Explore various details here.</p>
+    <div className="min-h-screen bg-cover bg-center flex items-center justify-center py-12">
+    <div className="max-w-3xl w-full bg-[#fdf6e3] p-8 border-8 border-double border-gray-700 rounded-lg shadow-xl overflow-auto text-center flex flex-col items-center ">
+      <h1 className="text-4xl font-bold  mb-4">Almanac of Knowledge</h1>
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-6"
         onClick={onMainMenu}
@@ -42,8 +42,8 @@ const Almanac = ({ onMainMenu }) => {
         Back to Main Menu
       </button>
 
-      <div className="max-w-4xl mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold text-center mb-6">Almanac of Knowledge</h1>
+      <div className="max-w-4xl mx-auto py-8 px-4"> 
+         </div>
         <ul className="space-y-4">
           {currentTerms.map((item, index) => (
             <li
@@ -56,7 +56,9 @@ const Almanac = ({ onMainMenu }) => {
               </p>
             </li>
           ))}
+          
         </ul>
+      
       </div>
 
       {/* Static Bottom Navigation */}

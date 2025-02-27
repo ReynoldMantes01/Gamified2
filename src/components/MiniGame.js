@@ -12,8 +12,10 @@ import slimesImage from '../assets/slimes.gif';
 import mapData from './maps.json';
 import { getDatabase, ref, set, onValue } from 'firebase/database';
 import { auth } from '../firebase/config';
+import Slidebar from './Slidebar';
+import GameSettings from './GameSettings';
 
-const MiniGame = ({ onMainMenu }) => {
+const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, }) => {
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState([]);
     const [playerHearts, setPlayerHearts] = useState(10);
@@ -28,6 +30,9 @@ const MiniGame = ({ onMainMenu }) => {
     const [showTutorial, setShowTutorial] = useState(true);
     const [emptyIndices, setEmptyIndices] = useState([]);
     const [timeLeft, setTimeLeft] = useState(30);
+    const [slidebarOpen, setSlidebarOpen] = useState(false);
+    const [settingsOpen, setSettingsOpen] = useState(false);
+    const [profileOpen, setProfileOpen] = useState(false);
 
     const enemies = [
         { name: "Microbe", image: 'microbe.gif', health: 3 },
@@ -67,6 +72,17 @@ const MiniGame = ({ onMainMenu }) => {
         
         return letters;
     };
+// slidebar
+       const toggleSlidebar = () => setSlidebarOpen(!slidebarOpen);
+    
+        const handleClickOutside = useCallback(
+            (event) => {
+                if (slidebarOpen && !event.target.closest('.slidebar') && !event.target.closest('.slidebar-icon')) {
+                    setSlidebarOpen(false);
+                }
+            },
+            [slidebarOpen]
+        );
 
     // Initialize grid with a guaranteed science word
     useEffect(() => {
@@ -222,16 +238,43 @@ const MiniGame = ({ onMainMenu }) => {
             
             {/* Header */}
             <div className="w-full flex justify-between items-center p-4 bg-black bg-opacity-50">
+                {/* heart nasa kaliwaa */}
                 <div className="flex items-center">
                     <img src={heartImage} alt="Heart" className="w-8 h-8 mr-2" />
-                    <span className="text-white text-2xl">{playerHearts}</span>
+                        <span className="text-white text-2xl">{playerHearts}</span>
+                    </div>
+                    {/* CENTER SCORE */}
+                    <div className="text-white text-2xl absolute left-1/2 transform -translate-x-1/2">
+                        Score: {score}
+                            </div>
+                            {/* NAV BAR KANAN*/}                     
+                            <div className="flex items-center space-x-4">
+                                <div className="slidebar-icon text-2xl cursor-pointer" onClick={toggleSlidebar}>
+                                    <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
+                                </div>
+                        <Slidebar
+                            isOpen={slidebarOpen}
+                                    toggleSlidebar={toggleSlidebar}
+                                        onMainMenu={onMainMenu}
+                                    setSettingsOpen={setSettingsOpen}
+                            />
                 </div>
-                <div className="text-white text-2xl">Score: {score}</div>
-                <button onClick={onMainMenu} className="text-white">
-                    <Cross />
-                </button>
             </div>
-
+            {/* Modals */}
+            {settingsOpen && (
+                <GameSettings
+                    onClose={() => setSettingsOpen(false)}
+                    onSave={(volume) => {
+                        setMusicVolume(volume);
+                        setSettingsOpen(false);
+                    }}
+                    onReset={() => {
+                        setMusicVolume(50);
+                        setSettingsOpen(false);
+                    }}
+                    musicVolume={musicVolume}
+                />
+            )}
             {/* Timer */}
             <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 px-6 py-2 rounded-full">
                 <span className={`text-3xl font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-white'}`}>
@@ -327,7 +370,7 @@ const MiniGame = ({ onMainMenu }) => {
                     ))}
                 </div>
                 <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg text-lg hover:bg-blue-600 transform transition-transform hover:scale-105"
+                    className="bg-blue-500 text-white px-2 py-1 flex justify-end rounded-lg text-lg hover:bg-blue-600 transform transition-transform hover:scale-105"
                     onClick={handleSubmitWord}
                 >
                     Submit
@@ -346,8 +389,11 @@ const MiniGame = ({ onMainMenu }) => {
                         Return to Main Menu
                     </button>
                 </div>
+                
             )}
+            
         </div>
+        
     );
 
 };
