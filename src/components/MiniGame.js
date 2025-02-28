@@ -14,8 +14,9 @@ import { getDatabase, ref, set, onValue } from 'firebase/database';
 import { auth } from '../firebase/config';
 import Slidebar from './Slidebar';
 import GameSettings from './GameSettings';
+import Profile from './Profile';
 
-const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, }) => {
+const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileData, setProfileData }) => {
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState([]);
     const [playerHearts, setPlayerHearts] = useState(10);
@@ -252,27 +253,29 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, }) => {
                                 <div className="slidebar-icon text-2xl cursor-pointer" onClick={toggleSlidebar}>
                                     <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
                                 </div>
-                        <Slidebar
-                            isOpen={slidebarOpen}
-                                    toggleSlidebar={toggleSlidebar}
-                                        onMainMenu={onMainMenu}
-                                    setSettingsOpen={setSettingsOpen}
-                            />
+                        <Slidebar 
+                            isOpen={slidebarOpen} 
+                            toggleSlidebar={toggleSlidebar} 
+                            onMainMenu={onMainMenu} 
+                            setSettingsOpen={setSettingsOpen}
+                            setProfileOpen={setProfileOpen}
+                            onLogout={onLogout}
+                        />
                 </div>
             </div>
             {/* Modals */}
             {settingsOpen && (
                 <GameSettings
                     onClose={() => setSettingsOpen(false)}
-                    onSave={(volume) => {
-                        setMusicVolume(volume);
-                        setSettingsOpen(false);
-                    }}
-                    onReset={() => {
-                        setMusicVolume(50);
-                        setSettingsOpen(false);
-                    }}
                     musicVolume={musicVolume}
+                    setMusicVolume={setMusicVolume}
+                />
+            )}
+            {profileOpen && (
+                <Profile
+                    onClose={() => setProfileOpen(false)}
+                    profileData={profileData}
+                    setProfileData={setProfileData}
                 />
             )}
             {/* Timer */}

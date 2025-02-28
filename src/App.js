@@ -306,7 +306,16 @@ const App = () => {
       case "almanac":
         return <Almanac onMainMenu={() => setCurrentPage("mainMenu")} />;
       case "miniGame":
-        return <MiniGame onMainMenu={() => setCurrentPage("mainMenu")} />;
+        return (
+          <MiniGame
+            onMainMenu={() => setCurrentPage("mainMenu")}
+            onLogout={handleLogout}
+            musicVolume={musicVolume}
+            setMusicVolume={setMusicVolume}
+            profileData={profileData}
+            setProfileData={setProfileData}
+          />
+        );
       default:
         return <MainMenu onPlay={() => setCurrentPage("gamePage")} />;
     }

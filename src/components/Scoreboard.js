@@ -1,51 +1,63 @@
-import React, { useState, useEffect } from 'react';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import React, { useState, useEffect, useCallback } from 'react';
+import { getDatabase, ref, onValue, query, orderByChild } from 'firebase/database';
 import bgImage from '../assets/bg.gif';
 
 const SCORES_PER_PAGE = 6;
 
 const Scoreboard = ({ onMainMenu }) => {
     const [currentPage, setCurrentPage] = useState(0);
-    const [scores, setScores] = useState([
-        { name: "Richard Lopez", score: 850, rank: 1, timestamp: "2025-02-18" },
-        { name: "Reynold Mantes", score: 780, rank: 2, timestamp: "2025-02-18" },
-        { name: "Jayson Llanes", score: 720, rank: 3, timestamp: "2025-02-18" },
-        { name: "Cyrus Judiawon", score: 650, rank: 4, timestamp: "2025-02-18" },
-        { name: "Hazzel Mercado", score: 580, rank: 5, timestamp: "2025-02-18" },
-        { name: "Joanna Indic", score: 520, rank: 6, timestamp: "2025-02-18" },
-        { name: "Kyle Pasuquin", score: 450, rank: 7, timestamp: "2025-02-18" }
-    ]);
+    const [scores, setScores] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const db = getDatabase();
-        const scoresRef = ref(db, 'users');
+    const processScores = useCallback((data) => {
+        if (!data) return [];
+        const userScores = [];
+        Object.entries(data).forEach(([userId, userData]) => {
+            if (userData.miniGameScores) {
+                // Get the highest score for each user
+                const highestScore = Object.entries(userData.miniGameScores)
+                    .reduce((highest, [timestamp, scoreData]) => {
+                        return (!highest || scoreData.score > highest.score) 
+                            ? { score: scoreData.score, timestamp }
+                            : highest;
+                    }, null);
 
-        onValue(scoresRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                const userScores = [];
-                Object.entries(data).forEach(([userId, userData]) => {
-                    if (userData.miniGameScores) {
-                        Object.entries(userData.miniGameScores).forEach(([timestamp, scoreData]) => {
-                            userScores.push({
-                                name: userData.profile?.username || 'Anonymous',
-                                score: scoreData.score,
-                                timestamp: new Date(parseInt(timestamp)).toLocaleDateString()
-                            });
-                        });
-                    }
-                });
-                
-                // Sort scores and add ranks
-                userScores.sort((a, b) => b.score - a.score);
-                userScores.forEach((score, index) => {
-                    score.rank = index + 1;
-                });
-                
-                setScores(userScores);
+                if (highestScore) {
+                    userScores.push({
+                        name: userData.profile?.username || 'Anonymous',
+                        score: highestScore.score,
+                        timestamp: new Date(parseInt(highestScore.timestamp)).toLocaleDateString(),
+                        userId
+                    });
+                }
             }
         });
+        
+        // Sort scores and add ranks
+        userScores.sort((a, b) => b.score - a.score);
+        return userScores.map((score, index) => ({
+            ...score,
+            rank: index + 1,
+            isNew: score.timestamp === new Date().toLocaleDateString()
+        }));
     }, []);
+
+    useEffect(() => {
+        setLoading(true);
+        const db = getDatabase();
+        const scoresRef = ref(db, 'users');
+        
+        // Set up real-time listener
+        const unsubscribe = onValue(scoresRef, (snapshot) => {
+            const data = snapshot.val();
+            const processedScores = processScores(data);
+            setScores(processedScores);
+            setLoading(false);
+        });
+
+        // Cleanup listener on component unmount
+        return () => unsubscribe();
+    }, [processScores]);
 
     const startIndex = currentPage * SCORES_PER_PAGE;
     const endIndex = startIndex + SCORES_PER_PAGE;
@@ -82,65 +94,85 @@ const Scoreboard = ({ onMainMenu }) => {
                 <h2 className="text-6xl font-bold text-white text-center mb-8 text-stroke-black">Scoreboard</h2>
                 
                 <div className="bg-black bg-opacity-70 rounded-lg p-6 mb-4">
-                    <div className="grid grid-cols-4 gap-4 mb-6 text-white font-bold text-xl border-b-2 border-white pb-4">
-                        <div className="text-center">Rank</div>
-                        <div className="text-center">Player</div>
-                        <div className="text-center">Score</div>
-                        <div className="text-center">Date</div>
-                    </div>
-                    
-                    {currentScores.map((player) => (
-                        <div 
-                            key={player.rank}
-                            className={`grid grid-cols-4 gap-4 p-4 rounded-lg mb-3 ${
-                                player.rank === 1 ? 'bg-yellow-500 bg-opacity-70' :
-                                player.rank === 2 ? 'bg-gray-400 bg-opacity-70' :
-                                player.rank === 3 ? 'bg-yellow-700 bg-opacity-70' :
-                                'bg-white bg-opacity-20'
-                            } text-white`}
-                        >
-                            <div className="flex items-center justify-center text-2xl">
-                                {player.rank === 1 && '🏆'}
-                                {player.rank === 2 && '🥈'}
-                                {player.rank === 3 && '🥉'}
-                                {player.rank > 3 && `#${player.rank}`}
+                    {loading ? (
+                        <>
+                            <div className="grid grid-cols-4 gap-4 mb-6 text-white font-bold text-xl border-b-2 border-white pb-4">
+                                <div className="text-center">Rank</div>
+                                <div className="text-center">Player</div>
+                                <div className="text-center">Score</div>
+                                <div className="text-center">Date</div>
                             </div>
-                            <div className="text-center text-lg">{player.name}</div>
-                            <div className="text-center text-lg">{player.score}</div>
-                            <div className="text-center text-lg">{player.timestamp}</div>
-                        </div>
-                    ))}
+                            
+                            {/* Top 3 Trophy Placeholders */}
+                            <div className="grid grid-cols-4 gap-4 p-4 rounded-lg mb-3 bg-yellow-500 bg-opacity-70 text-white">
+                                <div className="text-center font-bold text-3xl">🏆</div>
+                                <div className="text-center">---</div>
+                                <div className="text-center">---</div>
+                                <div className="text-center">---</div>
+                            </div>
+                            <div className="grid grid-cols-4 gap-4 p-4 rounded-lg mb-3 bg-gray-400 bg-opacity-70 text-white">
+                                <div className="text-center font-bold text-3xl">🥈</div>
+                                <div className="text-center">---</div>
+                                <div className="text-center">---</div>
+                                <div className="text-center">---</div>
+                            </div>
+                            <div className="grid grid-cols-4 gap-4 p-4 rounded-lg mb-3 bg-yellow-700 bg-opacity-70 text-white">
+                                <div className="text-center font-bold text-3xl">🥉</div>
+                                <div className="text-center">---</div>
+                                <div className="text-center">---</div>
+                                <div className="text-center">---</div>
+                            </div>
+                            <div className="text-white text-center py-4">Loading scores...</div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="grid grid-cols-4 gap-4 mb-6 text-white font-bold text-xl border-b-2 border-white pb-4">
+                                <div className="text-center">Rank</div>
+                                <div className="text-center">Player</div>
+                                <div className="text-center">Score</div>
+                                <div className="text-center">Date</div>
+                            </div>
+                            
+                            {currentScores.map((player) => (
+                                <div 
+                                    key={`${player.userId}-${player.score}`}
+                                    className={`grid grid-cols-4 gap-4 p-4 rounded-lg mb-3 transform transition-all duration-500 ${
+                                        player.rank === 1 ? 'bg-yellow-500 bg-opacity-70' :
+                                        player.rank === 2 ? 'bg-gray-400 bg-opacity-70' :
+                                        player.rank === 3 ? 'bg-yellow-700 bg-opacity-70' :
+                                        'bg-white bg-opacity-20'
+                                    } ${player.isNew ? 'scale-105' : ''} text-white`}
+                                >
+                                    <div className="text-center font-bold">{player.rank}</div>
+                                    <div className="text-center">{player.name}</div>
+                                    <div className="text-center">{player.score}</div>
+                                    <div className="text-center">{player.timestamp}</div>
+                                </div>
+                            ))}
+                        </>
+                    )}
                 </div>
 
-                <div className="flex justify-center items-center space-x-4">
+                <div className="flex justify-between mt-4">
                     <button
                         onClick={handlePrevious}
                         disabled={currentPage === 0}
-                        className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${
-                            currentPage === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                        className={`bg-blue-500 text-white px-4 py-2 rounded ${
+                            currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
                         }`}
                     >
                         Previous
                     </button>
-                    <span className="text-white font-bold">
-                        Page {currentPage + 1} of {totalPages}
-                    </span>
                     <button
                         onClick={handleNext}
                         disabled={endIndex >= scores.length}
-                        className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${
-                            endIndex >= scores.length ? 'opacity-50 cursor-not-allowed' : ''
+                        className={`bg-blue-500 text-white px-4 py-2 rounded ${
+                            endIndex >= scores.length ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
                         }`}
                     >
                         Next
                     </button>
                 </div>
-
-                <style jsx>{`
-                    .text-stroke-black {
-                        -webkit-text-stroke: 2px black;
-                    }
-                `}</style>
             </div>
         </div>
     );
