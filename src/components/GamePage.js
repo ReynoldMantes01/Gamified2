@@ -19,7 +19,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState([]);
     const [userProgress, setUserProgress] = useState(null);
-    const [definition, setDefinition] = useState('Definition shows here when you enter right');
+    const [definition, setDefinition] = useState({ text: 'Definition shows here when you enter right', source: '' });
     const [emptyIndices, setEmptyIndices] = useState([]);
     const [slidebarOpen, setSlidebarOpen] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
@@ -92,6 +92,17 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     useEffect(() => {
         console.log('Current word count:', selectedLetters.length);
     }, [selectedLetters]);
+
+    useEffect(() => {
+        if (isValidWord) {
+            const word = selectedLetters.join('').toUpperCase();
+            const termInfo = scienceTerm[word];
+            setDefinition({
+                text: termInfo.definition,
+                source: termInfo.source
+            });
+        }
+    }, [selectedLetters, isValidWord]);
 
     // Status effect colors with glow
     const effectStyles = {
@@ -193,7 +204,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 
                 // Show feedback about the new effect
                 setDefinition(prev => 
-                    `${prev}\n\nNew ${randomEffect.toUpperCase()} effect added to a letter! Find it in the grid.`
+                    `${prev.text}\n\nNew ${randomEffect.toUpperCase()} effect added to a letter! Find it in the grid.`
                 );
             }
         }
@@ -291,7 +302,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         
         // Check if blind effect prevents attack (75% chance)
         if (enemyStatusEffects.blind > 0 && Math.random() < 0.75) {
-            setDefinition('Enemy attack missed due to blind effect!');
+            setDefinition(prev => 
+                `${prev.text}\n\nEnemy attack missed due to blind effect!`
+            );
             return;
         }
         
@@ -321,10 +334,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
         if (scienceTerm[word.toUpperCase()]) {
             const term = scienceTerm[word.toUpperCase()];
-            setDefinition(
-                `${term.category}: ${term.definition} 
-                [Source: ${term.source}] [Learn More](${term.link})`
-            );
+            setDefinition({
+                text: `${term.category}: ${term.definition} 
+                [Source: ${term.source}] [Learn More](${term.link})`,
+                source: term.source
+            });
             
             // Apply bleed multiplier
             if (enemyStatusEffects.bleed > 0) {
@@ -387,7 +401,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     
                     // Show feedback about the new effect
                     setDefinition(prev => 
-                        `${prev}\n\nNew ${randomEffect.toUpperCase()} effect added to a letter! Find it in the grid.`
+                        `${prev.text}\n\nNew ${randomEffect.toUpperCase()} effect added to a letter! Find it in the grid.`
                     );
                 }
             }
@@ -396,7 +410,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 handleVictory();
             }
         } else {
-            setDefinition('Invalid word. Please try again.');
+            setDefinition(prev => 
+                `${prev.text}\n\nInvalid word. Please try again.`
+            );
             const updatedPlayerHearts = Math.max(0, playerHearts - damage);
             setPlayerHearts(updatedPlayerHearts);
             handleEnemyAttack();
@@ -540,7 +556,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         setHintsRemaining(2); // Reset hints to 2
         setHighlightedIndices([]); // Clear highlights
         setHint(''); // Clear hint message
-        setDefinition('Form a word to see its definition!');
+        setDefinition({ text: 'Form a word to see its definition!', source: '' });
     };
 
     const handleSettingsSave = (newMusicVolume) => {
@@ -707,29 +723,39 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         const scienceTerms = Object.keys(scienceTerm);
         const randomTerm = scienceTerms[Math.floor(Math.random() * scienceTerms.length)];
         
-        // Convert the term to an array of letters
-        const termLetters = randomTerm.split('');
-        
-        // Calculate remaining slots after keeping existing letters
-        const remainingSlots = 20 - existingLetters.filter(l => l !== '').length;
-        
-        // Generate random letters for remaining slots
-        const vowels = 'AEIOU';
-        const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
-        const additionalLetters = Array.from({ length: remainingSlots }, () => 
-            Math.random() < 0.4
-                ? vowels.charAt(Math.floor(Math.random() * vowels.length))
-                : consonants.charAt(Math.floor(Math.random() * consonants.length))
-        );
+        // Convert the term to an array of unique letters (we'll need at least one of each)
+        const termLetters = Array.from(new Set(randomTerm.split('')));
         
         // Create new grid keeping existing letters and effects
         const newGrid = [...existingLetters];
-        let additionalIndex = 0;
         
+        // First, place the term letters in random empty positions
+        let emptyPositions = [];
         for (let i = 0; i < 20; i++) {
             if (newGrid[i] === '' || newGrid[i] === undefined) {
-                newGrid[i] = additionalLetters[additionalIndex++];
+                emptyPositions.push(i);
             }
+        }
+        
+        // Shuffle the empty positions
+        for (let i = emptyPositions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [emptyPositions[i], emptyPositions[j]] = [emptyPositions[j], emptyPositions[i]];
+        }
+        
+        // Place each letter from the term
+        for (let i = 0; i < termLetters.length && i < emptyPositions.length; i++) {
+            newGrid[emptyPositions[i]] = termLetters[i];
+        }
+        
+        // Fill remaining slots with random letters, maintaining a good vowel/consonant ratio
+        const vowels = 'AEIOU';
+        const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
+        
+        for (let i = termLetters.length; i < emptyPositions.length; i++) {
+            newGrid[emptyPositions[i]] = Math.random() < 0.4
+                ? vowels.charAt(Math.floor(Math.random() * vowels.length))
+                : consonants.charAt(Math.floor(Math.random() * consonants.length));
         }
         
         return newGrid;
@@ -887,19 +913,16 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 
                 {/* Description Box */}
                 <div className="description-box bg-[#f4d9a3] border-2 border-black p-4 rounded-lg mb-3 h-64 overflow-y-auto">
-                    <div 
-                        className="prose prose-base"
-                        dangerouslySetInnerHTML={{ 
-                            __html: definition.replace(
-                                /\[([^\]]+)\]\(([^)]+)\)/g, 
-                                '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-medium">$1</a>'
-                            ).replace(/\n/g, '<br/>')
-                        }}
-                    />
-                    {!definition && (
-                        <p className="text-base text-gray-600">
-                            {mapData[currentEnemy?.map]?.description || "Form a word to see its definition!"}
-                        </p>
+                    <p className="text-gray-800">{definition.text}</p>
+                    {definition.source && (
+                        <a 
+                            href={definition.source}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-800 underline text-sm mt-2 block"
+                        >
+                            Learn more
+                        </a>
                     )}
                 </div>
 
