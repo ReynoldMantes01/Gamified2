@@ -4,37 +4,41 @@ const scienceTerms = {
 
 ACCELERATION: {
     DEFINITION: "The rate of change of velocity with respect to time. FORMULA: a = Δv/Δt",
-    SOURCE: "HTTPS://www.britannica.com/science/acceleration-physics"
+    SOURCE: "https://www.britannica.com/science/acceleration"
 },
 VELOCITY: {
     DEFINITION: "The rate of change of position in a specific direction. FORMULA: v = Δx/Δt",
-    SOURCE: "HTTPS://www.britannica.com/science/velocity"
+    SOURCE: "https://www.britannica.com/science/velocity"
 },
 FORCE: {
     DEFINITION: "A push or pull that can change an object's motion or shape. FORMULA: F = ma",
-    SOURCE: "HTTPS://www.britannica.com/science/force-physics"
+    SOURCE: "https://www.britannica.com/science/force-physics"
 },
 MOMENTUM: {
     DEFINITION: "The quantity of motion of a moving body, equal to the product of mass and velocity. FORMULA: p = mv",
-    SOURCE: "HTTPS://www.britannica.com/science/momentum"
+    SOURCE: "https://www.britannica.com/science/momentum"
 },
 INERTIA: {
     DEFINITION: "The resistance of a physical object to any change in its velocity, including changes in speed or direction",
-    SOURCE: "HTTPS://www.britannica.com/science/inertia"
+    SOURCE: "https://www.britannica.com/science/inertia"
 },
 GRAVITY: {
     DEFINITION: "The universal force of attraction between all masses. FORMULA: F = G(m₁m₂)/r²",
-    SOURCE: "HTTPS://www.nasa.gov/universe/gravity"
+    SOURCE: "https://www.nasa.gov/universe/gravity"
 },
 FRICTION: {
     DEFINITION: "The force resisting relative motion between surfaces in contact. FORMULA: f = μN",
-    SOURCE: "HTTPS://www.britannica.com/science/friction"
+    SOURCE: "https://www.britannica.com/science/friction"
 },
-ACID: "Substance that produces H+ ions in solution",
+ACID: {
+    DEFINITION: "Substance that produces H+ ions in solution",
+    SOURCE: "https://www.britannica.com/science/acid"
+},
 AMPLITUDE: "Maximum displacement from equilibrium position",
 ANTIMATTER: "Matter with opposite properties of normal matter",
 ASTEROID: "Rocky object orbiting the Sun",
 ATMOSPHERE: "Gaseous layer surrounding Earth",
+ATOM: "The basic unit of matter, made up of protons, neutrons, and electrons",
 ATOM: "The basic unit of matter, made up of protons, neutrons, and electrons",
 BASE: "Substance that produces OH- ions in solution",
 BIOSPHERE: "All life on Earth",
@@ -51,68 +55,68 @@ COMPOUND: "Substance made of different elements chemically combined",
 CONDUCTION: "Heat transfer through direct contact",
 CONVECTION: {
     DEFINITION: "The transfer of heat through a fluid (liquid or gas) by the movement of warmer and cooler fluid regions",
-    SOURCE: "HTTPS://www.britannica.com/science/convection"
+    SOURCE: "https://www.britannica.com/science/convection"
 },
 DENSITY: {
     DEFINITION: "The mass of a substance per unit volume. FORMULA: ρ = m/V",
-    SOURCE: "HTTPS://www.britannica.com/science/density"
+    SOURCE: "https://www.britannica.com/science/density"
 },
 DIFFRACTION: {
     DEFINITION: "The bending of waves around obstacles or through openings, characteristic of all wave phenomena",
-    SOURCE: "HTTPS://www.britannica.com/science/diffraction"
+    SOURCE: "https://www.britannica.com/science/diffraction"
 },
 DNA: {
     DEFINITION: "A self-replicating material present in nearly all living organisms as the main constituent of chromosomes, carrying genetic information",
-    SOURCE: "HTTPS://www.genome.gov/genetics-glossary/Deoxyribonucleic-Acid"
+    SOURCE: "https://www.genome.gov/genetics-glossary/Deoxyribonucleic-Acid"
 },
 DOPPLER: {
     DEFINITION: "The change in frequency or wavelength of a wave for an observer moving relative to its source",
-    SOURCE: "HTTPS://www.britannica.com/science/Doppler-effect"
+    SOURCE: "https://www.britannica.com/science/Doppler-effect"
 },
 ELECTRON: {
     DEFINITION: "A stable subatomic particle with a negative electric charge, found in all atoms around the nucleus",
-    SOURCE: "HTTPS://www.britannica.com/science/electron"
+    SOURCE: "https://www.britannica.com/science/electron"
 },
 ELASTICITY: {
     DEFINITION: "The ability of a material to return to its original shape and size after being stretched or compressed",
-    SOURCE: "HTTPS://www.britannica.com/science/elasticity-physics"
+    SOURCE: "https://www.britannica.com/science/elasticity-physics"
 },
 ELEMENT: {
     DEFINITION: "A pure substance consisting of atoms with the same number of protons in their atomic nuclei",
-    SOURCE: "HTTPS://www.britannica.com/science/chemical-element"
+    SOURCE: "https://www.britannica.com/science/chemical-element"
 },
 ENERGY: {
     DEFINITION: "The capacity to do work or cause physical change, existing in various forms that can be converted but not created or destroyed",
-    SOURCE: "HTTPS://www.britannica.com/science/energy"
+    SOURCE: "https://www.britannica.com/science/energy"
 },
 ENTANGLEMENT: {
     DEFINITION: "A quantum phenomenon where particles become correlated in such a way that the quantum state of each particle cannot be described independently",
-    SOURCE: "HTTPS://www.nature.com/subjects/quantum-entanglement"
+    SOURCE: "https://www.nature.com/subjects/quantum-entanglement"
 },
 ENTROPY: {
     DEFINITION: "A measure of the disorder or randomness in a closed system. FORMULA: ΔS = Q/T",
-    SOURCE: "HTTPS://www.britannica.com/science/entropy-physics"
+    SOURCE: "https://www.britannica.com/science/entropy-physics"
 },
 ENZMYE: "Protein that catalyzes biological reactions",
 EROSION: {
     DEFINITION: "The gradual destruction and removal of rock or soil by natural processes such as wind, water, or ice",
-    SOURCE: "HTTPS://www.nationalgeographic.org/encyclopedia/erosion"
+    SOURCE: "https://www.nationalgeographic.org/encyclopedia/erosion"
 },
 FREQUENCY: {
     DEFINITION: "The number of occurrences of a repeating event per unit time. FORMULA: f = 1/T",
-    SOURCE: "HTTPS://www.britannica.com/science/frequency-physics"
+    SOURCE: "https://www.britannica.com/science/frequency-physics"
 },
 GALAXY: {
     DEFINITION: "A massive system of stars, gas, dust, and dark matter held together by gravity",
-    SOURCE: "HTTPS://www.nasa.gov/universe/galaxies"
+    SOURCE: "https://www.nasa.gov/universe/galaxies"
 },
 GENE: {
     DEFINITION: "A sequence of DNA that codes for a specific protein or functional RNA molecule",
-    SOURCE: "HTTPS://www.genome.gov/genetics-glossary/Gene"
+    SOURCE: "https://www.genome.gov/genetics-glossary/Gene"
 },
 HEAT: {
     DEFINITION: "The transfer of thermal energy between objects due to temperature differences",
-    SOURCE: "HTTPS://www.britannica.com/science/heat"
+    SOURCE: "https://www.britannica.com/science/heat"
 },
 HEATCAPACITY: "Heat needed to raise temperature by one degree",
 HYDROSPHERE: "All water on Earth",

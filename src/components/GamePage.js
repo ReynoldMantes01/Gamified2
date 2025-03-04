@@ -806,9 +806,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                             alt="Player Avatar"
                             className="w-8 h-8 rounded-full object-cover mr-2"
                         />
-                        <div className="hearts flex">
+                        <div className="hearts flex items-center">
                             {[...Array(playerHearts)].map((_, i) => (
-                                <img key={i} src={heartImage} alt="Heart" className="w-4 h-4 ml-1" />
+                                <img key={i} src={heartImage} alt="Heart" className="w-6 h-6 ml-1" />
                             ))}
                         </div>
                     </div>
@@ -821,9 +821,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                         alt="Enemy Avatar"
                         className="w-8 h-8 rounded-full object-cover mr-2"
                     />
-                    <div className="hearts flex">
+                    <div className="hearts flex items-center">
                         {[...Array(enemyHearts)].map((_, i) => (
-                            <img key={i} src={heartImage} alt="Heart" className="w-4 h-4 ml-1" />
+                            <img key={i} src={heartImage} alt="Heart" className="w-6 h-6 ml-1" />
                         ))}
                     </div>
                 </div>
@@ -832,9 +832,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             {/* Main Game Content */}
             <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-7xl gap-4 mb-4">
                 {/* Player Character */}
-                <div className="character-container relative w-full md:w-1/3">
+                <div className="character-container relative w-full md:w-1/3 flex justify-center items-center">
                     <div
-                        className={`character w-40 h-40 md:w-72 md:h-72 lg:w-96 lg:h-96 bg-contain bg-no-repeat transition-transform duration-300 mx-auto ${
+                        className={`character w-40 h-40 md:w-72 md:h-72 lg:w-96 lg:h-96 bg-contain bg-center bg-no-repeat transition-transform duration-300 ${
                             laserActive ? "transform scale-110" : ""
                         }`}
                         style={{ backgroundImage: `url(${character})` }}
@@ -878,9 +878,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 </div>
 
                 {/* Enemy Character */}
-                <div className="enemy-container relative w-full md:w-1/3">
+                <div className="enemy-container relative w-full md:w-1/3 flex justify-center items-center">
                     <div
-                        className={`enemy w-40 h-40 md:w-72 md:h-72 lg:w-96 lg:h-96 bg-contain bg-no-repeat mx-auto`}
+                        className={`enemy w-40 h-40 md:w-72 md:h-72 lg:w-96 lg:h-96 bg-contain bg-center bg-no-repeat`}
                         style={{ 
                             backgroundImage: currentEnemy?.image ? 
                                 `url(${require(`../assets/${currentEnemy.image}`)})` : 
@@ -908,7 +908,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             <div className="game-content w-[95%] max-w-[1400px] grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border-4 border-black rounded-lg bg-opacity-90 mb-4"
                 style={{ 
                     backgroundImage: `url(${functionBackground})`,
-                    height: '35vh'
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    height: '35vh',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)'
                 }}>
                 
                 {/* Description Box */}
