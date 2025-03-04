@@ -7,12 +7,13 @@ const transformedTerms = Object.entries(scienceTerms)
   .map(([word, info]) => ({
     word: word,
     censoredWord: "*".repeat(word.length),
-    definition: typeof info === 'object' ? info.definition : info, // Handle both new and old format
-    source: typeof info === 'object' ? info.source : null
+    // Handle uppercase properties
+    definition: typeof info === 'object' ? (info.DEFINITION || 'No definition available') : info,
+    source: typeof info === 'object' ? info.SOURCE : null
   }))
   .sort((a, b) => a.word.localeCompare(b.word)); // Sort alphabetically
 
-const ITEMS_PER_PAGE = 5; // Increased items per page
+const ITEMS_PER_PAGE = 5; // Show 5 items per page
 
 const Almanac = ({ onMainMenu }) => {
   const [currentPage, setCurrentPage] = useState(0);
