@@ -80,28 +80,29 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
   };
 
   return (
-    <div className="text-center p-5 min-h-screen flex flex-col items-center justify-center">
+        <div className="text-center backdrop-blur p-5 min-h-screen flex flex-col items-center justify-center">
       <h1 className="text-4xl font-bold mb-6 text-white drop-shadow-[4px_4px_0px_black]">Select Your Level</h1>
-      
-      {/* Map Selection */}
-      <div className="flex justify-center items-center mb-8">
-        {mapData.maps.map((map, index) => {
+  
+      {/* Map Selection (Three Box Layout) */}
+      <div className="flex justify-center items-center space-x-12 mb-12">
+        {mapData.maps.slice(0, 3).map((map, index) => {
           const locked = isMapLocked(index);
           return (
             <button
               key={map.id}
               onClick={() => !locked && handleMapSelect(index)}
-              className={`mx-2 px-4 py-2 rounded ${
-                index === currentMapIndex
-                  ? 'bg-blue-600 text-white'
+              className={`w-64 h-72 flex flex-col justify-center items-center rounded-2xl shadow-xl text-2xl font-bold transition-all duration-300 transform
+                ${
+                  index === currentMapIndex
+                  ? "bg-transparent text-white scale-105   shadow-2xl"
                   : locked
-                    ? 'bg-gray-700 cursor-not-allowed opacity-50'
-                    : 'bg-gray-500 text-white hover:bg-gray-600'
-              }`}
+                  ? "bg-gray-700 text-white cursor-not-allowed opacity-50"
+                  : "bg-grey-400 text-white hover:bg-transparent hover:scale-105 hover:shadow-2xl"
+                }`}
               disabled={locked}
             >
               {map.name}
-              {locked && <span className="ml-2">🔒</span>}
+              {locked && <span className="mt-2">🔒</span>}
             </button>
           );
         })}

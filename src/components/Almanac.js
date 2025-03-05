@@ -13,7 +13,7 @@ const transformedTerms = Object.entries(scienceTerms)
   }))
   .sort((a, b) => a.word.localeCompare(b.word)); // Sort alphabetically
 
-const ITEMS_PER_PAGE = 5; // Show 5 items per page
+const ITEMS_PER_PAGE = 3; // Show 5 items per page
 
 const Almanac = ({ onMainMenu }) => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -62,7 +62,7 @@ const Almanac = ({ onMainMenu }) => {
         </button>
 
         {/* Search Bar */}
-        <div className="mb-6">
+  {/*       <div className="mb-6">
           <input
             type="text"
             placeholder="Search terms..."
@@ -70,7 +70,7 @@ const Almanac = ({ onMainMenu }) => {
             onChange={handleSearch}
             className="w-full max-w-md px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </div>
+        </div> */}
 
         <div className="w-full">
           <ul className="space-y-4">
