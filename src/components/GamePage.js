@@ -37,7 +37,10 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [hintsRemaining, setHintsRemaining] = useState(2);
     const [highlightedIndices, setHighlightedIndices] = useState([]);
     const [currentAvatar, setCurrentAvatar] = useState(profileData?.selectedAvatar);
+    const ADMIN_EMAIL = "admin@example.com";
+    const ADMIN_PASSWORD = "adminPassword";
 
+<<<<<<< HEAD
     // Enemy progression order
     const enemyProgressionOrder = [
         "microbe",
@@ -47,6 +50,23 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         "parasite",
         "infection"
     ];
+=======
+    // Initialize enemy progression from maps.json
+    const [enemyProgression, setEnemyProgression] = useState([]);
+    
+    // Load enemy progression from maps.json
+    useEffect(() => {
+        // Extract all enemies from all maps in order
+        const progression = [];
+        mapData.maps.forEach(map => {
+            map.enemies.forEach(enemy => {
+                progression.push(enemy);
+            });
+        });
+        setEnemyProgression(progression);
+        console.log("Enemy progression loaded:", progression.map(e => e.id));
+    }, []);
+>>>>>>> 363924f94c56e075fdff2fe767b3320f0c8b1694
 
     // World unlocking conditions (3 enemies per world)
     const enemiesPerWorld = 3;
@@ -180,6 +200,30 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         
         return () => clearInterval(interval);
     }, []);
+
+    const handleGameOver = (isVictory) => {
+        console.log("Game over with victory:", isVictory);
+        if (isVictory) {
+            console.log("Victory! Updating user progress for enemy:", currentEnemy?.id);
+            if (auth.currentUser) {
+                // Update user progress when enemy is defeated
+                updateUserProgress(currentEnemy);
+            } else {
+                console.log("No user logged in, skipping progress update");
+            }
+            
+            setVictoryVisible(true);
+        } else {
+            setDefeatVisible(true);
+        }
+    };
+
+    useEffect(() => {
+        if (enemyHearts <= 0 && currentEnemy) {
+            console.log("Enemy hearts reached zero, triggering defeat:", currentEnemy.id);
+            handleGameOver(true);
+        }
+    }, [enemyHearts, currentEnemy]);
 
     const addRandomEffect = () => {
         console.log('Checking for effect addition, word length:', selectedLetters.length);
@@ -405,9 +449,24 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     );
                 }
             }
+<<<<<<< HEAD
 
             if (updatedHearts === 0) {
                 handleVictory();
+=======
+            
+            setDefinition({
+                text: feedbackText,
+                source: scienceTerm[word].source
+            });
+            
+            // Check if enemy is defeated
+            if (updatedHearts <= 0) {
+                console.log("Enemy defeated! Hearts:", updatedHearts);
+                // The useEffect will handle the enemy defeat
+            } else {
+                console.log("Enemy damaged but not defeated. Hearts remaining:", updatedHearts);
+>>>>>>> 363924f94c56e075fdff2fe767b3320f0c8b1694
             }
         } else {
             setDefinition(prev => 
@@ -436,46 +495,38 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         setEmptyIndices([]);
         setGridLetters(filledGrid);
     };
+    
 
     const handleNextLevel = () => {
-        // Keep existing letters and effects, just fill in empty spots
-        const newGridLetters = generateRandomLetters(gridLetters, letterEffects);
-        
-        // Reset game state but keep letter effects
-        setPlayerHearts(prev => Math.min(prev + 1, 5)); // Increase hearts by 1, max of 5
-        setSelectedLetters([]);
-        setEmptyIndices([]);
-        setGridLetters(newGridLetters);
+        console.log("handleNextLevel called");
         setVictoryVisible(false);
-
-        // Reset enemy status effects for new enemy
-        setEnemyStatusEffects({
-            poison: 0,
-            bleed: 0,
-            exhaust: 0,
-            burn: 0,
-            blind: 0
-        });
-
-        // Get next enemy from the level's map data
-        if (level?.selectedMap?.enemies) {
-            const currentEnemyIndex = level.selectedMap.enemies.findIndex(
-                enemy => enemy.name === currentEnemy.name
-            );
+        
+        // Find the current enemy index in the progression
+        const currentEnemyIndex = enemyProgression.findIndex(e => e.id === currentEnemy?.id);
+        console.log("Current enemy index:", currentEnemyIndex);
+        
+        if (currentEnemyIndex !== -1 && currentEnemyIndex < enemyProgression.length - 1) {
+            // Move to the next enemy
+            const nextEnemy = enemyProgression[currentEnemyIndex + 1];
+            console.log("Moving to next enemy:", nextEnemy.id);
             
-            if (currentEnemyIndex !== -1 && currentEnemyIndex < level.selectedMap.enemies.length - 1) {
-                // There is a next enemy in this map
-                const nextEnemy = level.selectedMap.enemies[currentEnemyIndex + 1];
-                setCurrentEnemy(nextEnemy);
-                setEnemyHearts(nextEnemy.health || 3);
-                setDialogMessage(nextEnemy.dialog || `${nextEnemy.name} appears!`);
-                setDialogVisible(true);
-            } else {
-                // No more enemies in this map, go back to main menu
+            // Check if we need to change maps
+            const currentMapId = currentEnemy.mapId;
+            const nextMapId = nextEnemy.mapId;
+            
+            if (currentMapId !== nextMapId) {
+                console.log("Map transition needed from", currentMapId, "to", nextMapId);
+                // Return to map selection screen for map transition
                 onMainMenu();
+            } else {
+                // Stay on same map, just change enemy
+                console.log("Staying on same map, changing enemy");
+                setCurrentEnemy(nextEnemy);
+                resetGame();
             }
         } else {
-            // No enemies data, go back to main menu
+            console.log("No more enemies, returning to main menu");
+            // No more enemies, return to main menu
             onMainMenu();
         }
     };
@@ -612,75 +663,95 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     };
 
     const updateUserProgress = async (defeatedEnemy) => {
-        const user = auth.currentUser;
-        if (!user) return;
-
+        if (!auth.currentUser) return;
+        
+        const defeatedEnemyId = defeatedEnemy.id;
         const db = getDatabase();
-        const userRef = ref(db, `users/${user.uid}`);
-
+        const userRef = ref(db, `users/${auth.currentUser.uid}`);
+        
         try {
             // Get current user data
             const snapshot = await get(userRef);
-            if (!snapshot.exists()) return;
-
-            const userData = snapshot.val();
-            const defeatedEnemyName = defeatedEnemy.name.toLowerCase().replace(' ', '_');
-
-            // Add defeated enemy to list if not already there
-            const defeatedEnemies = userData.defeatedEnemies || [];
-            if (!defeatedEnemies.includes(defeatedEnemyName)) {
-                defeatedEnemies.push(defeatedEnemyName);
-            }
-
-            // Find next enemy to unlock
-            const currentEnemyIndex = enemyProgressionOrder.indexOf(defeatedEnemyName);
-            const nextEnemyName = enemyProgressionOrder[currentEnemyIndex + 1];
-
-            // Update unlocked enemies
-            const unlockedEnemies = userData.unlockedEnemies || [];
-            if (nextEnemyName && !unlockedEnemies.includes(nextEnemyName)) {
-                unlockedEnemies.push(nextEnemyName);
-            }
-
-            // Check if we need to unlock next world
-            const currentWorld = parseInt(userData.currentWorld) || 1;
-            const defeatedCount = defeatedEnemies.length;
-            const newWorldNumber = Math.floor(defeatedCount / enemiesPerWorld) + 1;
-            const unlockedWorlds = userData.unlockedWorlds || ["map1"];
-            
-            if (newWorldNumber > currentWorld) {
-                const newWorldId = `map${newWorldNumber}`;
-                if (!unlockedWorlds.includes(newWorldId)) {
-                    unlockedWorlds.push(newWorldId);
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+                
+                // Initialize if not exists
+                if (!userData.unlockedEnemies) {
+                    userData.unlockedEnemies = ["bio_t1"]; // Start with first enemy unlocked
                 }
+                if (!userData.unlockedWorlds) {
+                    userData.unlockedWorlds = ["map1"];
+                }
+                
+                // Add defeated enemy to unlocked list if not already there
+                if (!userData.unlockedEnemies.includes(defeatedEnemyId)) {
+                    userData.unlockedEnemies.push(defeatedEnemyId);
+                }
+
+                // Find next enemy to unlock
+                const currentEnemyIndex = enemyProgression.findIndex(e => e.id === defeatedEnemyId);
+                console.log("Current enemy index:", currentEnemyIndex, "Enemy ID:", defeatedEnemyId);
+                
+                if (currentEnemyIndex !== -1 && currentEnemyIndex < enemyProgression.length - 1) {
+                    const nextEnemy = enemyProgression[currentEnemyIndex + 1];
+                    console.log("Next enemy to unlock:", nextEnemy.id);
+                    
+                    // Add next enemy to unlocked list if not already there
+                    if (!userData.unlockedEnemies.includes(nextEnemy.id)) {
+                        userData.unlockedEnemies.push(nextEnemy.id);
+                    }
+                    
+                    // Check if we need to unlock next world
+                    // We unlock a new world after defeating the boss (every 3rd enemy)
+                    if ((currentEnemyIndex + 1) % enemiesPerWorld === 0) {
+                        const nextWorldIndex = Math.floor((currentEnemyIndex + 1) / enemiesPerWorld) + 1;
+                        const nextWorldId = `map${nextWorldIndex}`;
+                        
+                        if (!userData.unlockedWorlds.includes(nextWorldId)) {
+                            userData.unlockedWorlds.push(nextWorldId);
+                        }
+                    }
+                }
+                
+                // Update user data
+                await set(userRef, userData);
+                console.log("User progress updated:", userData);
             }
-
-            // Update user data in Firebase
-            await set(userRef, {
-                ...userData,
-                defeatedEnemies,
-                unlockedEnemies,
-                unlockedWorlds,
-                currentWorld: Math.max(currentWorld, newWorldNumber),
-                lastUpdated: new Date().toISOString()
-            });
-
         } catch (error) {
             console.error("Error updating user progress:", error);
         }
     };
 
-    const handleVictory = async () => {
-        setVictoryVisible(true);
+    const handleVictory = () => {
+        console.log("Victory! Updating user progress for enemy:", currentEnemy?.id);
+        if (!auth.currentUser) {
+            console.log("No user logged in, skipping progress update");
+            return;
+        }
+        
         // Update user progress when enemy is defeated
-        await updateUserProgress(currentEnemy);
+        updateUserProgress(currentEnemy);
+        
+        setVictoryVisible(true);
     };
 
-    const handleGameOver = async (isVictory) => {
-        if (isVictory) {
-            await handleVictory();
-        }
-        // ... rest of your existing handleGameOver logic
+    const handleEnemyDefeat = () => {
+        console.log("Enemy defeated:", currentEnemy?.id);
+        
+        // First, call handleGameOver to show victory screen
+        handleGameOver(true);
+        
+        // The rest of the progression logic will happen when the player clicks "Next Level"
+        // in the victory dialog, which calls handleNextLevel
+    };
+
+    // State variables for current map and enemy index
+    const [currentMapId, setCurrentMapId] = useState('map1'); // Default to first map
+    const [currentEnemyIndex, setCurrentEnemyIndex] = useState(0); // Default to first enemy
+
+    // Function to get current map data based on currentMapId
+    const getCurrentMapData = () => {
+        return mapData.maps.find(map => map.id === currentMapId);
     };
 
     const updateLevelProgress = async (completedLevel) => {
@@ -717,7 +788,59 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         return !userProgress.unlockedLevels.includes(levelNumber);
     };
 
+<<<<<<< HEAD
     //Word Box
+=======
+    const isEnemyLocked = (enemyId) => {
+        if (!userProgress?.unlockedEnemies || !enemyProgression.length) return true;
+        
+        // Get the index of the enemy in the progression
+        const enemyIndex = enemyProgression.findIndex(e => e.id === enemyId);
+        if (enemyIndex === -1) return true;
+        
+        // Check if any of the unlocked enemies are further in the progression
+        return !userProgress.unlockedEnemies.some(unlockedId => {
+            const unlockedIndex = enemyProgression.findIndex(e => e.id === unlockedId);
+            return unlockedIndex >= enemyIndex;
+        });
+    };
+
+    const resetGame = () => {
+        console.log("Resetting game state for new enemy");
+        
+        // Keep existing letters and effects, just fill in empty spots
+        const newGridLetters = generateRandomLetters(gridLetters, letterEffects);
+        
+        // Reset game state but keep letter effects
+        setPlayerHearts(prev => Math.min(prev + 1, 5)); // Increase hearts by 1, max of 5
+        setSelectedLetters([]);
+        setEmptyIndices([]);
+        setGridLetters(newGridLetters);
+        
+        // Reset enemy status effects for new enemy
+        setEnemyStatusEffects({
+            poison: 0,
+            bleed: 0,
+            exhaust: 0,
+            burn: 0,
+            blind: 0
+        });
+        
+        // Set enemy hearts based on current enemy
+        if (currentEnemy) {
+            setEnemyHearts(currentEnemy.health || 3);
+            
+            // Set dialog for the new enemy
+            const enemyDialog = currentEnemy.dialog || `${currentEnemy.name} appears!`;
+            setDialogSequence([enemyDialog]);
+            setCurrentDialogIndex(0);
+            setDialogMessage(enemyDialog);
+            setDialogVisible(true);
+        }
+    };
+
+    // Word Box
+>>>>>>> 363924f94c56e075fdff2fe767b3320f0c8b1694
     function generateRandomLetters(existingLetters = [], existingEffects = []) {
         // Get a random science term
         const scienceTerms = Object.keys(scienceTerm);
