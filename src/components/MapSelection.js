@@ -7,16 +7,20 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
   const [currentMapIndex, setCurrentMapIndex] = useState(0);
   const [selectedMap, setSelectedMap] = useState(mapData.maps[0]);
   const [userProgress, setUserProgress] = useState(null);
+  const [enemyProgressionOrder, setEnemyProgressionOrder] = useState([]);
 
-  // Enemy progression order
-  const enemyProgressionOrder = [
-    "microbe",
-    "toxic_crawler",
-    "virus",
-    "bacteria",
-    "parasite",
-    "infection"
-  ];
+  // Load enemy progression from maps.json
+  useEffect(() => {
+    // Extract all enemies from all maps in order
+    const progression = [];
+    mapData.maps.forEach(map => {
+      map.enemies.forEach(enemy => {
+        progression.push(enemy.id);
+      });
+    });
+    setEnemyProgressionOrder(progression);
+    console.log("Enemy progression loaded:", progression);
+  }, []);
 
   // Add real-time listener for user progress
   useEffect(() => {
@@ -41,16 +45,21 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
     return !userProgress.unlockedWorlds.includes(mapId);
   };
 
-  const isEnemyLocked = (enemyName, mapId) => {
-    // Always allow microbe in the first map
-    if (mapId === "map1" && enemyName.toLowerCase() === "microbe") {
+  const isEnemyLocked = (enemy, mapId) => {
+    // Always allow the first enemy in the first map
+    if (mapId === "map1" && enemy.id === "bio_t1") {
       return false;
     }
     
     if (!userProgress?.unlockedEnemies) {
-      return true;
+      // If no progress, only the first enemy is unlocked
+      return !(mapId === "map1" && enemy.id === "bio_t1");
     }
-    return !userProgress.unlockedEnemies.includes(enemyName.toLowerCase().replace(' ', '_'));
+
+    // Check if this enemy is in the unlocked enemies list
+    const isUnlocked = userProgress.unlockedEnemies.includes(enemy.id);
+    console.log(`Checking if enemy ${enemy.id} is unlocked:`, isUnlocked);
+    return !isUnlocked;
   };
 
   const handleMapSelect = (mapIndex) => {
@@ -61,20 +70,12 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
   };
 
   const handleEnemySelect = (enemy) => {
-    // Always allow microbe in the first map
-    if (selectedMap.id === "map1" && enemy.name.toLowerCase() === "microbe") {
-      onLevelSelect({
-        enemy,
-        selectedMap
-      });
-      return;
-    }
-
     // Check if enemy is locked before allowing selection
-    if (!isEnemyLocked(enemy.name, selectedMap.id)) {
+    if (!isEnemyLocked(enemy, selectedMap.id)) {
       onLevelSelect({
         enemy,
-        selectedMap
+        selectedMap,
+        levelNumber: enemyProgressionOrder.indexOf(enemy.id) + 1
       });
     }
   };
@@ -117,7 +118,7 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
           <p className="text-red-900">Theme: {selectedMap.theme}</p>
           <div className="mt-4 grid grid-cols-1 gap-4">
             {selectedMap.enemies.map((enemy) => {
-              const isLocked = isEnemyLocked(enemy.name, selectedMap.id);
+              const isLocked = isEnemyLocked(enemy, selectedMap.id);
               return (
                 <button
                   key={enemy.id}
