@@ -37,8 +37,6 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [hintsRemaining, setHintsRemaining] = useState(2);
     const [highlightedIndices, setHighlightedIndices] = useState([]);
     const [currentAvatar, setCurrentAvatar] = useState(profileData?.selectedAvatar);
-    const ADMIN_EMAIL = "admin@example.com";
-    const ADMIN_PASSWORD = "adminPassword";
 
     // Initialize enemy progression from maps.json
     const [enemyProgression, setEnemyProgression] = useState([]);
