@@ -38,6 +38,17 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [highlightedIndices, setHighlightedIndices] = useState([]);
     const [currentAvatar, setCurrentAvatar] = useState(profileData?.selectedAvatar);
 
+<<<<<<< HEAD
+    // Enemy progression order
+    const enemyProgressionOrder = [
+        "microbe",
+        "toxic_crawler",
+        "virus",
+        "bacteria",
+        "parasite",
+        "infection"
+    ];
+=======
     // Initialize enemy progression from maps.json
     const [enemyProgression, setEnemyProgression] = useState([]);
     
@@ -53,6 +64,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         setEnemyProgression(progression);
         console.log("Enemy progression loaded:", progression.map(e => e.id));
     }, []);
+>>>>>>> 363924f94c56e075fdff2fe767b3320f0c8b1694
 
     // World unlocking conditions (3 enemies per world)
     const enemiesPerWorld = 3;
@@ -359,67 +371,87 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     // Handle player's attack logic
     const handleAttack = () => {
-        const word = selectedLetters.join('').toUpperCase();
-        
-        // Check if the word is a valid science term
-        if (scienceTerm[word]) {
-            // Word length determines damage (longer words = more damage)
-            const damage = Math.min(word.length, 3);
+        const word = selectedLetters.join('');
+        let damage = Math.min(3, Math.ceil(word.length / 1000000000000000));
+
+        if (scienceTerm[word.toUpperCase()]) {
+            const term = scienceTerm[word.toUpperCase()];
+            setDefinition({
+                text: `${term.category}: ${term.definition} 
+                [Source: ${term.source}] [Learn More](${term.link})`,
+                source: term.source
+            });
             
-            // Apply status effects if any
-            let totalDamage = damage;
-            let statusEffectApplied = false;
+            // Apply bleed multiplier
+            if (enemyStatusEffects.bleed > 0) {
+                damage *= (1 + (0.2 * enemyStatusEffects.bleed));
+            }
             
-            // Check for status effects in the selected letters
-            selectedLetters.forEach((_, index) => {
-                const effectIndex = emptyIndices[index];
-                const effect = letterEffects[effectIndex];
-                
+            const updatedHearts = Math.max(0, enemyHearts - damage);
+            setEnemyHearts(updatedHearts);
+
+            // Check for letter effects in the word
+            const usedEffects = selectedLetters.map((_, i) => letterEffects[emptyIndices[i]]);
+            
+            // Apply effects from used letters
+            usedEffects.forEach((effect, i) => {
                 if (effect) {
-                    statusEffectApplied = true;
-                    
-                    // Apply the effect
-                    setEnemyStatusEffects(prev => {
-                        const newEffects = { ...prev };
-                        
-                        switch (effect) {
-                            case 'poison':
-                                newEffects.poison += 3; // 3 turns of poison
-                                break;
-                            case 'bleed':
-                                newEffects.bleed += 1; // +20% damage per stack
-                                totalDamage *= (1 + 0.2 * newEffects.bleed);
-                                break;
-                            case 'exhaust':
-                                newEffects.exhaust += 2; // 2 turns of exhaust
-                                break;
-                            case 'burn':
-                                newEffects.burn += 5; // 5 seconds of burn
-                                break;
-                            case 'blind':
-                                newEffects.blind += 2; // 2 turns of blind
-                                break;
-                        }
-                        
-                        return newEffects;
-                    });
-                    
-                    // Clear the used effect
+                    switch(effect) {
+                        case 'poison':
+                            setEnemyStatusEffects(prev => ({ ...prev, poison: prev.poison + 3 }));
+                            break;
+                        case 'bleed':
+                            damage *= 1.5;
+                            setEnemyStatusEffects(prev => ({ ...prev, bleed: prev.bleed + 1 }));
+                            break;
+                        case 'exhaust':
+                            setEnemyStatusEffects(prev => ({ ...prev, exhaust: prev.exhaust + 2 }));
+                            break;
+                        case 'burn':
+                            setEnemyStatusEffects(prev => ({ ...prev, burn: prev.burn + 5 }));
+                            break;
+                        case 'blind':
+                            setEnemyStatusEffects(prev => ({ ...prev, blind: prev.blind + 2 }));
+                            break;
+                    }
+                    // Clear the effect after using it
                     const newEffects = [...letterEffects];
-                    newEffects[effectIndex] = null;
+                    newEffects[emptyIndices[i]] = null;
                     setLetterEffects(newEffects);
                 }
             });
-            
-            // Apply damage to enemy
-            const updatedHearts = Math.max(0, enemyHearts - Math.ceil(totalDamage));
-            setEnemyHearts(updatedHearts);
-            
-            // Show attack feedback with status effects
-            let feedbackText = `You dealt ${Math.ceil(totalDamage)} damage with "${word}"!`;
-            if (statusEffectApplied) {
-                feedbackText += " Status effect applied!";
+
+            // Add effect to a remaining letter if word is 4 or more letters
+            if (word.length >= 4) {
+                const effects = ['poison', 'bleed', 'exhaust', 'burn', 'blind'];
+                const randomEffect = effects[Math.floor(Math.random() * effects.length)];
+                
+                // Get unused letters that don't have effects
+                const unusedIndices = gridLetters
+                    .map((letter, i) => ({ letter, index: i }))
+                    .filter(({letter, index}) => 
+                        letter !== '' && 
+                        !emptyIndices.includes(index) && 
+                        !letterEffects[index]
+                    );
+                
+                if (unusedIndices.length > 0) {
+                    const randomSpot = unusedIndices[Math.floor(Math.random() * unusedIndices.length)];
+                    const newEffects = [...letterEffects];
+                    newEffects[randomSpot.index] = randomEffect;
+                    setLetterEffects(newEffects);
+                    
+                    // Show feedback about the new effect
+                    setDefinition(prev => 
+                        `${prev.text}\n\nNew ${randomEffect.toUpperCase()} effect added to a letter! Find it in the grid.`
+                    );
+                }
             }
+<<<<<<< HEAD
+
+            if (updatedHearts === 0) {
+                handleVictory();
+=======
             
             setDefinition({
                 text: feedbackText,
@@ -432,27 +464,34 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 // The useEffect will handle the enemy defeat
             } else {
                 console.log("Enemy damaged but not defeated. Hearts remaining:", updatedHearts);
+>>>>>>> 363924f94c56e075fdff2fe767b3320f0c8b1694
             }
         } else {
-            // Invalid word
-            setDefinition({
-                text: `"${word}" is not a valid science term. Try again!`,
-                source: ''
-            });
+            setDefinition(prev => 
+                `${prev.text}\n\nInvalid word. Please try again.`
+            );
+            const updatedPlayerHearts = Math.max(0, playerHearts - damage);
+            setPlayerHearts(updatedPlayerHearts);
+            handleEnemyAttack();
+            if (updatedPlayerHearts === 0) {
+                setDefeatVisible(true);
+            }
         }
-        
-        // Clear selected letters and update grid
-        setSelectedLetters([]);
-        
-        // Refill the grid with new letters
+
+        // Clear used letters but keep their effects in letterEffects array
         const newGridLetters = [...gridLetters];
         emptyIndices.forEach(index => {
             newGridLetters[index] = '';
         });
-        
+
+        // Generate new letters only for empty spots, keeping effects
         const filledGrid = generateRandomLetters(newGridLetters, letterEffects);
-        setGridLetters(filledGrid);
+        
+        setLaserActive(true);
+        setTimeout(() => setLaserActive(false), 500);
+        setSelectedLetters([]);
         setEmptyIndices([]);
+        setGridLetters(filledGrid);
     };
     
 
@@ -589,69 +628,37 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     useEffect(() => {
         const fetchUserProgress = async () => {
-            if (!auth.currentUser) return;
-            
-            const db = getDatabase();
-            const userRef = ref(db, `users/${auth.currentUser.uid}`);
-            
-            try {
-                const snapshot = await get(userRef);
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    setUserProgress(data);
-                    
-                    // Initialize game state based on user progress
-                    if (data.currentMap) {
-                        setCurrentMapId(data.currentMap);
-                    }
-                    
-                    if (data.currentEnemyIndex !== undefined) {
-                        setCurrentEnemyIndex(data.currentEnemyIndex);
-                    }
-                } else {
-                    // Create initial user progress if it doesn't exist
-                    // Get the first enemy ID from maps.json
-                    const firstEnemyId = mapData.maps[0]?.enemies[0]?.id || "bio_t1";
-                    
-                    const initialData = {
-                        unlockedMaps: ["map1"],
-                        defeatedEnemies: [],
-                        unlockedEnemies: [firstEnemyId],
-                        currentMap: "map1",
-                        currentEnemyIndex: 0,
-                        experience: 0,
-                        createdAt: new Date().toISOString(),
-                        lastUpdated: new Date().toISOString()
-                    };
-                    
-                    try {
-                        await set(userRef, initialData);
-                        setUserProgress(initialData);
-                    } catch (error) {
-                        console.error("Error creating user data:", error);
-                        // Use local state if Firebase fails
-                        setUserProgress(initialData);
-                    }
-                }
-            } catch (error) {
-                console.error("Firebase permission error:", error);
-                // Set default progress if there's a permission error
-                const firstEnemyId = mapData.maps[0]?.enemies[0]?.id || "bio_t1";
+            const user = auth.currentUser;
+            if (user) {
+                const db = getDatabase();
+                const userRef = ref(db, `users/${user.uid}`);
                 
-                const defaultProgress = {
-                    unlockedMaps: ["map1"],
-                    defeatedEnemies: [],
-                    unlockedEnemies: [firstEnemyId],
-                    currentMap: "map1",
-                    currentEnemyIndex: 0,
-                    experience: 0
-                };
-                setUserProgress(defaultProgress);
+                onValue(userRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        setUserProgress(data);
+                    } else {
+                        // Initialize user data if it doesn't exist
+                        set(userRef, {
+                            email: user.email,
+                            currentLevel: 1,
+                            unlockedLevels: [1],
+                            experience: 0,
+                            createdAt: new Date().toISOString(),
+                            lastUpdated: new Date().toISOString()
+                        });
+                    }
+                });
             }
         };
         
         fetchUserProgress();
     }, []);
+
+    const isEnemyLocked = (enemyName) => {
+        if (!userProgress?.unlockedEnemies) return true;
+        return !userProgress.unlockedEnemies.includes(enemyName);
+    };
 
     const updateUserProgress = async (defeatedEnemy) => {
         if (!auth.currentUser) return;
@@ -779,6 +786,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         return !userProgress.unlockedLevels.includes(levelNumber);
     };
 
+<<<<<<< HEAD
+    //Word Box
+=======
     const isEnemyLocked = (enemyId) => {
         if (!userProgress?.unlockedEnemies || !enemyProgression.length) return true;
         
@@ -828,6 +838,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     };
 
     // Word Box
+>>>>>>> 363924f94c56e075fdff2fe767b3320f0c8b1694
     function generateRandomLetters(existingLetters = [], existingEffects = []) {
         // Get a random science term
         const scienceTerms = Object.keys(scienceTerm);
@@ -971,9 +982,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                         return (
                             <div
                                 key={index}
-                                className={`relative w-12 h-12 border-2 border-black flex items-center justify-center text-2xl font-bold rounded-lg cursor-pointer transition-all duration-300 rounded-lg
-                                    ${highlightedIndices.includes(index) ? 'bg-yellow-300 scale-110' : 'hover:bg-[#e5c8a1]'}
-                                    ${effect ? effectStyles[effect] : 'bg-[#f4d9a3]'}`}
+                                className={`relative w-12 h-12 border-2 border-black flex items-center justify-center text-2xl font-bold rounded-lg cursor-pointer hover:bg-[#e5c8a1] ${
+                                    effect ? effectStyles[effect] : 'bg-[#f4d9a3]'
+                                }`}
                                 onClick={() => handleSelectedLetterClick(letter, index)}
                             >
                                 {letter}
