@@ -26,16 +26,46 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
   useEffect(() => {
     const user = auth.currentUser;
     if (user) {
+      console.log("Setting up Firebase realtime listener for user:", user.uid);
       const db = getDatabase();
       const userRef = ref(db, `users/${user.uid}`);
       
       const unsubscribe = onValue(userRef, (snapshot) => {
         if (snapshot.exists()) {
-          setUserProgress(snapshot.val());
+          const data = snapshot.val();
+          console.log("Received real-time update from Firebase:", data);
+          setUserProgress(data);
+        } else {
+          console.log("No user data exists in Firebase");
         }
+      }, (error) => {
+        console.error("Firebase realtime listener error:", error);
       });
 
-      return () => unsubscribe();
+      return () => {
+        console.log("Unsubscribing from Firebase realtime listener");
+        unsubscribe();
+      };
+    } else {
+      console.log("No user logged in, can't set up Firebase listener");
+    }
+  }, []);
+
+  // Reload user progress when the component mounts
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (user) {
+      const db = getDatabase();
+      const userRef = ref(db, `users/${user.uid}`);
+      onValue(userRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          console.log("Reloaded user progress:", data);
+          setUserProgress(data);
+        } else {
+          console.log("No user data exists in Firebase");
+        }
+      });
     }
   }, []);
 
@@ -45,20 +75,30 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
     return !userProgress.unlockedWorlds.includes(mapId);
   };
 
-  const isEnemyLocked = (enemy, mapId) => {
-    // Always allow the first enemy in the first map
-    if (mapId === "map1" && enemy.id === "bio_t1") {
+  // Check if an enemy is locked
+  const isEnemyLocked = (enemyName) => {
+    console.log("Checking if enemy is locked:", enemyName);
+    console.log("User progress:", userProgress);
+    
+    // Always unlock the first enemy in the first map (Microbe)
+    if (currentMapIndex === 0 && enemyName.toLowerCase() === "microbe") {
+      console.log("First enemy in first map is always unlocked");
       return false;
     }
     
-    if (!userProgress?.unlockedEnemies) {
-      // If no progress, only the first enemy is unlocked
-      return !(mapId === "map1" && enemy.id === "bio_t1");
+    if (!userProgress || !userProgress.unlockedEnemies) {
+      console.log("No user progress or unlockedEnemies found, enemy is locked");
+      return true;
     }
-
-    // Check if this enemy is in the unlocked enemies list
-    const isUnlocked = userProgress.unlockedEnemies.includes(enemy.id);
-    console.log(`Checking if enemy ${enemy.id} is unlocked:`, isUnlocked);
+    
+    // Normalize enemy name for comparison
+    const normalizedEnemyName = enemyName.toLowerCase().replace(' ', '_');
+    
+    // Check if the enemy is in the unlockedEnemies array
+    const isUnlocked = userProgress.unlockedEnemies.includes(normalizedEnemyName);
+    console.log(`Enemy ${normalizedEnemyName} is ${isUnlocked ? 'unlocked' : 'locked'}`);
+    console.log("Unlocked enemies:", userProgress.unlockedEnemies);
+    
     return !isUnlocked;
   };
 
@@ -69,15 +109,22 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
     }
   };
 
+  // Handle enemy selection
   const handleEnemySelect = (enemy) => {
-    // Check if enemy is locked before allowing selection
-    if (!isEnemyLocked(enemy, selectedMap.id)) {
-      onLevelSelect({
-        enemy,
-        selectedMap,
-        levelNumber: enemyProgressionOrder.indexOf(enemy.id) + 1
-      });
+    console.log("Enemy selected:", enemy.name);
+    
+    // Check if enemy is locked
+    if (isEnemyLocked(enemy.name)) {
+      console.log("Enemy is locked, cannot select");
+      return; // Don't proceed if enemy is locked
     }
+
+    console.log("Enemy is unlocked, proceeding with selection");
+    const selectedMap = mapData.maps[currentMapIndex];
+    onLevelSelect({
+      selectedMap,
+      enemy,
+    });
   };
 
   return (
@@ -117,25 +164,37 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
         >
           <h2 className="text-2xl font-semibold text-blue-800">{selectedMap.name}</h2>
           <p className="text-red-900">Theme: {selectedMap.theme}</p>
-          <div className="mt-4 grid grid-cols-1 gap-4">
+          <div className="mt-4 grid grid-cols-1 gap-8">
             {selectedMap.enemies.map((enemy) => {
-              const isLocked = isEnemyLocked(enemy, selectedMap.id);
+              const isLocked = isEnemyLocked(enemy.name);
               return (
-                <button
-                  key={enemy.id}
-                  onClick={() => !isLocked && handleEnemySelect(enemy)}
-                  className={`px-4 py-2 ${
-                    isLocked 
-                      ? 'bg-gray-700 cursor-not-allowed opacity-50' 
-                      : 'bg-blue-500 hover:bg-blue-600'
-                  } text-white rounded shadow`}
-                  disabled={isLocked}
-                >
-                  {enemy.name}
+                <div key={enemy.id} className="relative group">
+                  <button
+                    onClick={() => {
+                      if (!isLocked) {
+                        handleEnemySelect(enemy);
+                      }
+                    }}
+                    title={isLocked ? "This level is locked! Complete previous levels to unlock." : `Play as ${enemy.name}`}
+                    className={`px-4 py-2 w-full ${
+                      isLocked 
+                        ? 'bg-gray-700 text-gray-300 cursor-not-allowed opacity-50 hover:bg-gray-600' 
+                        : 'bg-blue-500 text-white hover:bg-blue-600'
+                    } rounded shadow flex items-center justify-between`}
+                  >
+                    <span>{enemy.name}</span>
+                    {isLocked ? (
+                      <span className="ml-2">🔒</span>
+                    ) : (
+                      <span className="ml-2">✓</span>
+                    )}
+                  </button>
                   {isLocked && (
-                    <span className="ml-2">🔒</span>
+                    <div className="absolute left-1/2 -translate-x-1/2 -bottom-8 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+                      Complete previous levels to unlock
+                    </div>
                   )}
-                </button>
+                </div>
               );
             })}
           </div>

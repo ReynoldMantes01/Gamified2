@@ -14,7 +14,7 @@ import mapData from './maps.json';
 import { auth } from '../firebase/config';
 import { getDatabase, ref, onValue, set, get } from 'firebase/database';
 
-const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level }) => {
+const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level, reload }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState([]);
@@ -476,7 +476,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             if (currentMapId !== nextMapId) {
                 console.log("Map transition needed from", currentMapId, "to", nextMapId);
                 // Return to map selection screen for map transition
-                onMainMenu();
+                console.log("Forcing reload of user progress before returning to main menu");
+                reload();
+                setTimeout(() => {
+                    onMainMenu();
+                }, 500); // Small delay to ensure reload completes
             } else {
                 // Stay on same map, just change enemy
                 console.log("Staying on same map, changing enemy");
@@ -486,7 +490,10 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         } else {
             console.log("No more enemies, returning to main menu");
             // No more enemies, return to main menu
-            onMainMenu();
+            reload();
+            setTimeout(() => {
+                onMainMenu();
+            }, 500); // Small delay to ensure reload completes
         }
     };
 
@@ -654,9 +661,16 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     }, []);
 
     const updateUserProgress = async (defeatedEnemy) => {
-        if (!auth.currentUser) return;
+        if (!auth.currentUser) {
+            console.log("No user logged in, can't update progress");
+            return;
+        }
         
-        const defeatedEnemyId = defeatedEnemy.id;
+        console.log("Updating user progress for defeated enemy:", defeatedEnemy);
+        
+        // Normalize the defeated enemy name for storage
+        const defeatedEnemyName = defeatedEnemy.name.toLowerCase().replace(' ', '_');
+        
         const db = getDatabase();
         const userRef = ref(db, `users/${auth.currentUser.uid}`);
         
@@ -665,48 +679,79 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             const snapshot = await get(userRef);
             if (snapshot.exists()) {
                 const userData = snapshot.val();
+                console.log("Current user data:", userData);
                 
-                // Initialize if not exists
+                // Initialize arrays if they don't exist
                 if (!userData.unlockedEnemies) {
-                    userData.unlockedEnemies = ["bio_t1"]; // Start with first enemy unlocked
+                    userData.unlockedEnemies = ["microbe"];
                 }
                 if (!userData.unlockedWorlds) {
                     userData.unlockedWorlds = ["map1"];
                 }
-                
-                // Add defeated enemy to unlocked list if not already there
-                if (!userData.unlockedEnemies.includes(defeatedEnemyId)) {
-                    userData.unlockedEnemies.push(defeatedEnemyId);
+                if (!userData.defeatedEnemies) {
+                    userData.defeatedEnemies = [];
                 }
-
-                // Find next enemy to unlock
-                const currentEnemyIndex = enemyProgression.findIndex(e => e.id === defeatedEnemyId);
-                console.log("Current enemy index:", currentEnemyIndex, "Enemy ID:", defeatedEnemyId);
                 
-                if (currentEnemyIndex !== -1 && currentEnemyIndex < enemyProgression.length - 1) {
-                    const nextEnemy = enemyProgression[currentEnemyIndex + 1];
-                    console.log("Next enemy to unlock:", nextEnemy.id);
+                // Add defeated enemy to defeated list if not already there
+                if (!userData.defeatedEnemies.includes(defeatedEnemyName)) {
+                    userData.defeatedEnemies.push(defeatedEnemyName);
+                }
+                
+                // Create a flattened array of all enemies from all maps
+                const allEnemies = [];
+                for (const map of mapData.maps) {
+                    for (const enemy of map.enemies) {
+                        allEnemies.push({
+                            id: enemy.id,
+                            name: enemy.name.toLowerCase().replace(' ', '_'),
+                            mapId: map.id
+                        });
+                    }
+                }
+                
+                console.log("All enemies in progression:", allEnemies);
+                
+                // Find the current enemy in the progression
+                const currentEnemyIndex = allEnemies.findIndex(e => 
+                    e.name === defeatedEnemyName || e.id === defeatedEnemy.id
+                );
+                
+                console.log("Current enemy index in progression:", currentEnemyIndex);
+                
+                // If found and not the last enemy, unlock the next one
+                if (currentEnemyIndex !== -1 && currentEnemyIndex < allEnemies.length - 1) {
+                    const nextEnemy = allEnemies[currentEnemyIndex + 1];
+                    console.log("Next enemy to unlock:", nextEnemy);
                     
                     // Add next enemy to unlocked list if not already there
-                    if (!userData.unlockedEnemies.includes(nextEnemy.id)) {
-                        userData.unlockedEnemies.push(nextEnemy.id);
+                    if (!userData.unlockedEnemies.includes(nextEnemy.name)) {
+                        userData.unlockedEnemies.push(nextEnemy.name);
+                        console.log(`Added ${nextEnemy.name} to unlocked enemies`);
                     }
                     
-                    // Check if we need to unlock next world
-                    // We unlock a new world after defeating the boss (every 3rd enemy)
-                    if ((currentEnemyIndex + 1) % enemiesPerWorld === 0) {
-                        const nextWorldIndex = Math.floor((currentEnemyIndex + 1) / enemiesPerWorld) + 1;
-                        const nextWorldId = `map${nextWorldIndex}`;
-                        
-                        if (!userData.unlockedWorlds.includes(nextWorldId)) {
-                            userData.unlockedWorlds.push(nextWorldId);
+                    // Check if we need to unlock the next world
+                    if (defeatedEnemy.mapId !== nextEnemy.mapId) {
+                        if (!userData.unlockedWorlds.includes(nextEnemy.mapId)) {
+                            userData.unlockedWorlds.push(nextEnemy.mapId);
+                            console.log(`Unlocked new world: ${nextEnemy.mapId}`);
                         }
                     }
+                } else {
+                    console.log("No next enemy found or current enemy is the last one");
                 }
                 
-                // Update user data
+                // Add timestamp for debugging
+                userData.lastUpdated = new Date().toISOString();
+                
+                // Update user data in Firebase
+                console.log("Updating Firebase with new user data:", userData);
                 await set(userRef, userData);
-                console.log("User progress updated:", userData);
+                
+                // Verify the update
+                const updatedSnapshot = await get(userRef);
+                if (updatedSnapshot.exists()) {
+                    console.log("Verified updated user data:", updatedSnapshot.val());
+                }
             }
         } catch (error) {
             console.error("Error updating user progress:", error);
@@ -714,14 +759,22 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     };
 
     const handleVictory = () => {
-        console.log("Victory! Updating user progress for enemy:", currentEnemy?.id);
+        console.log("Victory! Updating user progress for enemy:", currentEnemy);
         if (!auth.currentUser) {
             console.log("No user logged in, skipping progress update");
             return;
         }
         
+        // Make sure the enemy has the mapId property
+        const enemyWithMapId = {
+            ...currentEnemy,
+            mapId: level?.selectedMap?.id || 'map1'
+        };
+        
+        console.log("Updating user progress with enemy including mapId:", enemyWithMapId);
+        
         // Update user progress when enemy is defeated
-        updateUserProgress(currentEnemy);
+        updateUserProgress(enemyWithMapId);
         
         setVictoryVisible(true);
     };

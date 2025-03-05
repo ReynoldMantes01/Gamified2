@@ -87,6 +87,30 @@ const App = () => {
     }
   }, [db, profileData]);
 
+  // Function to force reload user progress data from Firebase
+  const reloadUserProgress = () => {
+    console.log("Forcing reload of user progress data from Firebase");
+    const auth = getAuth();
+    const user = auth.currentUser;
+    
+    if (user) {
+      const userRef = ref(db, `users/${user.uid}`);
+      get(userRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          console.log("Reloaded user progress:", data);
+          setUserProgress(data);
+        } else {
+          console.log("No user data found during reload");
+        }
+      }).catch(error => {
+        console.error("Error reloading user progress:", error);
+      });
+    } else {
+      console.log("No user logged in, can't reload progress");
+    }
+  };
+
   // Add useEffect to fetch user progress
   useEffect(() => {
     const auth = getAuth();
@@ -115,20 +139,26 @@ const App = () => {
 
   // Function to handle level selection
   const handleLevelSelect = (levelData) => {
+    console.log("Level selected:", levelData);
+    
     // Always allow microbe in first map
     if (levelData.selectedMap.id === "map1" && levelData.enemy.name.toLowerCase() === "microbe") {
+      console.log("First enemy in first map is always unlocked");
       setSelectedLevel(levelData);
       setCurrentPage("gamePage");
       return;
     }
 
     // Check if user has required progress
-    if (userProgress?.unlockedEnemies?.includes(levelData.enemy.name.toLowerCase().replace(' ', '_'))) {
+    const enemyName = levelData.enemy.name.toLowerCase().replace(' ', '_');
+    if (userProgress?.unlockedEnemies?.includes(enemyName)) {
+      console.log(`Enemy ${enemyName} is unlocked, proceeding to game page`);
       setSelectedLevel(levelData);
       setCurrentPage("gamePage");
     } else {
-      // Show error message or handle locked level
-      alert("This level is locked! Complete previous levels to unlock.");
+      console.log(`Enemy ${enemyName} is locked, cannot proceed`);
+      // Enemy is locked - this should not happen as the UI prevents selecting locked enemies
+      // No alert needed as the UI should prevent this
     }
   };
 
@@ -301,6 +331,7 @@ const App = () => {
             onLogout={handleLogout} 
             musicVolume={musicVolume}
             setMusicVolume={setMusicVolume}
+            reload={reloadUserProgress}
           />
         );
       case "almanac":
