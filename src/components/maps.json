@@ -64,7 +64,7 @@
       "id": "map2",
       "name": "Physics Realm",
       "theme": "Physics",
-      "background": "physics_background.png",
+      "background": "physics_world.gif",
       "enemies": [
         {
           "id": "phy_t1",
@@ -121,7 +121,7 @@
       "id": "map3",
       "name": "Chemistry Domain",
       "theme": "Chemistry",
-      "background": "chemistry_background.png",
+      "background": "chemistry_world.gif",
       "enemies": [
         {
           "id": "chem_t1",

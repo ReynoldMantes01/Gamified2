@@ -123,7 +123,7 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                             alt="Google"
                             className="w-4 h-5"
                         />
-                        Google
+                       
                     </button>
                     <button
                         onClick={handleFacebookLogin}
@@ -134,7 +134,6 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                             alt="Facebook"
                             className="w-4 h-5"
                         />
-                        Facebook
                     </button>
                 </div>
                 <p className="mt-6 text-center">

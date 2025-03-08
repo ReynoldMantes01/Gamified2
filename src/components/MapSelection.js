@@ -2,6 +2,35 @@ import React, { useState, useEffect } from "react";
 import { auth } from '../firebase/config';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import mapData from './maps.json';
+import bioWorldBackground from '../assets/Bio_World.gif';
+import physicsBackground from '../assets/physics_world.gif';
+import chemistryBackground from '../assets/chemistry_world.gif'
+import microbeImage from '../assets/microbe.gif';
+import toxinImage from '../assets/toxin.gif';
+import mutantDnaImage from '../assets/mutant_dna.gif';
+import quarkImage from '../assets/quark.png';
+import Bg from '../assets/Chemistry.gif'
+
+const imageMap = {
+  // Map backgrounds
+  "Bio_World.gif": bioWorldBackground,
+  "physics_world.gif": physicsBackground,
+  "chemistry_world.gif": chemistryBackground,
+
+  // Biology enemies
+  "microbe.gif": microbeImage,
+  "toxin.gif": toxinImage,
+  "mutant_dna.gif": mutantDnaImage,
+
+  // Physics enemies
+  "quark.png": quarkImage,
+
+};
+
+// Helper function to get the correct image
+const getImage = (imagePath) => {
+  return imageMap[imagePath] || ''; // Return empty string if not found
+};
 
 const MapSelection = ({ onLevelSelect, onMainMenu }) => {
   const [currentMapIndex, setCurrentMapIndex] = useState(0);
@@ -29,7 +58,7 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
       console.log("Setting up Firebase realtime listener for user:", user.uid);
       const db = getDatabase();
       const userRef = ref(db, `users/${user.uid}`);
-      
+
       const unsubscribe = onValue(userRef, (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
@@ -79,26 +108,26 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
   const isEnemyLocked = (enemyName) => {
     console.log("Checking if enemy is locked:", enemyName);
     console.log("User progress:", userProgress);
-    
+
     // Always unlock the first enemy in the first map (Microbe)
     if (currentMapIndex === 0 && enemyName.toLowerCase() === "microbe") {
       console.log("First enemy in first map is always unlocked");
       return false;
     }
-    
+
     if (!userProgress || !userProgress.unlockedEnemies) {
       console.log("No user progress or unlockedEnemies found, enemy is locked");
       return true;
     }
-    
+
     // Normalize enemy name for comparison
     const normalizedEnemyName = enemyName.toLowerCase().replace(' ', '_');
-    
+
     // Check if the enemy is in the unlockedEnemies array
     const isUnlocked = userProgress.unlockedEnemies.includes(normalizedEnemyName);
     console.log(`Enemy ${normalizedEnemyName} is ${isUnlocked ? 'unlocked' : 'locked'}`);
     console.log("Unlocked enemies:", userProgress.unlockedEnemies);
-    
+
     return !isUnlocked;
   };
 
@@ -112,7 +141,7 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
   // Handle enemy selection
   const handleEnemySelect = (enemy) => {
     console.log("Enemy selected:", enemy.name);
-    
+
     // Check if enemy is locked
     if (isEnemyLocked(enemy.name)) {
       console.log("Enemy is locked, cannot select");
@@ -128,29 +157,48 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
   };
 
   return (
-        <div className="text-center backdrop-blur p-5 min-h-screen flex flex-col items-center justify-center">
+    <div className="text-center bg-[url(/src/assets/Animated.gif)] p-3 min-h-screen flex flex-col items-center justify-center">
       <h1 className="text-4xl font-bold mb-6 text-white drop-shadow-[4px_4px_0px_black]">Select Your Level</h1>
-  
+
       {/* Map Selection (Three Box Layout) */}
       <div className="flex justify-center items-center space-x-12 mb-12">
         {mapData.maps.slice(0, 3).map((map, index) => {
           const locked = isMapLocked(index);
+          const isSelected = index === currentMapIndex;
           return (
             <button
               key={map.id}
               onClick={() => !locked && handleMapSelect(index)}
               className={`w-64 h-72 flex flex-col justify-center items-center rounded-2xl shadow-xl text-2xl font-bold transition-all duration-300 transform
-                ${
-                  index === currentMapIndex
+                ${index === currentMapIndex
                   ? "bg-transparent text-white scale-105   shadow-2xl"
                   : locked
-                  ? "bg-gray-700 text-white cursor-not-allowed opacity-50"
-                  : "bg-grey-400 text-white hover:bg-transparent hover:scale-105 hover:shadow-2xl"
+                    ? "bg-gray-700 text-white cursor-not-allowed opacity-50"
+                    : "bg-grey-400 text-white hover:bg-transparent hover:scale-105 hover:shadow-2xl"
                 }`}
               disabled={locked}
             >
-              {map.name}
-              {locked && <span className="mt-2">🔒</span>}
+
+
+              {/*  SELECTED IMAGE BLUR */}
+              <div className="absolute inset-0 w-full h-full">
+                <img
+                  src={getImage(map.background)}
+                  className={`w-full h-full object-cover ${!isSelected ? 'blur-sm opacity-70' : 'opacity-80'} transition-all duration-300`}
+                  alt={`${map.name} background`}
+                />
+                {!isSelected && <div className="absolute inset-0 bg-black bg-opacity-30"></div>}
+              </div>
+
+              {/* OVER LAY TEXT */}
+              <span className="relative z-10 text-white drop-shadow-[2px_2px_2px_rgba(0,0,0,0.8)]">{map.name}</span>
+
+              {/* Locked Icon */}
+              {locked && (
+                <div className="mt-4 relative z-10 bg-black bg-opacity-60 p-3 rounded-full">
+                  <span className="text-3xl">🔒</span>
+                </div>
+              )}
             </button>
           );
         })}
@@ -158,13 +206,17 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
 
       {/* Selected Map Details */}
       <div className="flex justify-center items-center">
-        <div 
-          className="w-80 bg-cover bg-center rounded-lg shadow-lg p-4" 
-          style={{ backgroundImage: `url(${selectedMap.background})` }}
+        <div
+          className="w-96 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg shadow-lg p-6 text-white border border-white border-opacity-20"
+          style={{
+            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(${getImage(selectedMap.background)})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
         >
-          <h2 className="text-2xl font-semibold text-blue-800">{selectedMap.name}</h2>
-          <p className="text-red-900">Theme: {selectedMap.theme}</p>
-          <div className="mt-4 grid grid-cols-1 gap-8">
+          <h2 className="text-3xl font-semibold mb-2">{selectedMap.name}</h2>
+          <p className=" mb-4">Theme: {selectedMap.theme}</p>
+          <div className="mt-6 grid grid-cols-1 gap-4">
             {selectedMap.enemies.map((enemy) => {
               const isLocked = isEnemyLocked(enemy.name);
               return (
@@ -175,22 +227,30 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
                         handleEnemySelect(enemy);
                       }
                     }}
-                    title={isLocked ? "This level is locked! Complete previous levels to unlock." : `Play as ${enemy.name}`}
-                    className={`px-4 py-2 w-full ${
-                      isLocked 
-                        ? 'bg-gray-700 text-gray-300 cursor-not-allowed opacity-50 hover:bg-gray-600' 
-                        : 'bg-blue-500 text-white hover:bg-blue-600'
-                    } rounded shadow flex items-center justify-between`}
+                    title={isLocked ? "This level is locked! Complete previous levels to unlock." : `Fight ${enemy.name}`}
+                    className={`px-4 py-2 w-full ${isLocked
+                      ? 'bg-gray-700 text-gray-300 cursor-not-allowed opacity-50 hover:bg-gray-600'
+                      : 'bg-blue-500 text-white hover:bg-blue-600'
+                      } rounded shadow flex items-center justify-between`}
                   >
-                    <span>{enemy.name}</span>
+                    <div className="flex items-center">
+                      {enemy.image && (
+                        <img
+                          src={getImage(enemy.image)}
+                          alt={enemy.name}
+                          className="w-8 h-8 mr-3 rounded-full object-cover"
+                        />
+                      )}
+                      <span className="font-medium">{enemy.name}</span>
+                    </div>
                     {isLocked ? (
-                      <span className="ml-2">🔒</span>
+                      <span className="ml-2 text-xl">🔒</span>
                     ) : (
-                      <span className="ml-2">✓</span>
+                      <span className="ml-2 bg-green-500 p-1 rounded-full">✓</span>
                     )}
                   </button>
                   {isLocked && (
-                    <div className="absolute left-1/2 -translate-x-1/2 -bottom-8 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+                    <div className="absolute left-1/2 -translate-x-1/2 -bottom-10 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-2 px-3 whitespace-nowrap z-10">
                       Complete previous levels to unlock
                     </div>
                   )}
@@ -201,9 +261,9 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
         </div>
       </div>
 
-      <button 
-        onClick={onMainMenu} 
-        className="mt-6 px-3 py-2 bg-red-500 text-white rounded shadow"
+      <button
+        onClick={onMainMenu}
+        className="mt-8 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-lg transition-colors duration-200 font-medium"
       >
         Back to Main Menu
       </button>
