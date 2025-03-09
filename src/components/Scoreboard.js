@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { getDatabase, ref, onValue, query, orderByChild } from 'firebase/database';
 import bgImage from '../assets/bg.gif';
 
-const SCORES_PER_PAGE = 6;
+const SCORES_PER_PAGE = 5;
+
 
 const Scoreboard = ({ onMainMenu }) => {
     const [currentPage, setCurrentPage] = useState(0);

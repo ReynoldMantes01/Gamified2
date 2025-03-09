@@ -15,6 +15,7 @@ import { auth } from '../firebase/config';
 import Slidebar from './Slidebar';
 import GameSettings from './GameSettings';
 import Profile from './Profile';
+import Scoreboard from './Scoreboard'; // Import Scoreboard component
 
 const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileData, setProfileData }) => {
     const [selectedLetters, setSelectedLetters] = useState([]);
@@ -34,6 +35,7 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     const [slidebarOpen, setSlidebarOpen] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
+    const [scoreboardOpen, setScoreboardOpen] = useState(false); // State for scoreboard visibility
 
     const enemies = [
         { name: "Microbe", image: 'microbe.gif', health: 3 },
@@ -73,17 +75,18 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
         
         return letters;
     };
-// slidebar
-       const toggleSlidebar = () => setSlidebarOpen(!slidebarOpen);
+
+    // Slidebar toggle function
+    const toggleSlidebar = () => setSlidebarOpen(!slidebarOpen);
     
-        const handleClickOutside = useCallback(
-            (event) => {
-                if (slidebarOpen && !event.target.closest('.slidebar') && !event.target.closest('.slidebar-icon')) {
-                    setSlidebarOpen(false);
-                }
-            },
-            [slidebarOpen]
-        );
+    const handleClickOutside = useCallback(
+        (event) => {
+            if (slidebarOpen && !event.target.closest('.slidebar') && !event.target.closest('.slidebar-icon')) {
+                setSlidebarOpen(false);
+            }
+        },
+        [slidebarOpen]
+    );
 
     // Initialize grid with a guaranteed science word
     useEffect(() => {
@@ -244,15 +247,15 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
                     <img src={heartImage} alt="Heart" className="w-8 h-8 mr-2" />
                         <span className="text-white text-2xl">{playerHearts}</span>
                     </div>
-                    {/* CENTER SCORE */}
+                    {/* CENTER SCORE */} 
                     <div className="text-white text-2xl absolute left-1/2 transform -translate-x-1/2">
                         Score: {score}
-                            </div>
-                            {/* NAV BAR KANAN*/}                     
-                            <div className="flex items-center space-x-4">
-                                <div className="slidebar-icon text-2xl cursor-pointer" onClick={toggleSlidebar}>
-                                    <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
-                                </div>
+                    </div>
+                    {/* NAV BAR KANAN*/}                     
+                    <div className="flex items-center space-x-4">
+                        <div className="slidebar-icon text-2xl cursor-pointer" onClick={toggleSlidebar}>
+                            <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
+                        </div>
                         <Slidebar 
                             isOpen={slidebarOpen} 
                             toggleSlidebar={toggleSlidebar} 
@@ -261,9 +264,13 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
                             setProfileOpen={setProfileOpen}
                             onLogout={onLogout}
                         />
+                    </div>
                 </div>
-            </div>
             {/* Modals */}
+            {scoreboardOpen && ( // Render Scoreboard if open
+                <Scoreboard onMainMenu={() => setScoreboardOpen(false)} />
+            )}
+
             {settingsOpen && (
                 <GameSettings
                     onClose={() => setSettingsOpen(false)}
@@ -392,13 +399,9 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
                         Return to Main Menu
                     </button>
                 </div>
-                
             )}
-            
         </div>
-        
     );
-
 };
 
 export default MiniGame;
