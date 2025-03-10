@@ -61,20 +61,20 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
           )}
         </div>
         <div className="flex space-x-4 justify-center">
-          <button 
-            onClick={handleSave} 
+          <button
+            onClick={handleSave}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           >
             Save
           </button>
-          <button 
-            onClick={handleReset} 
+          <button
+            onClick={handleReset}
             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
           >
             Reset
           </button>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
           >
             Back

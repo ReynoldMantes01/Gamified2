@@ -7,7 +7,7 @@ import scienceTerm from './scienceTerm';
 import heartImage from '../assets/heart.png';
 import attackImage from '../assets/attack.png';
 import attackEnemyImage from '../assets/attack.gif';
-import character from '../assets/newchar.gif';
+import character from '../assets/Mc.jpg';
 import functionBackground from '../assets/functionBackground.png';
 import mapLibrary from '../components/maps.json';
 import mapData from './maps.json';
@@ -40,7 +40,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     // Initialize enemy progression from maps.json
     const [enemyProgression, setEnemyProgression] = useState([]);
-    
+
     // Load enemy progression from maps.json
     useEffect(() => {
         // Extract all enemies from all maps in order
@@ -62,7 +62,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         if (auth.currentUser) {
             const db = getDatabase();
             const profileRef = ref(db, `users/${auth.currentUser.uid}/profile`);
-            
+
             const unsubscribe = onValue(profileRef, (snapshot) => {
                 if (snapshot.exists()) {
                     const data = snapshot.val();
@@ -123,7 +123,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         if (level?.enemy) {
             setCurrentEnemy(level.enemy);
             setEnemyHearts(level.enemy.health);
-            
+
             // Set dialog sequence based on level
             if (level.levelNumber === 1) {
                 setShowTutorial(true);
@@ -139,7 +139,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 setCurrentDialogIndex(0);
                 setDialogVisible(true);
             }
-            
+
             // Reset hints for new level
             setHintsRemaining(2);
             setHighlightedIndices([]);
@@ -163,27 +163,27 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         const interval = setInterval(() => {
             setEnemyStatusEffects(prev => {
                 const newEffects = { ...prev };
-                
+
                 // Process poison (0.5 damage per turn)
                 if (newEffects.poison > 0) {
                     setEnemyHearts(h => Math.max(0, h - 0.5));
                     newEffects.poison--;
                 }
-                
+
                 // Process burn (0.1 damage every second)
                 if (newEffects.burn > 0) {
                     setEnemyHearts(h => Math.max(0, h - 0.1));
                     newEffects.burn--;
                 }
-                
+
                 // Decrease other effect durations
                 if (newEffects.exhaust > 0) newEffects.exhaust--;
                 if (newEffects.blind > 0) newEffects.blind--;
-                
+
                 return newEffects;
             });
         }, 1000);
-        
+
         return () => clearInterval(interval);
     }, []);
 
@@ -197,7 +197,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             } else {
                 console.log("No user logged in, skipping progress update");
             }
-            
+
             setVictoryVisible(true);
         } else {
             setDefeatVisible(true);
@@ -216,24 +216,24 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         if (selectedLetters.length >= 2) {
             const effects = ['poison', 'bleed', 'exhaust', 'burn', 'blind'];
             const randomEffect = effects[Math.floor(Math.random() * effects.length)];
-            
+
             // Get available spots (those with letters but no effects)
             const availableSpots = gridLetters.map((letter, i) => ({letter, index: i}))
                 .filter(({letter, index}) => letter !== '' && !letterEffects[index]);
-            
+
             console.log('Available spots for effects:', availableSpots.length);
-            
+
             if (availableSpots.length > 0) {
                 const randomSpot = availableSpots[Math.floor(Math.random() * availableSpots.length)];
                 const newEffects = [...letterEffects];
                 newEffects[randomSpot.index] = randomEffect;
-                
+
                 console.log('Adding effect:', randomEffect, 'at position:', randomSpot.index);
-                
+
                 setLetterEffects(newEffects);
-                
+
                 // Show feedback about the new effect
-                setDefinition(prev => 
+                setDefinition(prev =>
                     `${prev.text}\n\nNew ${randomEffect.toUpperCase()} effect added to a letter! Find it in the grid.`
                 );
             }
@@ -265,14 +265,14 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             newEmptyIndices.splice(index, 1);
             setEmptyIndices(newEmptyIndices);
         }
-        
+
         setIsValidWord(false);
     };
 
     const handleScramble = () => {
         // Generate new grid letters with guaranteed valid word
         const newGridLetters = generateRandomLetters();
-        
+
         // Reset all states
         setSelectedLetters([]);
         setEmptyIndices([]);
@@ -290,8 +290,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
         const gridLettersString = gridLetters.join('');
         const possibleWords = Object.keys(scienceTerm).filter((word) =>
-            word.split('').every((char) => 
-                gridLettersString.split('').filter(c => c === char).length >= 
+            word.split('').every((char) =>
+                gridLettersString.split('').filter(c => c === char).length >=
                 word.split('').filter(c => c === char).length
             )
         );
@@ -300,12 +300,12 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             // Sort words by length (prefer shorter words for hints)
             const sortedWords = possibleWords.sort((a, b) => a.length - b.length);
             const hintWord = sortedWords[0];
-            
+
             // Find indices of the hint word letters in the grid
             const newHighlightedIndices = [];
             const hintLetters = hintWord.split('');
             const gridLettersCopy = [...gridLetters];
-            
+
             hintLetters.forEach(letter => {
                 const index = gridLettersCopy.findIndex(l => l === letter);
                 if (index !== -1) {
@@ -329,15 +329,15 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     const handleEnemyAttack = () => {
         if (enemyLaserActive) return;
-        
+
         // Check if blind effect prevents attack (75% chance)
         if (enemyStatusEffects.blind > 0 && Math.random() < 0.75) {
-            setDefinition(prev => 
+            setDefinition(prev =>
                 `${prev.text}\n\nEnemy attack missed due to blind effect!`
             );
             return;
         }
-        
+
         setEnemyLaserActive(true);
         setTimeout(() => {
             let damage = 1;
@@ -345,7 +345,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             if (enemyStatusEffects.exhaust > 0) {
                 damage *= 0.5;
             }
-            
+
             setPlayerHearts((prev) => {
                 const newHeartCount = Math.max(0, prev - damage);
                 if (newHeartCount === 0) {
@@ -360,28 +360,28 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     // Handle player's attack logic
     const handleAttack = () => {
         const word = selectedLetters.join('').toUpperCase();
-        
+
         // Check if the word is a valid science term
         if (scienceTerm[word]) {
             // Word length determines damage (longer words = more damage)
             const damage = Math.min(word.length, 3);
-            
+
             // Apply status effects if any
             let totalDamage = damage;
             let statusEffectApplied = false;
-            
+
             // Check for status effects in the selected letters
             selectedLetters.forEach((_, index) => {
                 const effectIndex = emptyIndices[index];
                 const effect = letterEffects[effectIndex];
-                
+
                 if (effect) {
                     statusEffectApplied = true;
-                    
+
                     // Apply the effect
                     setEnemyStatusEffects(prev => {
                         const newEffects = { ...prev };
-                        
+
                         switch (effect) {
                             case 'poison':
                                 newEffects.poison += 3; // 3 turns of poison
@@ -400,32 +400,32 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                 newEffects.blind += 2; // 2 turns of blind
                                 break;
                         }
-                        
+
                         return newEffects;
                     });
-                    
+
                     // Clear the used effect
                     const newEffects = [...letterEffects];
                     newEffects[effectIndex] = null;
                     setLetterEffects(newEffects);
                 }
             });
-            
+
             // Apply damage to enemy
             const updatedHearts = Math.max(0, enemyHearts - Math.ceil(totalDamage));
             setEnemyHearts(updatedHearts);
-            
+
             // Show attack feedback with status effects
             let feedbackText = `You dealt ${Math.ceil(totalDamage)} damage with "${word}"!`;
             if (statusEffectApplied) {
                 feedbackText += " Status effect applied!";
             }
-            
+
             setDefinition({
                 text: feedbackText,
                 source: scienceTerm[word].source
             });
-            
+
             // Check if enemy is defeated
             if (updatedHearts <= 0) {
                 console.log("Enemy defeated! Hearts:", updatedHearts);
@@ -440,39 +440,39 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 source: ''
             });
         }
-        
+
         // Clear selected letters and update grid
         setSelectedLetters([]);
-        
+
         // Refill the grid with new letters
         const newGridLetters = [...gridLetters];
         emptyIndices.forEach(index => {
             newGridLetters[index] = '';
         });
-        
+
         const filledGrid = generateRandomLetters(newGridLetters, letterEffects);
         setGridLetters(filledGrid);
         setEmptyIndices([]);
     };
-    
+
 
     const handleNextLevel = () => {
         console.log("handleNextLevel called");
         setVictoryVisible(false);
-        
+
         // Find the current enemy index in the progression
         const currentEnemyIndex = enemyProgression.findIndex(e => e.id === currentEnemy?.id);
         console.log("Current enemy index:", currentEnemyIndex);
-        
+
         if (currentEnemyIndex !== -1 && currentEnemyIndex < enemyProgression.length - 1) {
             // Move to the next enemy
             const nextEnemy = enemyProgression[currentEnemyIndex + 1];
             console.log("Moving to next enemy:", nextEnemy.id);
-            
+
             // Check if we need to change maps
             const currentMapId = currentEnemy.mapId;
             const nextMapId = nextEnemy.mapId;
-            
+
             if (currentMapId !== nextMapId) {
                 console.log("Map transition needed from", currentMapId, "to", nextMapId);
                 // Return to map selection screen for map transition
@@ -577,12 +577,12 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     };
 
     const handleSettingsSave = (newMusicVolume) => {
-        setMusicVolume(newMusicVolume); 
-        setSettingsOpen(false); 
+        setMusicVolume(newMusicVolume);
+        setSettingsOpen(false);
     };
 
     const handleSettingsReset = () => {
-        setMusicVolume(50); 
+        setMusicVolume(50);
     };
 
     // Add effect descriptions
@@ -597,21 +597,21 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     useEffect(() => {
         const fetchUserProgress = async () => {
             if (!auth.currentUser) return;
-            
+
             const db = getDatabase();
             const userRef = ref(db, `users/${auth.currentUser.uid}`);
-            
+
             try {
                 const snapshot = await get(userRef);
                 if (snapshot.exists()) {
                     const data = snapshot.val();
                     setUserProgress(data);
-                    
+
                     // Initialize game state based on user progress
                     if (data.currentMap) {
                         setCurrentMapId(data.currentMap);
                     }
-                    
+
                     if (data.currentEnemyIndex !== undefined) {
                         setCurrentEnemyIndex(data.currentEnemyIndex);
                     }
@@ -619,7 +619,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     // Create initial user progress if it doesn't exist
                     // Get the first enemy ID from maps.json
                     const firstEnemyId = mapData.maps[0]?.enemies[0]?.id || "bio_t1";
-                    
+
                     const initialData = {
                         unlockedMaps: ["map1"],
                         defeatedEnemies: [],
@@ -630,7 +630,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                         createdAt: new Date().toISOString(),
                         lastUpdated: new Date().toISOString()
                     };
-                    
+
                     try {
                         await set(userRef, initialData);
                         setUserProgress(initialData);
@@ -644,7 +644,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 console.error("Firebase permission error:", error);
                 // Set default progress if there's a permission error
                 const firstEnemyId = mapData.maps[0]?.enemies[0]?.id || "bio_t1";
-                
+
                 const defaultProgress = {
                     unlockedMaps: ["map1"],
                     defeatedEnemies: [],
@@ -656,7 +656,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 setUserProgress(defaultProgress);
             }
         };
-        
+
         fetchUserProgress();
     }, []);
 
@@ -665,22 +665,22 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             console.log("No user logged in, can't update progress");
             return;
         }
-        
+
         console.log("Updating user progress for defeated enemy:", defeatedEnemy);
-        
+
         // Normalize the defeated enemy name for storage
         const defeatedEnemyName = defeatedEnemy.name.toLowerCase().replace(' ', '_');
-        
+
         const db = getDatabase();
         const userRef = ref(db, `users/${auth.currentUser.uid}`);
-        
+
         try {
             // Get current user data
             const snapshot = await get(userRef);
             if (snapshot.exists()) {
                 const userData = snapshot.val();
                 console.log("Current user data:", userData);
-                
+
                 // Initialize arrays if they don't exist
                 if (!userData.unlockedEnemies) {
                     userData.unlockedEnemies = ["microbe"];
@@ -691,12 +691,12 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 if (!userData.defeatedEnemies) {
                     userData.defeatedEnemies = [];
                 }
-                
+
                 // Add defeated enemy to defeated list if not already there
                 if (!userData.defeatedEnemies.includes(defeatedEnemyName)) {
                     userData.defeatedEnemies.push(defeatedEnemyName);
                 }
-                
+
                 // Create a flattened array of all enemies from all maps
                 const allEnemies = [];
                 for (const map of mapData.maps) {
@@ -708,27 +708,27 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                         });
                     }
                 }
-                
+
                 console.log("All enemies in progression:", allEnemies);
-                
+
                 // Find the current enemy in the progression
-                const currentEnemyIndex = allEnemies.findIndex(e => 
+                const currentEnemyIndex = allEnemies.findIndex(e =>
                     e.name === defeatedEnemyName || e.id === defeatedEnemy.id
                 );
-                
+
                 console.log("Current enemy index in progression:", currentEnemyIndex);
-                
+
                 // If found and not the last enemy, unlock the next one
                 if (currentEnemyIndex !== -1 && currentEnemyIndex < allEnemies.length - 1) {
                     const nextEnemy = allEnemies[currentEnemyIndex + 1];
                     console.log("Next enemy to unlock:", nextEnemy);
-                    
+
                     // Add next enemy to unlocked list if not already there
                     if (!userData.unlockedEnemies.includes(nextEnemy.name)) {
                         userData.unlockedEnemies.push(nextEnemy.name);
                         console.log(`Added ${nextEnemy.name} to unlocked enemies`);
                     }
-                    
+
                     // Check if we need to unlock the next world
                     if (defeatedEnemy.mapId !== nextEnemy.mapId) {
                         if (!userData.unlockedWorlds.includes(nextEnemy.mapId)) {
@@ -739,14 +739,14 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 } else {
                     console.log("No next enemy found or current enemy is the last one");
                 }
-                
+
                 // Add timestamp for debugging
                 userData.lastUpdated = new Date().toISOString();
-                
+
                 // Update user data in Firebase
                 console.log("Updating Firebase with new user data:", userData);
                 await set(userRef, userData);
-                
+
                 // Verify the update
                 const updatedSnapshot = await get(userRef);
                 if (updatedSnapshot.exists()) {
@@ -764,27 +764,27 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             console.log("No user logged in, skipping progress update");
             return;
         }
-        
+
         // Make sure the enemy has the mapId property
         const enemyWithMapId = {
             ...currentEnemy,
             mapId: level?.selectedMap?.id || 'map1'
         };
-        
+
         console.log("Updating user progress with enemy including mapId:", enemyWithMapId);
-        
+
         // Update user progress when enemy is defeated
         updateUserProgress(enemyWithMapId);
-        
+
         setVictoryVisible(true);
     };
 
     const handleEnemyDefeat = () => {
         console.log("Enemy defeated:", currentEnemy?.id);
-        
+
         // First, call handleGameOver to show victory screen
         handleGameOver(true);
-        
+
         // The rest of the progression logic will happen when the player clicks "Next Level"
         // in the victory dialog, which calls handleNextLevel
     };
@@ -804,7 +804,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             const db = getDatabase();
             const userRef = ref(db, `users/${user.uid}`);
             const nextLevel = completedLevel + 1;
-            
+
             // Only update if this is the highest level completed
             if (!userProgress.unlockedLevels.includes(nextLevel)) {
                 const updatedUnlockedLevels = [...userProgress.unlockedLevels, nextLevel];
@@ -834,11 +834,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     const isEnemyLocked = (enemyId) => {
         if (!userProgress?.unlockedEnemies || !enemyProgression.length) return true;
-        
+
         // Get the index of the enemy in the progression
         const enemyIndex = enemyProgression.findIndex(e => e.id === enemyId);
         if (enemyIndex === -1) return true;
-        
+
         // Check if any of the unlocked enemies are further in the progression
         return !userProgress.unlockedEnemies.some(unlockedId => {
             const unlockedIndex = enemyProgression.findIndex(e => e.id === unlockedId);
@@ -848,16 +848,16 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     const resetGame = () => {
         console.log("Resetting game state for new enemy");
-        
+
         // Keep existing letters and effects, just fill in empty spots
         const newGridLetters = generateRandomLetters(gridLetters, letterEffects);
-        
+
         // Reset game state but keep letter effects
         setPlayerHearts(prev => Math.min(prev + 1, 5)); // Increase hearts by 1, max of 5
         setSelectedLetters([]);
         setEmptyIndices([]);
         setGridLetters(newGridLetters);
-        
+
         // Reset enemy status effects for new enemy
         setEnemyStatusEffects({
             poison: 0,
@@ -866,11 +866,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             burn: 0,
             blind: 0
         });
-        
+
         // Set enemy hearts based on current enemy
         if (currentEnemy) {
             setEnemyHearts(currentEnemy.health || 3);
-            
+
             // Set dialog for the new enemy
             const enemyDialog = currentEnemy.dialog || `${currentEnemy.name} appears!`;
             setDialogSequence([enemyDialog]);
@@ -885,13 +885,13 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         // Get a random science term
         const scienceTerms = Object.keys(scienceTerm);
         const randomTerm = scienceTerms[Math.floor(Math.random() * scienceTerms.length)];
-        
+
         // Convert the term to an array of unique letters (we'll need at least one of each)
         const termLetters = Array.from(new Set(randomTerm.split('')));
-        
+
         // Create new grid keeping existing letters and effects
         const newGrid = [...existingLetters];
-        
+
         // First, place the term letters in random empty positions
         let emptyPositions = [];
         for (let i = 0; i < 20; i++) {
@@ -899,28 +899,28 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 emptyPositions.push(i);
             }
         }
-        
+
         // Shuffle the empty positions
         for (let i = emptyPositions.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [emptyPositions[i], emptyPositions[j]] = [emptyPositions[j], emptyPositions[i]];
         }
-        
+
         // Place each letter from the term
         for (let i = 0; i < termLetters.length && i < emptyPositions.length; i++) {
             newGrid[emptyPositions[i]] = termLetters[i];
         }
-        
+
         // Fill remaining slots with random letters, maintaining a good vowel/consonant ratio
         const vowels = 'AEIOU';
         const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
-        
+
         for (let i = termLetters.length; i < emptyPositions.length; i++) {
             newGrid[emptyPositions[i]] = Math.random() < 0.4
                 ? vowels.charAt(Math.floor(Math.random() * vowels.length))
                 : consonants.charAt(Math.floor(Math.random() * consonants.length));
         }
-        
+
         return newGrid;
     }
 
@@ -928,8 +928,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         <div
             className="game-container relative h-screen w-full flex flex-col items-center justify-between p-4 md:p-6 lg:p-8"
             style={{
-                backgroundImage: level?.selectedMap?.background ? 
-                    `url(${require(`../assets/${level.selectedMap.background}`)})` : 
+                backgroundImage: level?.selectedMap?.background ?
+                    `url(${require(`../assets/${level.selectedMap.background}`)})` :
                     'none',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
@@ -997,9 +997,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 {/* Player Character */}
                 <div className="character-container relative w-full md:w-1/3 flex justify-center items-center">
                     <div
-                        className={`character w-40 h-40 md:w-72 md:h-72 lg:w-96 lg:h-96 bg-contain bg-center bg-no-repeat transition-transform duration-300 ${
-                            laserActive ? "transform scale-110" : ""
-                        }`}
+                        className={`character w-40 h-40 md:w-72 md:h-72 lg:w-96 lg:h-96 bg-contain bg-center bg-no-repeat transition-transform duration-300 ${laserActive ? "transform scale-110" : ""
+                            }`}
                         style={{ backgroundImage: `url(${character})` }}
                     >
                         {laserActive && (
@@ -1044,9 +1043,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 <div className="enemy-container relative w-full md:w-1/3 flex justify-center items-center">
                     <div
                         className={`enemy w-40 h-40 md:w-72 md:h-72 lg:w-96 lg:h-96 bg-contain bg-center bg-no-repeat`}
-                        style={{ 
-                            backgroundImage: currentEnemy?.image ? 
-                                `url(${require(`../assets/${currentEnemy.image}`)})` : 
+                        style={{
+                            backgroundImage: currentEnemy?.image ?
+                                `url(${require(`../assets/${currentEnemy.image}`)})` :
                                 'none',
                             transform: 'scaleX(-1)'
                         }}
@@ -1069,7 +1068,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
             {/* Bottom Content */}
             <div className="game-content w-[95%] max-w-[1400px] grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border-4 border-black rounded-lg bg-opacity-90 mb-4"
-                style={{ 
+                style={{
                     backgroundImage: `url(${functionBackground})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
@@ -1077,12 +1076,12 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     height: '35vh',
                     backgroundColor: 'rgba(255, 255, 255, 0.9)'
                 }}>
-                
+
                 {/* Description Box */}
                 <div className="description-box bg-[#f4d9a3] border-2 border-black p-4 rounded-lg mb-3 h-64 overflow-y-auto">
                     <p className="text-gray-800">{definition.text}</p>
                     {definition.source && (
-                        <a 
+                        <a
                             href={definition.source}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -1139,9 +1138,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     {/* Action Buttons */}
                     <div className="action-buttons flex flex-col space-y-1.5">
                         <button
-                            className={`bg-[#f4d9a3] border-2 border-black py-1.5 text-center text-sm rounded-lg transition-colors ${
-                                !isValidWord ? "opacity-50 cursor-not-allowed" : "hover:bg-[#e5c8a1]"
-                            }`}
+                            className={`bg-[#f4d9a3] border-2 border-black py-1.5 text-center text-sm rounded-lg transition-colors ${!isValidWord ? "opacity-50 cursor-not-allowed" : "hover:bg-[#e5c8a1]"
+                                }`}
                             onClick={handleAttack}
                             disabled={!isValidWord}
                         >
@@ -1153,9 +1151,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                         </div>
 
                         <button
-                            className={`hint-button bg-[#f4d9a3] border-2 border-black py-1.5 text-sm rounded-lg transition-colors ${
-                                hintsRemaining > 0 ? 'hover:bg-[#e5c8a1]' : 'opacity-50 cursor-not-allowed'
-                            }`}
+                            className={`hint-button bg-[#f4d9a3] border-2 border-black py-1.5 text-sm rounded-lg transition-colors ${hintsRemaining > 0 ? 'hover:bg-[#e5c8a1]' : 'opacity-50 cursor-not-allowed'
+                                }`}
                             onClick={handleHint}
                             disabled={hintsRemaining <= 0}
                         >

@@ -43,7 +43,7 @@ const AvatarSelectionPopup = ({ onClose, onSelect, selectedAvatar }) => {
             <div className="bg-gray-800 text-white p-10 rounded-lg w-[600px]" onClick={(e) => e.stopPropagation()}>
                 <h2 className="text-3xl mb-8 text-center">Select Avatar</h2>
                 <div className="flex items-center justify-between">
-                    <button 
+                    <button
                         onClick={handlePrevPage}
                         className="bg-gray-700 hover:bg-gray-600 text-white rounded-full p-4 focus:outline-none transform transition hover:scale-110"
                     >
@@ -54,17 +54,16 @@ const AvatarSelectionPopup = ({ onClose, onSelect, selectedAvatar }) => {
 
                     <div className="flex justify-center mx-4">
                         {getCurrentAvatars().map((avatar, index) => (
-                            <div 
+                            <div
                                 key={index}
-                                className={`cursor-pointer rounded-lg p-3 transform transition hover:scale-105 ${
-                                    selectedAvatar === avatar.src 
-                                        ? 'border-4 border-blue-500' 
+                                className={`cursor-pointer rounded-lg p-3 transform transition hover:scale-105 ${selectedAvatar === avatar.src
+                                        ? 'border-4 border-blue-500'
                                         : 'border-4 border-gray-600 hover:border-gray-500'
-                                }`}
+                                    }`}
                                 onClick={() => handleAvatarSelect(avatar.src)}
                             >
-                                <img 
-                                    src={avatar.src} 
+                                <img
+                                    src={avatar.src}
                                     alt={avatar.name}
                                     className="w-64 h-64 object-cover rounded-lg"
                                 />
@@ -73,7 +72,7 @@ const AvatarSelectionPopup = ({ onClose, onSelect, selectedAvatar }) => {
                         ))}
                     </div>
 
-                    <button 
+                    <button
                         onClick={handleNextPage}
                         className="bg-gray-700 hover:bg-gray-600 text-white rounded-full p-4 focus:outline-none transform transition hover:scale-110"
                     >
@@ -84,7 +83,7 @@ const AvatarSelectionPopup = ({ onClose, onSelect, selectedAvatar }) => {
                 </div>
 
                 <div className="text-center mt-8">
-                    <button 
+                    <button
                         className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-lg text-lg"
                         onClick={onClose}
                     >
@@ -95,11 +94,10 @@ const AvatarSelectionPopup = ({ onClose, onSelect, selectedAvatar }) => {
                 {/* Page indicator */}
                 <div className="flex justify-center mt-4 space-x-2">
                     {[...Array(totalPages)].map((_, index) => (
-                        <div 
+                        <div
                             key={index}
-                            className={`w-2 h-2 rounded-full ${
-                                currentPage === index ? 'bg-blue-500' : 'bg-gray-600'
-                            }`}
+                            className={`w-2 h-2 rounded-full ${currentPage === index ? 'bg-blue-500' : 'bg-gray-600'
+                                }`}
                         />
                     ))}
                 </div>

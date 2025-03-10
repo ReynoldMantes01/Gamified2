@@ -62,7 +62,7 @@ const Almanac = ({ onMainMenu }) => {
         </button>
 
         {/* Search Bar */}
-  {/*       <div className="mb-6">
+        {/*       <div className="mb-6">
           <input
             type="text"
             placeholder="Search terms..."
@@ -106,7 +106,7 @@ const Almanac = ({ onMainMenu }) => {
           <button
             className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${
               currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+              }`}
             onClick={handlePrevious}
             disabled={currentPage === 0}
           >
@@ -120,7 +120,7 @@ const Almanac = ({ onMainMenu }) => {
           <button
             className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${
               endIndex >= filteredTerms.length ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+              }`}
             onClick={handleNext}
             disabled={endIndex >= filteredTerms.length}
           >
