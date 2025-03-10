@@ -6,12 +6,10 @@ import bioWorldBackground from '../assets/Bio_World.gif';
 import physicsBackground from '../assets/physics_world.gif';
 import chemistryBackground from '../assets/chemistry_world.gif'
 import microbeImage from '../assets/microbe.gif';
-import toxinImage from '../assets/toxin.png';
+import toxinImage from '../assets/toxin.gif';
 import mutantDnaImage from '../assets/mutant_dna.gif';
 import quarkImage from '../assets/quark.png';
-import gravitonImage from '../assets/graviton.png';
-import blackhole from '../assets/black_hole.png';
-import atoms from '../assets/atom.png';
+import Bg from '../assets/Chemistry.gif'
 
 const imageMap = {
   // Map backgrounds
@@ -21,16 +19,11 @@ const imageMap = {
 
   // Biology enemies
   "microbe.gif": microbeImage,
-  "toxin.png": toxinImage,
+  "toxin.gif": toxinImage,
   "mutant_dna.gif": mutantDnaImage,
 
   // Physics enemies
   "quark.png": quarkImage,
-  "graviton.png": gravitonImage,
-  "black_hole.png": blackhole,
-
-  // Chemistry Enemies
-  "atom.png": atoms
 
 };
 

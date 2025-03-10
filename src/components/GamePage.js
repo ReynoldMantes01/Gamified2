@@ -7,7 +7,7 @@ import scienceTerm from './scienceTerm';
 import heartImage from '../assets/heart.png';
 import attackImage from '../assets/attack.png';
 import attackEnemyImage from '../assets/attack.gif';
-import character from '../assets/Mc.jpg';
+import character from '../assets/newchar.gif';
 import functionBackground from '../assets/functionBackground.png';
 import mapLibrary from '../components/maps.json';
 import mapData from './maps.json';
@@ -218,8 +218,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             const randomEffect = effects[Math.floor(Math.random() * effects.length)];
 
             // Get available spots (those with letters but no effects)
-            const availableSpots = gridLetters.map((letter, i) => ({letter, index: i}))
-                .filter(({letter, index}) => letter !== '' && !letterEffects[index]);
+            const availableSpots = gridLetters.map((letter, i) => ({ letter, index: i }))
+                .filter(({ letter, index }) => letter !== '' && !letterEffects[index]);
 
             console.log('Available spots for effects:', availableSpots.length);
 
