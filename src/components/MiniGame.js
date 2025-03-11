@@ -33,9 +33,13 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     const [emptyIndices, setEmptyIndices] = useState([]);
     const [timeLeft, setTimeLeft] = useState(30);
     const [slidebarOpen, setSlidebarOpen] = useState(false);
+    const [isPaused, setIsPaused] = useState(false);
+    const [countdown, setCountdown] = useState(0);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [scoreboardOpen, setScoreboardOpen] = useState(false); // State for scoreboard visibility
+
+
 
     const enemies = [
         { name: "Microbe", image: 'microbe.gif', health: 3 },
@@ -76,8 +80,33 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
         return letters;
     };
 
-    // Slidebar toggle function
-    const toggleSlidebar = () => setSlidebarOpen(!slidebarOpen);
+    // Slidebar toggle function with pause functionality and countdown
+    const toggleSlidebar = () => {
+        if (!slidebarOpen) {
+            // Opening slidebar - pause immediately
+            setSlidebarOpen(true);
+            setIsPaused(true);
+        } else {
+            // Closing slidebar - close first, then start countdown
+            setSlidebarOpen(false);
+            setCountdown(3);
+            setTimeout(() => {
+                setCountdown(2);
+                setTimeout(() => {
+                    setCountdown(1);
+                    setTimeout(() => {
+                        setCountdown(0);
+                        setIsPaused(false);
+                    }, 1500);
+                }, 1500);
+            }, 1500);
+
+
+
+        }
+    };
+
+
     
     const handleClickOutside = useCallback(
         (event) => {
@@ -105,6 +134,9 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     // Timer effect
     useEffect(() => {
         if (!showTutorial && !gameOver) {
+            if (isPaused) return;
+
+
             const timer = setInterval(() => {
                 setTimeLeft((prevTime) => {
                     if (prevTime <= 0) {
@@ -130,27 +162,34 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
 
             return () => clearInterval(timer);
         }
-    }, [showTutorial, gameOver]);
+    }, [showTutorial, gameOver, isPaused]);
+
 
     // Handle letter selection
     const handleLetterClick = (letter, index) => {
-        if (!emptyIndices.includes(index)) {
+        if (!isPaused && !emptyIndices.includes(index)) {
             setSelectedLetters(prev => [...prev, letter]);
             setEmptyIndices(prev => [...prev, index]);
         }
     };
 
+
     // Handle letter removal from word
     const handleRemoveLetter = (letterIndex) => {
-        const originalIndex = emptyIndices[letterIndex];
-        setSelectedLetters(prev => prev.filter((_, i) => i !== letterIndex));
-        setEmptyIndices(prev => prev.filter((_, i) => i !== letterIndex));
+        if (!isPaused) {
+            const originalIndex = emptyIndices[letterIndex];
+            setSelectedLetters(prev => prev.filter((_, i) => i !== letterIndex));
+            setEmptyIndices(prev => prev.filter((_, i) => i !== letterIndex));
+        }
     };
+
 
     // Handle word submission and attacks
     const handleSubmitWord = useCallback(() => {
+        if (isPaused) return;
         const word = selectedLetters.join('').toUpperCase();
         setCurrentWord(word);
+
 
         if (word.length === 0) return;
 
@@ -213,6 +252,10 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
 
     return (
         <div className="relative h-screen w-screen overflow-hidden bg-cover bg-center flex flex-col items-center"
+
+
+
+
              style={{ 
                 backgroundImage: `url(${bgImage})`,
                 backgroundSize: 'cover',
@@ -387,7 +430,17 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
                 </button>
             </div>
 
+            {/* Countdown Screen */}
+            {countdown > 0 && (
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="text-white text-9xl font-bold animate-bounce">
+                        {countdown}
+                    </div>
+                </div>
+            )}
+
             {/* Game Over Screen */}
+
             {gameOver && (
                 <div className="absolute inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center">
                     <h2 className="text-white text-4xl mb-4">Game Over!</h2>
