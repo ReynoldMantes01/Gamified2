@@ -8,6 +8,7 @@ import heartImage from '../assets/heart.png';
 import attackImage from '../assets/attack.png';
 import attackEnemyImage from '../assets/attack.gif';
 import character from '../assets/newchar.gif';
+import characterAttack from '../assets/attack/newchar_attack.gif';
 import functionBackground from '../assets/functionBackground.png';
 import mapLibrary from '../components/maps.json';
 import mapData from './maps.json';
@@ -26,6 +27,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [profileOpen, setProfileOpen] = useState(false);
     const [playerHearts, setPlayerHearts] = useState(3);
     const [laserActive, setLaserActive] = useState(false);
+    const [isCharacterAttacking, setIsCharacterAttacking] = useState(false);
     const [dialogVisible, setDialogVisible] = useState(false);
     const [dialogMessage, setDialogMessage] = useState('');
     const [dialogSequence, setDialogSequence] = useState([]);
@@ -198,9 +200,17 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 console.log("No user logged in, skipping progress update");
             }
 
+            // Reset hints when player wins a battle
+            setHintsRemaining(2);
+            setHighlightedIndices([]);
+            setHint('');
+
             setVictoryVisible(true);
         } else {
             setDefeatVisible(true);
+            setHintsRemaining(2);
+            setHighlightedIndices([]);
+            setHint('');
         }
     };
 
@@ -359,6 +369,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     // Handle player's attack logic
     const handleAttack = () => {
+        setIsCharacterAttacking(true);
+        setTimeout(() => {
+            setIsCharacterAttacking(false);
+        }, 500);
+
         const word = selectedLetters.join('').toUpperCase();
 
         // Check if the word is a valid science term
@@ -776,6 +791,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         // Update user progress when enemy is defeated
         updateUserProgress(enemyWithMapId);
 
+        // Reset hints when player wins a battle
+        setHintsRemaining(2);
+        setHighlightedIndices([]);
+        setHint('');
+
         setVictoryVisible(true);
     };
 
@@ -997,22 +1017,10 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 {/* Player Character */}
                 <div className="character-container relative w-full md:w-1/3 flex justify-center items-center">
                     <div
-                        className={`character w-40 h-40 md:w-72 md:h-72 lg:w-96 lg:h-96 bg-contain bg-center bg-no-repeat transition-transform duration-300 ${laserActive ? "transform scale-110" : ""
+                        className={`character w-40 h-40 md:w-72 md:h-72 lg:w-96 lg:h-96 bg-contain bg-center bg-no-repeat transition-transform duration-300 ${isCharacterAttacking ? "transform scale-110" : ""
                             }`}
-                        style={{ backgroundImage: `url(${character})` }}
+                        style={{ backgroundImage: `url(${isCharacterAttacking ? characterAttack : character})` }}
                     >
-                        {laserActive && (
-                            <img
-                                src={attackImage}
-                                alt="laser"
-                                className="absolute top-1/2 left-full transform -translate-y-1/2"
-                                style={{
-                                    animation: "shoot 0.5s linear forwards",
-                                    height: "8rem",
-                                    width: "auto"
-                                }}
-                            />
-                        )}
                     </div>
                 </div>
 
@@ -1179,7 +1187,6 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     }}
                     onReset={() => {
                         setMusicVolume(50);
-                        setSettingsOpen(false);
                     }}
                     musicVolume={musicVolume}
                     profileData={profileData}

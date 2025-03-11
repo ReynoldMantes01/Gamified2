@@ -37,7 +37,7 @@
             "weakness": "Antidotes",
             "strength": "Polluted Areas"
           },
-          "image": "toxin.png",
+          "image": "toxin.gif",
           "dialog": "TOXIC CRAWLER! after we defeat MICROBES there is more dangerous Enemy, but did you know that Toxic refers to something harmful or poisonous to living organisms, potentially causing damage, illness, or death when absorbed, inhaled, or ingested. So stay out of it's Poison Spray."
         },
         {
@@ -80,7 +80,7 @@
             "weakness": "Mathematical Terms",
             "strength": "Common Words"
           },
-          "image": "quark.png"
+          "image": "quark.gif"
         },
         {
           "id": "phy_t2",
@@ -96,7 +96,7 @@
             "weakness": "Philosophical Words",
             "strength": "Scientific Terms"
           },
-          "image": "graviton.png"
+          "image": "graviton.gif"
         },
         {
           "id": "phy_boss",
@@ -112,7 +112,7 @@
             "weakness": "Simple Words",
             "strength": "Complex Words"
           },
-          "image": "black_hole.png"
+          "image": "black_hole.gif"
         }
       ],
       "next_map_id": "map3"
@@ -137,7 +137,7 @@
             "weakness": "Chemical Names",
             "strength": "Everyday Words"
           },
-          "image": "atom.png"
+          "image": "atom.gif"
         },
         {
           "id": "chem_t2",
@@ -153,7 +153,7 @@
             "weakness": "Organic Chemistry Words",
             "strength": "Non-Chemical Terms"
           },
-          "image": "molecule.png"
+          "image": "molecule.gif"
         },
         {
           "id": "chem_boss",
@@ -169,7 +169,7 @@
             "weakness": "Physics Terms",
             "strength": "Chemical Terms"
           },
-          "image": "reaction_master.png"
+          "image": "reaction_master.gif"
         }
       ],
       "next_map_id": null
