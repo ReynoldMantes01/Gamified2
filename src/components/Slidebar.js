@@ -1,9 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Cross } from 'hamburger-react';
-import Scoreboard from './Scoreboard'; // Import the Scoreboard component
+import Scoreboard from './Scoreboard';
 
 const Slidebar = ({ isOpen, toggleSlidebar, onMainMenu, setSettingsOpen, setProfileOpen, onLogout }) => {
-    const [scoreboardOpen, setScoreboardOpen] = useState(false); // State for scoreboard visibility
+    const [scoreboardOpen, setScoreboardOpen] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(0);
+
+    const menuItems = [
+        { label: 'Main Menu', onClick: onMainMenu },
+        { label: 'Settings', onClick: () => setSettingsOpen(true) },
+        { label: 'Profile', onClick: () => setProfileOpen(true) },
+        { label: 'Scoreboard', onClick: () => setScoreboardOpen(true) },
+        { label: 'Logout', onClick: onLogout }
+    ];
+
+    const handleKeyPress = (event) => {
+        if (!isOpen) return;
+
+        switch (event.key) {
+            case 'ArrowUp':
+                setSelectedIndex(prev => 
+                    prev <= 0 ? menuItems.length - 1 : prev - 1
+                );
+                break;
+            case 'ArrowDown':
+                setSelectedIndex(prev => 
+                    prev >= menuItems.length - 1 ? 0 : prev + 1
+                );
+                break;
+            case 'Enter':
+                menuItems[selectedIndex].onClick();
+                break;
+            case 'Escape':
+                toggleSlidebar();
+                break;
+            default:
+                break;
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [selectedIndex, isOpen]);
+
+    // Reset selected index when slidebar opens/closes
+    useEffect(() => {
+        setSelectedIndex(0);
+    }, [isOpen]);
 
     return ( 
         <>
@@ -22,37 +68,23 @@ const Slidebar = ({ isOpen, toggleSlidebar, onMainMenu, setSettingsOpen, setProf
 
             {/* Menu Items */}
             <ul className="list-none px-6 mb-10">
-                <li className="p-4 border-b border-gray-700 hover:bg-gray-700 rounded-md transition duration-300">
-                    <button className="text-white text-lg block w-full text-left" onClick={onMainMenu}>
-                        Main Menu
-                    </button>
-                </li>
-                <li className="p-4 border-b border-gray-700 hover:bg-gray-700 rounded-md transition duration-300">
-                    <button className="text-white text-lg block w-full text-left" onClick={() => setSettingsOpen(true)}>
-                        Settings
-                    </button>
-                </li>
-                <li className="p-4 border-b border-gray-700 hover:bg-gray-700 rounded-md transition duration-300">
-                    <button className="text-white text-lg block w-full text-left" onClick={() => setProfileOpen(true)}>
-                        Profile
-                    </button>
-                </li>
-                <li className="p-4 border-b border-gray-700 hover:bg-gray-700 rounded-md transition duration-300">
-                    <button 
-                        className="text-white text-lg block w-full text-left" 
-                        onClick={() => setScoreboardOpen(true)} // Open scoreboard
+                {menuItems.map((item, index) => (
+                    <li 
+                        key={index}
+                        className={`p-4 border-b border-gray-700 transition duration-300 rounded-md
+                            ${index === selectedIndex ? 'bg-gray-700 ring-2 ring-white' : 'hover:bg-gray-700'}`}
                     >
-                        Scoreboard
-                    </button>
-                </li>
-                <li className="p-4 hover:bg-gray-700 rounded-md transition duration-300">
-                    <button className="text-white text-lg block w-full text-left" onClick={onLogout}>
-                        Logout
-                    </button>
-                </li>
+                        <button 
+                            className="text-white text-lg block w-full text-left"
+                            onClick={item.onClick}
+                        >
+                            {item.label}
+                        </button>
+                    </li>
+                ))}
             </ul>
         </div>
-        {scoreboardOpen && ( // Render Scoreboard if open
+        {scoreboardOpen && (
             <Scoreboard onMainMenu={() => setScoreboardOpen(false)} />
         )}
         </>

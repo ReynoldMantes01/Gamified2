@@ -49,6 +49,7 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
   const [selectedMap, setSelectedMap] = useState(mapData.maps[0]);
   const [userProgress, setUserProgress] = useState(null);
   const [enemyProgressionOrder, setEnemyProgressionOrder] = useState([]);
+  const [selectedEnemyIndex, setSelectedEnemyIndex] = useState(-1); // -1 for map selection, 0+ for enemy selection
 
   // Load enemy progression from maps.json
   useEffect(() => {
@@ -147,17 +148,16 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
     if (!isMapLocked(mapIndex)) {
       setCurrentMapIndex(mapIndex);
       setSelectedMap(mapData.maps[mapIndex]);
+      setSelectedEnemyIndex(-1);
     }
   };
 
-  // Handle enemy selection
   const handleEnemySelect = (enemy) => {
     console.log("Enemy selected:", enemy.name);
 
-    // Check if enemy is locked
     if (isEnemyLocked(enemy.name)) {
       console.log("Enemy is locked, cannot select");
-      return; // Don't proceed if enemy is locked
+      return;
     }
 
     console.log("Enemy is unlocked, proceeding with selection");
@@ -168,11 +168,77 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
     });
   };
 
+  const handleKeyPress = (event) => {
+    event.preventDefault();
+    
+    if (selectedEnemyIndex === -1) {
+      // Map selection mode
+      switch (event.key) {
+        case 'ArrowLeft':
+          const prevIndex = currentMapIndex - 1;
+          if (prevIndex >= 0 && !isMapLocked(prevIndex)) {
+            handleMapSelect(prevIndex);
+          }
+          break;
+        case 'ArrowRight':
+          const nextIndex = currentMapIndex + 1;
+          if (nextIndex < mapData.maps.length && !isMapLocked(nextIndex)) {
+            handleMapSelect(nextIndex);
+          }
+          break;
+        case 'ArrowDown':
+          if (selectedMap.enemies.length > 0) {
+            setSelectedEnemyIndex(0);
+          }
+          break;
+        case 'Enter':
+          if (selectedMap.enemies.length > 0) {
+            setSelectedEnemyIndex(0);
+          }
+          break;
+        case 'Escape':
+          onMainMenu();
+          break;
+      }
+    } else {
+      // Enemy selection mode
+      switch (event.key) {
+        case 'ArrowUp':
+          if (selectedEnemyIndex > 0) {
+            setSelectedEnemyIndex(selectedEnemyIndex - 1);
+          } else {
+            setSelectedEnemyIndex(-1); // Go back to map selection
+          }
+          break;
+        case 'ArrowDown':
+          if (selectedEnemyIndex < selectedMap.enemies.length - 1) {
+            setSelectedEnemyIndex(selectedEnemyIndex + 1);
+          }
+          break;
+        case 'Enter':
+          const enemy = selectedMap.enemies[selectedEnemyIndex];
+          if (!isEnemyLocked(enemy.name)) {
+            handleEnemySelect(enemy);
+          }
+          break;
+        case 'Escape':
+          setSelectedEnemyIndex(-1); // Go back to map selection
+          break;
+      }
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [currentMapIndex, selectedEnemyIndex, selectedMap]);
+
   return (
     <div className="text-center bg-[url(/src/assets/Animated.gif)] p-3 min-h-screen flex flex-col items-center justify-center">
       <h1 className="text-4xl font-bold mb-6 text-white drop-shadow-[4px_4px_0px_black]">Select Your Level</h1>
 
-      {/* Map Selection (Three Box Layout) */}
       <div className="flex justify-center items-center space-x-12 mb-12">
         {mapData.maps.slice(0, 3).map((map, index) => {
           const locked = isMapLocked(index);
@@ -183,16 +249,13 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
               onClick={() => !locked && handleMapSelect(index)}
               className={`w-64 h-72 flex flex-col justify-center items-center rounded-2xl shadow-xl text-2xl font-bold transition-all duration-300 transform
                 ${index === currentMapIndex
-                  ? "bg-transparent text-white scale-105   shadow-2xl"
+                  ? "bg-transparent text-white scale-105 shadow-2xl ring-2 ring-white"
                   : locked
                     ? "bg-gray-700 text-white cursor-not-allowed opacity-50"
                     : "bg-grey-400 text-white hover:bg-transparent hover:scale-105 hover:shadow-2xl"
                 }`}
               disabled={locked}
             >
-
-
-              {/*  SELECTED IMAGE BLUR */}
               <div className="absolute inset-0 w-full h-full">
                 <img
                   src={getImage(map.background)}
@@ -202,10 +265,8 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
                 {!isSelected && <div className="absolute inset-0 bg-black bg-opacity-30"></div>}
               </div>
 
-              {/* OVER LAY TEXT */}
               <span className="relative z-10 text-white drop-shadow-[2px_2px_2px_rgba(0,0,0,0.8)]">{map.name}</span>
 
-              {/* Locked Icon */}
               {locked && (
                 <div className="mt-4 relative z-10 bg-black bg-opacity-60 p-3 rounded-full">
                   <span className="text-3xl">🔒</span>
@@ -216,7 +277,6 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
         })}
       </div>
 
-      {/* Selected Map Details */}
       <div className="flex justify-center items-center">
         <div
           className="w-96 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg shadow-lg p-6 text-white border border-white border-opacity-20"
@@ -227,10 +287,11 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
           }}
         >
           <h2 className="text-3xl font-semibold mb-2">{selectedMap.name}</h2>
-          <p className=" mb-4">Theme: {selectedMap.theme}</p>
+          <p className="mb-4">Theme: {selectedMap.theme}</p>
           <div className="mt-6 grid grid-cols-1 gap-4">
-            {selectedMap.enemies.map((enemy) => {
+            {selectedMap.enemies.map((enemy, index) => {
               const isLocked = isEnemyLocked(enemy.name);
+              const isSelected = index === selectedEnemyIndex;
               return (
                 <div key={enemy.id} className="relative group">
                   <button
@@ -240,10 +301,13 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
                       }
                     }}
                     title={isLocked ? "This level is locked! Complete previous levels to unlock." : `Fight ${enemy.name}`}
-                    className={`px-4 py-2 w-full ${isLocked
-                      ? 'bg-gray-700 text-gray-300 cursor-not-allowed opacity-50 hover:bg-gray-600'
-                      : 'bg-blue-500 text-white hover:bg-blue-600'
-                      } rounded shadow flex items-center justify-between`}
+                    className={`px-4 py-2 w-full ${
+                      isLocked
+                        ? 'bg-gray-700 text-gray-300 cursor-not-allowed opacity-50 hover:bg-gray-600'
+                        : isSelected
+                          ? 'bg-blue-600 text-white ring-2 ring-white scale-105'
+                          : 'bg-blue-500 text-white hover:bg-blue-600'
+                    } rounded shadow flex items-center justify-between transition-all duration-200`}
                   >
                     <div className="flex items-center">
                       {enemy.image && (

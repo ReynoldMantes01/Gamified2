@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import alienAvatar from '../assets/avatar/ALIEN AVATAR.jpg';
 import astronautAvatar from '../assets/avatar/ASTRONOUT AVATAR.jpg';
 import cuteAvatar from '../assets/avatar/CUTE AVATAR.jpg';
@@ -38,6 +38,34 @@ const AvatarSelectionPopup = ({ onClose, onSelect, selectedAvatar }) => {
         onClose();
     };
 
+    const handleKeyPress = (event) => {
+        switch (event.key) {
+            case 'ArrowLeft':
+                handlePrevPage();
+                break;
+            case 'ArrowRight':
+                handleNextPage();
+                break;
+            case 'Enter': {
+                const currentAvatar = getCurrentAvatars()[0];
+                handleAvatarSelect(currentAvatar.src);
+                break;
+            }
+            case 'Escape':
+                onClose();
+                break;
+            default:
+                break;
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [currentPage]);
+
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30" onClick={onClose}>
             <div className="bg-gray-800 text-white p-10 rounded-lg w-[600px]" onClick={(e) => e.stopPropagation()}>
@@ -56,10 +84,11 @@ const AvatarSelectionPopup = ({ onClose, onSelect, selectedAvatar }) => {
                         {getCurrentAvatars().map((avatar, index) => (
                             <div
                                 key={index}
-                                className={`cursor-pointer rounded-lg p-3 transform transition hover:scale-105 ${selectedAvatar === avatar.src
-                                        ? 'border-4 border-blue-500'
-                                        : 'border-4 border-gray-600 hover:border-gray-500'
-                                    }`}
+                                className={`cursor-pointer rounded-lg p-3 transform transition hover:scale-105 ring-4 ${
+                                    selectedAvatar === avatar.src
+                                    ? 'ring-blue-500'
+                                    : 'ring-gray-600 hover:ring-gray-500'
+                                }`}
                                 onClick={() => handleAvatarSelect(avatar.src)}
                             >
                                 <img
@@ -91,13 +120,13 @@ const AvatarSelectionPopup = ({ onClose, onSelect, selectedAvatar }) => {
                     </button>
                 </div>
 
-                {/* Page indicator */}
                 <div className="flex justify-center mt-4 space-x-2">
                     {[...Array(totalPages)].map((_, index) => (
                         <div
                             key={index}
-                            className={`w-2 h-2 rounded-full ${currentPage === index ? 'bg-blue-500' : 'bg-gray-600'
-                                }`}
+                            className={`w-2 h-2 rounded-full ${
+                                currentPage === index ? 'bg-blue-500' : 'bg-gray-600'
+                            }`}
                         />
                     ))}
                 </div>

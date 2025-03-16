@@ -11,8 +11,8 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showAvatarPopup, setShowAvatarPopup] = useState(false);
+    const [selectedField, setSelectedField] = useState(0); // 0: avatar, 1: username, 2: age, 3: gender, 4: save button, 5: back button
 
-    // Load saved profile data when component mounts
     useEffect(() => {
         const loadProfileData = async () => {
             if (!auth.currentUser) {
@@ -33,10 +33,9 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                         username: data.username,
                         age: data.age,
                         gender: data.gender,
-                        selectedAvatar: data.selectedAvatar || alienAvatar // Set alien as initial avatar only if no avatar is set
+                        selectedAvatar: data.selectedAvatar || alienAvatar
                     }));
 
-                    // If no avatar is set, save the initial avatar
                     if (!data.selectedAvatar) {
                         await set(profileRef, {
                             ...data,
@@ -85,7 +84,6 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
             return;
         }
 
-        // Validate required fields
         if (!profileData.username) {
             setError('Username is required');
             return;
@@ -96,7 +94,6 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
             const db = getDatabase();
             const userId = auth.currentUser.uid;
 
-            // Save user data to Firebase Realtime Database
             await set(ref(db, `users/${userId}/profile`), {
                 username: profileData.username,
                 age: profileData.age ? Number(profileData.age) : null,
@@ -114,6 +111,38 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
         }
     };
 
+    const handleKeyPress = (event) => {
+        switch (event.key) {
+            case 'ArrowUp':
+                setSelectedField(prev => (prev > 0 ? prev - 1 : 5));
+                break;
+            case 'ArrowDown':
+                setSelectedField(prev => (prev < 5 ? prev + 1 : 0));
+                break;
+            case 'Enter':
+                if (selectedField === 0) {
+                    setShowAvatarPopup(true);
+                } else if (selectedField === 4 && !saving && profileData.username) {
+                    handleSave();
+                } else if (selectedField === 5) {
+                    onClose();
+                }
+                break;
+            case 'Escape':
+                onClose();
+                break;
+            default:
+                break;
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [selectedField, saving, profileData]);
+
     if (loading) {
         return (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
@@ -129,11 +158,11 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
             <div className="bg-gray-800 text-white p-8 rounded w-[450px]" onClick={(e) => e.stopPropagation()}>
                 <h1 className="text-4xl mb-8 text-center">Profile</h1>
                 
-                {/* Avatar Display and Selection Button */}
                 <div className="mb-6 text-center">
                     <label className="block mb-4">Avatar</label>
                     <div 
-                        className="w-32 h-32 mx-auto mb-2 cursor-pointer rounded-lg border-2 border-gray-600 hover:border-gray-500 overflow-hidden"
+                        className={`w-32 h-32 mx-auto mb-2 cursor-pointer rounded-lg overflow-hidden transition-all duration-200
+                            ${selectedField === 0 ? 'ring-4 ring-blue-500 scale-105' : 'border-2 border-gray-600 hover:border-gray-500'}`}
                         onClick={() => setShowAvatarPopup(true)}
                     >
                         <img 
@@ -143,7 +172,7 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                         />
                     </div>
                     <button
-                        className="text-sm text-blue-400 hover:text-blue-300"
+                        className={`text-sm ${selectedField === 0 ? 'text-blue-300' : 'text-blue-400 hover:text-blue-300'}`}
                         onClick={() => setShowAvatarPopup(true)}
                     >
                         Change Avatar
@@ -157,7 +186,8 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                         name="username" 
                         value={profileData.username || ''} 
                         onChange={handleInputChange} 
-                        className="w-80 mx-auto p-2 text-black rounded" 
+                        className={`w-80 mx-auto p-2 text-black rounded transition-all duration-200
+                            ${selectedField === 1 ? 'ring-4 ring-blue-500' : ''}`}
                         placeholder="Enter Username"
                         required 
                     />
@@ -170,7 +200,8 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                         name="age" 
                         value={profileData.age || ''} 
                         onChange={handleInputChange} 
-                        className="w-80 mx-auto p-2 text-black rounded" 
+                        className={`w-80 mx-auto p-2 text-black rounded transition-all duration-200
+                            ${selectedField === 2 ? 'ring-4 ring-blue-500' : ''}`}
                         placeholder="Enter Age"
                         min="1"
                     />
@@ -182,7 +213,8 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                         name="gender" 
                         value={profileData.gender || ''} 
                         onChange={handleGenderChange} 
-                        className="w-80 mx-auto p-2 text-black rounded" 
+                        className={`w-80 mx-auto p-2 text-black rounded transition-all duration-200
+                            ${selectedField === 3 ? 'ring-4 ring-blue-500' : ''}`}
                         disabled={!!profileData.gender}
                     >
                         <option value="">Select Gender</option>
@@ -196,14 +228,16 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
 
                 <div className="flex space-x-4 mb-4 justify-center">
                     <button 
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50" 
+                        className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50 transition-all duration-200
+                            ${selectedField === 4 ? 'ring-4 ring-white scale-105' : ''}`}
                         onClick={handleSave}
                         disabled={saving || !profileData.username}
                     >
                         {saving ? 'Saving...' : 'Save'}
                     </button>
                     <button 
-                        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" 
+                        className={`bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition-all duration-200
+                            ${selectedField === 5 ? 'ring-4 ring-white scale-105' : ''}`}
                         onClick={onClose}
                     >
                         Back
@@ -211,7 +245,6 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                 </div>
             </div>
 
-            {/* Avatar Selection Popup */}
             {showAvatarPopup && (
                 <AvatarSelectionPopup
                     onClose={() => setShowAvatarPopup(false)}

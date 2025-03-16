@@ -4,7 +4,6 @@ import bgImage from '../assets/bg.gif';
 
 const SCORES_PER_PAGE = 5;
 
-
 const Scoreboard = ({ onMainMenu }) => {
     const [currentPage, setCurrentPage] = useState(0);
     const [scores, setScores] = useState([]);
@@ -15,7 +14,6 @@ const Scoreboard = ({ onMainMenu }) => {
         const userScores = [];
         Object.entries(data).forEach(([userId, userData]) => {
             if (userData.miniGameScores) {
-                // Get the highest score for each user
                 const highestScore = Object.entries(userData.miniGameScores)
                     .reduce((highest, [timestamp, scoreData]) => {
                         return (!highest || scoreData.score > highest.score) 
@@ -34,7 +32,6 @@ const Scoreboard = ({ onMainMenu }) => {
             }
         });
         
-        // Sort scores and add ranks
         userScores.sort((a, b) => b.score - a.score);
         return userScores.map((score, index) => ({
             ...score,
@@ -48,7 +45,6 @@ const Scoreboard = ({ onMainMenu }) => {
         const db = getDatabase();
         const scoresRef = ref(db, 'users');
         
-        // Set up real-time listener
         const unsubscribe = onValue(scoresRef, (snapshot) => {
             const data = snapshot.val();
             const processedScores = processScores(data);
@@ -56,7 +52,6 @@ const Scoreboard = ({ onMainMenu }) => {
             setLoading(false);
         });
 
-        // Cleanup listener on component unmount
         return () => unsubscribe();
     }, [processScores]);
 
@@ -76,6 +71,29 @@ const Scoreboard = ({ onMainMenu }) => {
             setCurrentPage(currentPage - 1);
         }
     };
+
+    const handleKeyPress = (event) => {
+        switch (event.key) {
+            case 'ArrowLeft':
+                handlePrevious();
+                break;
+            case 'ArrowRight':
+                handleNext();
+                break;
+            case 'Escape':
+                onMainMenu();
+                break;
+            default:
+                break;
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [currentPage, scores]);
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -104,7 +122,6 @@ const Scoreboard = ({ onMainMenu }) => {
                                 <div className="text-center">Date</div>
                             </div>
                             
-                            {/* Top 3 Trophy Placeholders */}
                             <div className="grid grid-cols-4 gap-4 p-4 rounded-lg mb-3 bg-yellow-500 bg-opacity-70 text-white">
                                 <div className="text-center font-bold text-3xl">🏆</div>
                                 <div className="text-center">---</div>
@@ -164,6 +181,9 @@ const Scoreboard = ({ onMainMenu }) => {
                     >
                         Previous
                     </button>
+                    <span className="text-white">
+                        Page {currentPage + 1} of {totalPages}
+                    </span>
                     <button
                         onClick={handleNext}
                         disabled={endIndex >= scores.length}

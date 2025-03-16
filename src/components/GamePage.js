@@ -39,6 +39,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [hintsRemaining, setHintsRemaining] = useState(2);
     const [highlightedIndices, setHighlightedIndices] = useState([]);
     const [currentAvatar, setCurrentAvatar] = useState(profileData?.selectedAvatar);
+    const [selectedLetterIndex, setSelectedLetterIndex] = useState(-1);
 
     useEffect(() => {
         const fetchPlayerHealth = async () => {
@@ -997,6 +998,12 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     // Handle keyboard input
     const handleKeyPress = useCallback((event) => {
+        // Handle Escape key for slidebar
+        if (event.key === 'Escape') {
+            setSlidebarOpen(prev => !prev);
+            return;
+        }
+
         if (slidebarOpen || settingsOpen || profileOpen || dialogVisible || showTutorial) return;
 
         const key = event.key.toUpperCase();
@@ -1014,14 +1021,38 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         }
         // Handle backspace for letter removal
         else if (event.key === 'Backspace' && selectedLetters.length > 0) {
-            const lastIndex = selectedLetters.length - 1;
-            handleSelectedLetterClick(selectedLetters[lastIndex], lastIndex);
+            if (selectedLetterIndex >= 0) {
+                handleSelectedLetterClick(selectedLetters[selectedLetterIndex], selectedLetterIndex);
+                setSelectedLetterIndex(Math.min(selectedLetterIndex, selectedLetters.length - 2));
+            } else {
+                const lastIndex = selectedLetters.length - 1;
+                handleSelectedLetterClick(selectedLetters[lastIndex], lastIndex);
+            }
         }
         // Handle enter for word submission
         else if (event.key === 'Enter' && isValidWord) {
             handleAttack();
         }
-    }, [slidebarOpen, settingsOpen, profileOpen, dialogVisible, showTutorial, gridLetters, emptyIndices, selectedLetters, isValidWord]);
+        // Handle Shift key for hint
+        else if (event.key === 'Shift') {
+            handleHint();
+        }
+        // Handle Control key for scramble
+        else if (event.key === 'Control') {
+            handleScramble();
+        }
+        // Handle arrow keys for navigation
+        else if (event.key === 'ArrowLeft') {
+            setSelectedLetterIndex(prev => 
+                prev <= 0 ? selectedLetters.length - 1 : prev - 1
+            );
+        }
+        else if (event.key === 'ArrowRight') {
+            setSelectedLetterIndex(prev => 
+                prev >= selectedLetters.length - 1 ? 0 : prev + 1
+            );
+        }
+    }, [slidebarOpen, settingsOpen, profileOpen, dialogVisible, showTutorial, gridLetters, emptyIndices, selectedLetters, isValidWord, selectedLetterIndex]);
 
     // Add keyboard event listener
     useEffect(() => {
@@ -1118,7 +1149,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                         return (
                             <div
                                 key={index}
-                                className={`relative w-12 h-12 border-2 border-black flex items-center justify-center text-2xl font-bold rounded-lg cursor-pointer transition-all duration-300 rounded-lg
+                                className={`relative w-12 h-12 border-2 flex items-center justify-center text-2xl font-bold rounded-lg cursor-pointer transition-all duration-300
+                                    ${index === selectedLetterIndex ? 'border-blue-500 bg-blue-100 scale-110' : 'border-black'}
                                     ${highlightedIndices.includes(index) ? 'bg-yellow-300 scale-110' : 'hover:bg-[#e5c8a1]'}
                                     ${effect ? effectStyles[effect] : 'bg-[#f4d9a3]'}`}
                                 onClick={() => handleSelectedLetterClick(letter, index)}

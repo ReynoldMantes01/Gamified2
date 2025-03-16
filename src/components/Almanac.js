@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import scienceTerms from './scienceTerm';
 
 // Transform terms for display
@@ -19,6 +19,7 @@ const Almanac = ({ onMainMenu }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTerm, setSelectedTerm] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(-1); // -1 for no selection, 0-2 for terms
 
   // Filter terms based on search
   const filteredTerms = transformedTerms.filter(term =>
@@ -28,27 +29,72 @@ const Almanac = ({ onMainMenu }) => {
   const startIndex = currentPage * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentTerms = filteredTerms.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(filteredTerms.length / ITEMS_PER_PAGE);
 
   const handleNext = () => {
     if (endIndex < filteredTerms.length) {
       setCurrentPage(currentPage + 1);
+      setSelectedIndex(-1);
     }
   };
 
   const handlePrevious = () => {
     if (currentPage > 0) {
       setCurrentPage(currentPage - 1);
+      setSelectedIndex(-1);
     }
   };
 
-  const handleTermClick = (term) => {
+  const handleTermClick = (term, index) => {
     setSelectedTerm(selectedTerm === term ? null : term);
+    setSelectedIndex(index);
   };
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(0); // Reset to first page when searching
+    setCurrentPage(0);
+    setSelectedIndex(-1);
   };
+
+  const handleKeyPress = (event) => {
+    switch (event.key) {
+      case 'ArrowLeft':
+        handlePrevious();
+        break;
+      case 'ArrowRight':
+        handleNext();
+        break;
+      case 'ArrowUp':
+        setSelectedIndex(prev => {
+          if (prev <= 0) return currentTerms.length - 1;
+          return prev - 1;
+        });
+        break;
+      case 'ArrowDown':
+        setSelectedIndex(prev => {
+          if (prev >= currentTerms.length - 1) return 0;
+          return prev + 1;
+        });
+        break;
+      case 'Enter':
+        if (selectedIndex >= 0 && selectedIndex < currentTerms.length) {
+          handleTermClick(currentTerms[selectedIndex], selectedIndex);
+        }
+        break;
+      case 'Escape':
+        onMainMenu();
+        break;
+      default:
+        break;
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [selectedIndex, currentPage, currentTerms]);
 
   return (
     <div className="min-h-screen bg-cover bg-center flex items-center justify-center py-12">
@@ -77,8 +123,9 @@ const Almanac = ({ onMainMenu }) => {
             {currentTerms.map((item, index) => (
               <li
                 key={index}
-                className="bg-gray-100 rounded-lg p-4 shadow-md hover:bg-gray-200 transition cursor-pointer"
-                onClick={() => handleTermClick(item)}
+                className={`bg-gray-100 rounded-lg p-4 shadow-md transition cursor-pointer
+                  ${selectedIndex === index ? 'ring-2 ring-blue-500 scale-105' : 'hover:bg-gray-200'}`}
+                onClick={() => handleTermClick(item, index)}
               >
                 <div className="flex flex-col">
                   <p className="font-semibold text-xl mb-2">
@@ -104,9 +151,8 @@ const Almanac = ({ onMainMenu }) => {
         {/* Navigation */}
         <div className="mt-8 w-full flex justify-between items-center">
           <button
-            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${
-              currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded 
+              ${currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
             onClick={handlePrevious}
             disabled={currentPage === 0}
           >
@@ -114,13 +160,12 @@ const Almanac = ({ onMainMenu }) => {
           </button>
 
           <span className="text-gray-700">
-            Page {currentPage + 1} of {Math.ceil(filteredTerms.length / ITEMS_PER_PAGE)}
+            Page {currentPage + 1} of {totalPages}
           </span>
 
           <button
-            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${
-              endIndex >= filteredTerms.length ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded 
+              ${endIndex >= filteredTerms.length ? "opacity-50 cursor-not-allowed" : ""}`}
             onClick={handleNext}
             disabled={endIndex >= filteredTerms.length}
           >

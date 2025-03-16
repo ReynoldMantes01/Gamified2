@@ -38,8 +38,7 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [scoreboardOpen, setScoreboardOpen] = useState(false); // State for scoreboard visibility
-
-
+    const [selectedLetterIndex, setSelectedLetterIndex] = useState(-1);
 
     const enemies = [
         { name: "Microbe", image: 'microbe.gif', health: 3 },
@@ -100,9 +99,6 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
                     }, 1500);
                 }, 1500);
             }, 1500);
-
-
-
         }
     };
 
@@ -252,6 +248,12 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
 
     // Handle keyboard input
     const handleKeyPress = useCallback((event) => {
+        // Handle Escape key for slidebar
+        if (event.key === 'Escape') {
+            setSlidebarOpen(prev => !prev);
+            return;
+        }
+
         if (isPaused || gameOver || showTutorial) return;
 
         const key = event.key.toUpperCase();
@@ -269,13 +271,29 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
         }
         // Handle backspace for letter removal
         else if (event.key === 'Backspace' && selectedLetters.length > 0) {
-            handleRemoveLetter(selectedLetters.length - 1);
+            if (selectedLetterIndex >= 0) {
+                handleRemoveLetter(selectedLetterIndex);
+                setSelectedLetterIndex(Math.min(selectedLetterIndex, selectedLetters.length - 2));
+            } else {
+                handleRemoveLetter(selectedLetters.length - 1);
+            }
         }
         // Handle enter for word submission
         else if (event.key === 'Enter') {
             handleSubmitWord();
         }
-    }, [isPaused, gameOver, showTutorial, gridLetters, emptyIndices, selectedLetters, handleSubmitWord]);
+        // Handle arrow keys for navigation
+        else if (event.key === 'ArrowLeft') {
+            setSelectedLetterIndex(prev => 
+                prev <= 0 ? selectedLetters.length - 1 : prev - 1
+            );
+        }
+        else if (event.key === 'ArrowRight') {
+            setSelectedLetterIndex(prev => 
+                prev >= selectedLetters.length - 1 ? 0 : prev + 1
+            );
+        }
+    }, [isPaused, gameOver, showTutorial, gridLetters, emptyIndices, selectedLetters, selectedLetterIndex]);
 
     // Add keyboard event listener
     useEffect(() => {
@@ -287,16 +305,12 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
 
     return (
         <div className="relative h-screen w-screen overflow-hidden bg-cover bg-center flex flex-col items-center"
-
-
-
-
-             style={{ 
+            style={{ 
                 backgroundImage: `url(${bgImage})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat'
-             }}>
+            }}>
             
             {/* Tutorial Dialog */}
             {showTutorial && (
@@ -323,27 +337,27 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
                 {/* heart nasa kaliwaa */}
                 <div className="flex items-center">
                     <img src={heartImage} alt="Heart" className="w-8 h-8 mr-2" />
-                        <span className="text-white text-2xl">{playerHearts}</span>
-                    </div>
-                    {/* CENTER SCORE */} 
-                    <div className="text-white text-2xl absolute left-1/2 transform -translate-x-1/2">
-                        Score: {score}
-                    </div>
-                    {/* NAV BAR KANAN*/}                     
-                    <div className="flex items-center space-x-4">
-                        <div className="slidebar-icon text-2xl cursor-pointer" onClick={toggleSlidebar}>
-                            <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
-                        </div>
-                        <Slidebar 
-                            isOpen={slidebarOpen} 
-                            toggleSlidebar={toggleSlidebar} 
-                            onMainMenu={onMainMenu} 
-                            setSettingsOpen={setSettingsOpen}
-                            setProfileOpen={setProfileOpen}
-                            onLogout={onLogout}
-                        />
-                    </div>
+                    <span className="text-white text-2xl">{playerHearts}</span>
                 </div>
+                {/* CENTER SCORE */} 
+                <div className="text-white text-2xl absolute left-1/2 transform -translate-x-1/2">
+                    Score: {score}
+                </div>
+                {/* NAV BAR KANAN*/}                     
+                <div className="flex items-center space-x-4">
+                    <div className="slidebar-icon text-2xl cursor-pointer" onClick={toggleSlidebar}>
+                        <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
+                    </div>
+                    <Slidebar 
+                        isOpen={slidebarOpen} 
+                        toggleSlidebar={toggleSlidebar} 
+                        onMainMenu={onMainMenu} 
+                        setSettingsOpen={setSettingsOpen}
+                        setProfileOpen={setProfileOpen}
+                        onLogout={onLogout}
+                    />
+                </div>
+            </div>
             {/* Modals */}
             {scoreboardOpen && ( // Render Scoreboard if open
                 <Scoreboard onMainMenu={() => setScoreboardOpen(false)} />
@@ -448,13 +462,15 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
             <div className="absolute bottom-4 w-full flex justify-center items-center space-x-4">
                 <div className="flex items-center space-x-1 px-3 py-2 min-w-[150px]">
                     {selectedLetters.map((letter, index) => (
-                        <button
+                        <div
                             key={index}
-                            className="w-10 h-10 text-xl font-bold bg-blue-500 text-white rounded-lg transform transition-all duration-200 hover:scale-110 hover:bg-blue-600"
                             onClick={() => handleRemoveLetter(index)}
+                            className={`selected-letter cursor-pointer w-10 h-10 flex items-center justify-center 
+                                text-xl font-bold rounded-lg bg-white border-2 
+                                ${index === selectedLetterIndex ? 'border-blue-500 bg-blue-100' : 'border-gray-300'}`}
                         >
                             {letter}
-                        </button>
+                        </div>
                     ))}
                 </div>
                 <button
