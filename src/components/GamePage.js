@@ -995,6 +995,42 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         return newGrid;
     }
 
+    // Handle keyboard input
+    const handleKeyPress = useCallback((event) => {
+        if (slidebarOpen || settingsOpen || profileOpen || dialogVisible || showTutorial) return;
+
+        const key = event.key.toUpperCase();
+        
+        // Handle letter selection
+        if (/^[A-Z]$/.test(key)) {
+            // Find the first available instance of the pressed letter
+            const letterIndex = gridLetters.findIndex((letter, index) => 
+                letter === key && !emptyIndices.includes(index)
+            );
+            
+            if (letterIndex !== -1) {
+                handleLetterClick(key, letterIndex);
+            }
+        }
+        // Handle backspace for letter removal
+        else if (event.key === 'Backspace' && selectedLetters.length > 0) {
+            const lastIndex = selectedLetters.length - 1;
+            handleSelectedLetterClick(selectedLetters[lastIndex], lastIndex);
+        }
+        // Handle enter for word submission
+        else if (event.key === 'Enter' && isValidWord) {
+            handleAttack();
+        }
+    }, [slidebarOpen, settingsOpen, profileOpen, dialogVisible, showTutorial, gridLetters, emptyIndices, selectedLetters, isValidWord]);
+
+    // Add keyboard event listener
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [handleKeyPress]);
+
     return (
         <div
             className="game-container relative h-screen w-full flex flex-col items-center justify-between p-4 md:p-6 lg:p-8"

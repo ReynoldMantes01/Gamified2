@@ -250,6 +250,41 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
         }
     };
 
+    // Handle keyboard input
+    const handleKeyPress = useCallback((event) => {
+        if (isPaused || gameOver || showTutorial) return;
+
+        const key = event.key.toUpperCase();
+        
+        // Handle letter selection
+        if (/^[A-Z]$/.test(key)) {
+            // Find the first available instance of the pressed letter
+            const letterIndex = gridLetters.findIndex((letter, index) => 
+                letter === key && !emptyIndices.includes(index)
+            );
+            
+            if (letterIndex !== -1) {
+                handleLetterClick(key, letterIndex);
+            }
+        }
+        // Handle backspace for letter removal
+        else if (event.key === 'Backspace' && selectedLetters.length > 0) {
+            handleRemoveLetter(selectedLetters.length - 1);
+        }
+        // Handle enter for word submission
+        else if (event.key === 'Enter') {
+            handleSubmitWord();
+        }
+    }, [isPaused, gameOver, showTutorial, gridLetters, emptyIndices, selectedLetters, handleSubmitWord]);
+
+    // Add keyboard event listener
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [handleKeyPress]);
+
     return (
         <div className="relative h-screen w-screen overflow-hidden bg-cover bg-center flex flex-col items-center"
 
