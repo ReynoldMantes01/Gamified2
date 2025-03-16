@@ -40,6 +40,27 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [highlightedIndices, setHighlightedIndices] = useState([]);
     const [currentAvatar, setCurrentAvatar] = useState(profileData?.selectedAvatar);
 
+    useEffect(() => {
+        const fetchPlayerHealth = async () => {
+            if (auth.currentUser) {
+                const db = getDatabase();
+                const userRef = ref(db, `users/${auth.currentUser.uid}/health`);
+                try {
+                    const snapshot = await get(userRef);
+                    if (snapshot.exists()) {
+                        setPlayerHearts(snapshot.val()); // Load health from Firebase
+                    } else {
+                        setPlayerHearts(3); // Default value if no health is found
+                    }
+                } catch (error) {
+                    console.error("Error loading player health:", error);
+                    setPlayerHearts(3); // Fallback to default value on error
+                }
+            }
+        };
+        fetchPlayerHealth();
+    }, []);
+
     // Initialize enemy progression from maps.json
     const [enemyProgression, setEnemyProgression] = useState([]);
 
@@ -189,22 +210,32 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         return () => clearInterval(interval);
     }, []);
 
-    const handleGameOver = (isVictory) => {
+    const handleGameOver = async (isVictory) => {
         console.log("Game over with victory:", isVictory);
         if (isVictory) {
             console.log("Victory! Updating user progress for enemy:", currentEnemy?.id);
             if (auth.currentUser) {
                 // Update user progress when enemy is defeated
-                updateUserProgress(currentEnemy);
+                await updateUserProgress(currentEnemy);
+    
+                // Increase player health
+                setPlayerHearts(prev => {
+                    const newHealth = Math.min(prev + 1, 15); // Increase health by 1, max of 5
+                    // Update health in Firebase
+                    const db = getDatabase();
+                    const userRef = ref(db, `users/${auth.currentUser.uid}/health`);
+                    set(userRef, newHealth);
+                    return newHealth;
+                });
             } else {
                 console.log("No user logged in, skipping progress update");
             }
-
+    
             // Reset hints when player wins a battle
             setHintsRemaining(2);
             setHighlightedIndices([]);
             setHint('');
-
+    
             setVictoryVisible(true);
         } else {
             setDefeatVisible(true);
@@ -450,10 +481,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             }
         } else {
             // Invalid word
-            setDefinition({
-                text: `"${word}" is not a valid science term. Try again!`,
-                source: ''
-            });
+                setDefinition({
+                    text: `"${word}" is not a valid science term. Please try again or form a valid word.`,
+                    source: ''
+                });
+
         }
 
         // Clear selected letters and update grid
@@ -577,9 +609,29 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         };
     }, [handleClickOutside]);
 
-    const handleTryAgain = () => {
+    const handleTryAgain = async () => {
         setDefeatVisible(false);
-        setPlayerHearts(3);
+        
+        // Check if the player is logged in
+        if (auth.currentUser) {
+            const db = getDatabase();
+            const userRef = ref(db, `users/${auth.currentUser.uid}/health`);
+            
+            try {
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    const health = snapshot.val();
+                    setPlayerHearts(health); // Set to the loaded health value
+                } 
+                // Remove the else block to avoid resetting to default value
+            } catch (error) {
+                console.error("Error loading player health:", error);
+                // Optionally, you can log an error or handle it differently
+            }
+        }
+        // Remove the else block to avoid resetting to default value
+        // setPlayerHearts(3); // Default value if no user is logged in
+    
         setEnemyHearts(level?.enemy?.health || 0);
         setSelectedLetters([]);
         setEmptyIndices([]);
@@ -590,7 +642,6 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         setHint(''); // Clear hint message
         setDefinition({ text: 'Form a word to see its definition!', source: '' });
     };
-
     const handleSettingsSave = (newMusicVolume) => {
         setMusicVolume(newMusicVolume);
         setSettingsOpen(false);
@@ -1087,7 +1138,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
                 {/* Description Box */}
                 <div className="description-box bg-[#f4d9a3] border-2 border-black p-4 rounded-lg mb-3 h-64 overflow-y-auto">
-                    <p className="text-gray-800">{definition.text}</p>
+                    <p className="text-gray-800">{definition.text || "Please form a word to see its definition."}</p>
+
                     {definition.source && (
                         <a
                             href={definition.source}
