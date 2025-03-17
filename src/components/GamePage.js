@@ -14,6 +14,7 @@ import mapLibrary from '../components/maps.json';
 import mapData from './maps.json';
 import { auth } from '../firebase/config';
 import { getDatabase, ref, onValue, set, get } from 'firebase/database';
+import scienceTerms from './scienceTerm';
 
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level, reload }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
@@ -218,7 +219,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             if (auth.currentUser) {
                 // Update user progress when enemy is defeated
                 await updateUserProgress(currentEnemy);
-    
+
                 // Increase player health
                 setPlayerHearts(prev => {
                     const newHealth = Math.min(prev + 1, 15); // Increase health by 1, max of 5
@@ -231,12 +232,12 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             } else {
                 console.log("No user logged in, skipping progress update");
             }
-    
+
             // Reset hints when player wins a battle
             setHintsRemaining(2);
             setHighlightedIndices([]);
             setHint('');
-    
+
             setVictoryVisible(true);
         } else {
             setDefeatVisible(true);
@@ -469,8 +470,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             }
 
             setDefinition({
-                text: feedbackText,
-                source: scienceTerm[word].source
+                text: `${word}Definition: ${scienceTerm[word].DEFINITION}`,
+                source: scienceTerm[word].SOURCE
             });
 
             // Check if enemy is defeated
@@ -482,10 +483,10 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             }
         } else {
             // Invalid word
-                setDefinition({
-                    text: `"${word}" is not a valid science term. Please try again or form a valid word.`,
-                    source: ''
-                });
+            setDefinition({
+                text: `"${word}" is not a valid science term. Please try again or form a valid word.`,
+                source: ''
+            });
 
         }
 
@@ -612,18 +613,18 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     const handleTryAgain = async () => {
         setDefeatVisible(false);
-        
+
         // Check if the player is logged in
         if (auth.currentUser) {
             const db = getDatabase();
             const userRef = ref(db, `users/${auth.currentUser.uid}/health`);
-            
+
             try {
                 const snapshot = await get(userRef);
                 if (snapshot.exists()) {
                     const health = snapshot.val();
                     setPlayerHearts(health); // Set to the loaded health value
-                } 
+                }
                 // Remove the else block to avoid resetting to default value
             } catch (error) {
                 console.error("Error loading player health:", error);
@@ -632,7 +633,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         }
         // Remove the else block to avoid resetting to default value
         // setPlayerHearts(3); // Default value if no user is logged in
-    
+
         setEnemyHearts(level?.enemy?.health || 0);
         setSelectedLetters([]);
         setEmptyIndices([]);
@@ -1007,14 +1008,14 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         if (slidebarOpen || settingsOpen || profileOpen || dialogVisible || showTutorial) return;
 
         const key = event.key.toUpperCase();
-        
+
         // Handle letter selection
         if (/^[A-Z]$/.test(key)) {
             // Find the first available instance of the pressed letter
-            const letterIndex = gridLetters.findIndex((letter, index) => 
+            const letterIndex = gridLetters.findIndex((letter, index) =>
                 letter === key && !emptyIndices.includes(index)
             );
-            
+
             if (letterIndex !== -1) {
                 handleLetterClick(key, letterIndex);
             }
@@ -1043,12 +1044,12 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         }
         // Handle arrow keys for navigation
         else if (event.key === 'ArrowLeft') {
-            setSelectedLetterIndex(prev => 
+            setSelectedLetterIndex(prev =>
                 prev <= 0 ? selectedLetters.length - 1 : prev - 1
             );
         }
         else if (event.key === 'ArrowRight') {
-            setSelectedLetterIndex(prev => 
+            setSelectedLetterIndex(prev =>
                 prev >= selectedLetters.length - 1 ? 0 : prev + 1
             );
         }
@@ -1194,28 +1195,28 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             </div>
 
             {/* Bottom Content */}
-            <div className="game-content w-[95%] max-w-[1400px] grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border-4 border-black rounded-lg bg-opacity-90 mb-4"
+            <div className="game-content w-[95%] max-w-[1400px] grid grid-cols-1 md:grid-cols-3 gap-6 p-6 border-4 border-gray-800 rounded-xl bg-opacity-90 mb-6 shadow-xl"
                 style={{
                     backgroundImage: `url(${functionBackground})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
-                    height: '35vh',
+                    height: '40vh',
                     backgroundColor: 'rgba(255, 255, 255, 0.9)'
                 }}>
 
                 {/* Description Box */}
-                <div className="description-box bg-[#f4d9a3] border-2 border-black p-4 rounded-lg mb-3 h-64 overflow-y-auto">
-                    <p className="text-gray-800">{definition.text || "Please form a word to see its definition."}</p>
+                <div className="description-box bg-gradient-to-b from-[#f4d9a3] to-[#f0d090] border-2 border-gray-800 p-5 rounded-xl mb-3 h-64 overflow-y-auto shadow-md">
+                    <div className="text-gray-800 leading-relaxed">{definition.text || "Please form a word to see its definition."}</div>
 
                     {definition.source && (
                         <a
                             href={definition.source}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-800 underline text-sm mt-2 block"
+                            className="inline-flex items-center text-blue-700 hover:text-blue-900 font-medium text-sm mt-3 group"
                         >
-                            Learn more
+                            Learn more <span className="ml-1 group-hover:ml-2 transition-all duration-300">→</span>
                         </a>
                     )}
                 </div>
@@ -1264,35 +1265,35 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="action-buttons flex flex-col space-y-1.5">
+                    <div className="action-buttons flex flex-col space-y-2">
                         <button
-                            className={`bg-[#f4d9a3] border-2 border-black py-1.5 text-center text-sm rounded-lg transition-colors ${!isValidWord ? "opacity-50 cursor-not-allowed" : "hover:bg-[#e5c8a1]"
-                                }`}
+                            className={`bg-gradient-to-r from-red-500 to-red-600 text-white border-2 border-gray-800 py-2.5 text-center font-bold text-base rounded-lg transition-all ${!isValidWord ? "opacity-50 cursor-not-allowed" : "hover:from-red-600 hover:to-red-700 hover:shadow-lg transform hover:-translate-y-0.5"}`}
                             onClick={handleAttack}
                             disabled={!isValidWord}
                         >
                             ATTACK
                         </button>
 
-                        <div className="hint-box bg-[#ffebc4] border-2 border-black py-1.5 text-center rounded-lg">
-                            <p className="text-xs truncate">{hint || `Hints remaining: ${hintsRemaining}`}</p>
+                        <div className="hint-box bg-amber-50 border-2 border-gray-800 py-2 px-3 text-center rounded-lg shadow-inner">
+                            <p className="text-sm truncate font-medium">{hint || `Hints remaining: ${hintsRemaining}`}</p>
                         </div>
 
-                        <button
-                            className={`hint-button bg-[#f4d9a3] border-2 border-black py-1.5 text-sm rounded-lg transition-colors ${hintsRemaining > 0 ? 'hover:bg-[#e5c8a1]' : 'opacity-50 cursor-not-allowed'
-                                }`}
-                            onClick={handleHint}
-                            disabled={hintsRemaining <= 0}
-                        >
-                            HINT
-                        </button>
+                        <div className="grid grid-cols-2 gap-2">
+                            <button
+                                className={`bg-gradient-to-r from-blue-500 to-blue-600 text-white border-2 border-gray-800 py-2 text-sm font-bold rounded-lg transition-all ${hintsRemaining > 0 ? 'hover:from-blue-600 hover:to-blue-700 hover:shadow-md transform hover:-translate-y-0.5' : 'opacity-50 cursor-not-allowed'}`}
+                                onClick={handleHint}
+                                disabled={hintsRemaining <= 0}
+                            >
+                                HINT
+                            </button>
 
-                        <button
-                            className="scramble-button bg-[#f4d9a3] border-2 border-black py-1.5 text-sm rounded-lg hover:bg-[#e5c8a1] transition-colors"
-                            onClick={handleScramble}
-                        >
-                            SCRAMBLE
-                        </button>
+                            <button
+                                className="scramble-button bg-[#f4d9a3]  text-black border-2 border-gray-800 py-2 text-sm font-bold rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all hover:shadow-md transform hover:-translate-y-0.5"
+                                onClick={handleScramble}
+                            >
+                                SCRAMBLE
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

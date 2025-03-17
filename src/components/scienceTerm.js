@@ -3,511 +3,511 @@ const scienceTerms = {
     // Physics - Mechanics and Motion
 
     ACCELERATION: {
-        definition: "The rate of change of velocity with respect to time. FORMULA: a = Δv/Δt",
-        source: "https://www.britannica.com/science/acceleration"
+        DEFINITION: "The rate of change of velocity with respect to time. FORMULA: a = Δv/Δt",
+        SOURCE: "https://www.britannica.com/science/acceleration"
     },
     VELOCITY: {
-        definition: "The rate of change of position in a specific direction. FORMULA: v = Δx/Δt",
-        source: "https://www.britannica.com/science/velocity"
+        DEFINITION: "The rate of change of position in a specific direction. FORMULA: v = Δx/Δt",
+        SOURCE: "https://www.britannica.com/science/velocity"
     },
     FORCE: {
-        definition: "A push or pull that can change an object's motion or shape. FORMULA: F = ma",
-        source: "https://www.britannica.com/science/force-physics"
+        DEFINITION: "A push or pull that can change an object's motion or shape. FORMULA: F = ma",
+        SOURCE: "https://www.britannica.com/science/force-physics"
     },
     MOMENTUM: {
-        definition: "The quantity of motion of a moving body, equal to the product of mass and velocity. FORMULA: p = mv",
-        source: "https://www.britannica.com/science/momentum"
+        DEFINITION: "The quantity of motion of a moving body, equal to the product of mass and velocity. FORMULA: p = mv",
+        SOURCE: "https://www.britannica.com/science/momentum"
     },
     INERTIA: {
-        definition: "The resistance of a physical object to any change in its velocity, including changes in speed or direction",
-        source: "https://www.britannica.com/science/inertia"
+        DEFINITION: "The resistance of a physical object to any change in its velocity, including changes in speed or direction",
+        SOURCE: "https://www.britannica.com/science/inertia"
     },
     GRAVITY: {
-        definition: "The universal force of attraction between all masses. FORMULA: F = G(m₁m₂)/r²",
-        source: "https://www.nasa.gov/universe/gravity"
+        DEFINITION: "The universal force of attraction between all masses. FORMULA: F = G(m₁m₂)/r²",
+        SOURCE: "https://www.nasa.gov/universe/gravity"
     },
     FRICTION: {
-        definition: "The force resisting relative motion between surfaces in contact. FORMULA: f = μN",
-        source: "https://www.britannica.com/science/friction"
+        DEFINITION: "The force resisting relative motion between surfaces in contact. FORMULA: f = μN",
+        SOURCE: "https://www.britannica.com/science/friction"
     },
     ACID: {
-        definition: "Substance that produces H+ ions in solution",
-        source: "https://www.britannica.com/science/acid"
+        DEFINITION: "Substance that produces H+ ions in solution",
+        SOURCE: "https://www.britannica.com/science/acid"
     },
     AMPLITUDE: {
-        definition: "Maximum displacement from equilibrium position",
-        source: "https://www.britannica.com/science/amplitude"
+        DEFINITION: "Maximum displacement from equilibrium position",
+        SOURCE: "https://www.britannica.com/science/amplitude"
     },
     ANTIMATTER: {
-        definition: "Matter with opposite properties of normal matter",
-        source: "https://www.britannica.com/science/antimatter"
+        DEFINITION: "Matter with opposite properties of normal matter",
+        SOURCE: "https://www.britannica.com/science/antimatter"
     },
     ASTEROID: {
-        definition: "Rocky object orbiting the Sun",
-        source: "https://www.britannica.com/science/asteroid"
+        DEFINITION: "Rocky object orbiting the Sun",
+        SOURCE: "https://www.britannica.com/science/asteroid"
     },
     ATMOSPHERE: {
-        definition: "Gaseous layer surrounding Earth",
-        source: "https://www.britannica.com/science/atmosphere"
+        DEFINITION: "Gaseous layer surrounding Earth",
+        SOURCE: "https://www.britannica.com/science/atmosphere"
     },
     ATOM: {
-        definition: "The basic unit of matter, made up of protons, neutrons, and electrons",
-        source: "https://www.britannica.com/science/atom"
+        DEFINITION: "The basic unit of matter, made up of protons, neutrons, and electrons",
+        SOURCE: "https://www.britannica.com/science/atom"
     },
     BASE: {
-        definition: "Substance that produces OH- ions in solution",
-        source: "https://www.britannica.com/science/base-chemistry"
+        DEFINITION: "Substance that produces OH- ions in solution",
+        SOURCE: "https://www.britannica.com/science/base-chemistry"
     },
     BIOSPHERE: {
-        definition: "All life on Earth",
-        source: "https://www.britannica.com/science/biosphere"
+        DEFINITION: "All life on Earth",
+        SOURCE: "https://www.britannica.com/science/biosphere"
     },
     BLACKHOLE: {
-        definition: "Region where gravity prevents light escape",
-        source: "https://www.britannica.com/science/black-hole"
+        DEFINITION: "Region where gravity prevents light escape",
+        SOURCE: "https://www.britannica.com/science/black-hole"
     },
     BOND: {
-        definition: "Force holding atoms together in molecules",
-        source: "https://www.britannica.com/science/chemical-bond"
+        DEFINITION: "Force holding atoms together in molecules",
+        SOURCE: "https://www.britannica.com/science/chemical-bond"
     },
     CARNOT: {
-        definition: "Ideal heat engine cycle efficiency. FORMULA: η = 1 - Tc/Th",
-        source: "https://www.britannica.com/science/Carnot-cycle"
+        DEFINITION: "Ideal heat engine cycle efficiency. FORMULA: η = 1 - Tc/Th",
+        SOURCE: "https://www.britannica.com/science/Carnot-cycle"
     },
     CATALYST: {
-        definition: "Substance that speeds up a reaction without being consumed",
-        source: "https://www.britannica.com/science/catalyst"
+        DEFINITION: "Substance that speeds up a reaction without being consumed",
+        SOURCE: "https://www.britannica.com/science/catalyst"
     },
     CELL: {
-        definition: "Basic unit of life",
-        source: "https://www.britannica.com/science/cell-biology"
+        DEFINITION: "Basic unit of life",
+        SOURCE: "https://www.britannica.com/science/cell-biology"
     },
     CENTRIPETAL: {
-        definition: "Force directing motion in circular path. FORMULA: F = mv²/r",
-        source: "https://www.britannica.com/science/centripetal-force"
+        DEFINITION: "Force directing motion in circular path. FORMULA: F = mv²/r",
+        SOURCE: "https://www.britannica.com/science/centripetal-force"
     },
     CHROMOSOME: {
-        definition: "Structure containing DNA",
-        source: "https://www.britannica.com/science/chromosome"
+        DEFINITION: "Structure containing DNA",
+        SOURCE: "https://www.britannica.com/science/chromosome"
     },
     CLIMATE: {
-        definition: "Long-term weather patterns",
-        source: "https://www.britannica.com/science/climate"
+        DEFINITION: "Long-term weather patterns",
+        SOURCE: "https://www.britannica.com/science/climate"
     },
     COMET: {
-        definition: "Icy body that produces gas tail near Sun",
-        source: "https://www.britannica.com/science/comet"
+        DEFINITION: "Icy body that produces gas tail near Sun",
+        SOURCE: "https://www.britannica.com/science/comet"
     },
     COMPOUND: {
-        definition: "Substance made of different elements chemically combined",
-        source: "https://www.britannica.com/science/chemical-compound"
+        DEFINITION: "Substance made of different elements chemically combined",
+        SOURCE: "https://www.britannica.com/science/chemical-compound"
     },
     CONDUCTION: {
-        definition: "Heat transfer through direct contact",
-        source: "https://www.britannica.com/science/conduction-heat-transfer"
+        DEFINITION: "Heat transfer through direct contact",
+        SOURCE: "https://www.britannica.com/science/conduction-heat-transfer"
     },
     CONVECTION: {
-        definition: "The transfer of heat through a fluid (liquid or gas) by the movement of warmer and cooler fluid regions",
-        source: "https://www.britannica.com/science/convection"
+        DEFINITION: "The transfer of heat through a fluid (liquid or gas) by the movement of warmer and cooler fluid regions",
+        SOURCE: "https://www.britannica.com/science/convection"
     },
     DENSITY: {
-        definition: "The mass of a substance per unit volume. FORMULA: ρ = m/V",
-        source: "https://www.britannica.com/science/density"
+        DEFINITION: "The mass of a substance per unit volume. FORMULA: ρ = m/V",
+        SOURCE: "https://www.britannica.com/science/density"
     },
     DIFFRACTION: {
-        definition: "The bending of waves around obstacles or through openings, characteristic of all wave phenomena",
-        source: "https://www.britannica.com/science/diffraction"
+        DEFINITION: "The bending of waves around obstacles or through openings, characteristic of all wave phenomena",
+        SOURCE: "https://www.britannica.com/science/diffraction"
     },
     DNA: {
-        definition: "A self-replicating material present in nearly all living organisms as the main constituent of chromosomes, carrying genetic information",
-        source: "https://www.genome.gov/genetics-glossary/Deoxyribonucleic-Acid"
+        DEFINITION: "A self-replicating material present in nearly all living organisms as the main constituent of chromosomes, carrying genetic information",
+        SOURCE: "https://www.genome.gov/genetics-glossary/Deoxyribonucleic-Acid"
     },
     DOPPLER: {
-        definition: "The change in frequency or wavelength of a wave for an observer moving relative to its source",
-        source: "https://www.britannica.com/science/Doppler-effect"
+        DEFINITION: "The change in frequency or wavelength of a wave for an observer moving relative to its SOURCE",
+        SOURCE: "https://www.britannica.com/science/Doppler-effect"
     },
     ELECTRON: {
-        definition: "A stable subatomic particle with a negative electric charge, found in all atoms around the nucleus",
-        source: "https://www.britannica.com/science/electron"
+        DEFINITION: "A stable subatomic particle with a negative electric charge, found in all atoms around the nucleus",
+        SOURCE: "https://www.britannica.com/science/electron"
     },
     ELASTICITY: {
-        definition: "The ability of a material to return to its original shape and size after being stretched or compressed",
-        source: "https://www.britannica.com/science/elasticity-physics"
+        DEFINITION: "The ability of a material to return to its original shape and size after being stretched or compressed",
+        SOURCE: "https://www.britannica.com/science/elasticity-physics"
     },
     ELEMENT: {
-        definition: "A pure substance consisting of atoms with the same number of protons in their atomic nuclei",
-        source: "https://www.britannica.com/science/chemical-element"
+        DEFINITION: "A pure substance consisting of atoms with the same number of protons in their atomic nuclei",
+        SOURCE: "https://www.britannica.com/science/chemical-element"
     },
     ENERGY: {
-        definition: "The capacity to do work or cause physical change, existing in various forms that can be converted but not created or destroyed",
-        source: "https://www.britannica.com/science/energy"
+        DEFINITION: "The capacity to do work or cause physical change, existing in various forms that can be converted but not created or destroyed",
+        SOURCE: "https://www.britannica.com/science/energy"
     },
     ENTANGLEMENT: {
-        definition: "A quantum phenomenon where particles become correlated in such a way that the quantum state of each particle cannot be described independently",
-        source: "https://www.nature.com/subjects/quantum-entanglement"
+        DEFINITION: "A quantum phenomenon where particles become correlated in such a way that the quantum state of each particle cannot be described independently",
+        SOURCE: "https://www.nature.com/subjects/quantum-entanglement"
     },
     ENTROPY: {
-        definition: "A measure of the disorder or randomness in a closed system. FORMULA: ΔS = Q/T",
-        source: "https://www.britannica.com/science/entropy-physics"
+        DEFINITION: "A measure of the disorder or randomness in a closed system. FORMULA: ΔS = Q/T",
+        SOURCE: "https://www.britannica.com/science/entropy-physics"
     },
     ENZMYE: "Protein that catalyzes biological reactions",
     EROSION: {
-        definition: "The gradual destruction and removal of rock or soil by natural processes such as wind, water, or ice",
-        source: "https://www.nationalgeographic.org/encyclopedia/erosion"
+        DEFINITION: "The gradual destruction and removal of rock or soil by natural processes such as wind, water, or ice",
+        SOURCE: "https://www.nationalgeographic.org/encyclopedia/erosion"
     },
     FREQUENCY: {
-        definition: "The number of occurrences of a repeating event per unit time. FORMULA: f = 1/T",
-        source: "https://www.britannica.com/science/frequency-physics"
+        DEFINITION: "The number of occurrences of a repeating event per unit time. FORMULA: f = 1/T",
+        SOURCE: "https://www.britannica.com/science/frequency-physics"
     },
     GALAXY: {
-        definition: "A massive system of stars, gas, dust, and dark matter held together by gravity",
-        source: "https://www.nasa.gov/universe/galaxies"
+        DEFINITION: "A massive system of stars, gas, dust, and dark matter held together by gravity",
+        SOURCE: "https://www.nasa.gov/universe/galaxies"
     },
     GENE: {
-        definition: "A sequence of DNA that codes for a specific protein or functional RNA molecule",
-        source: "https://www.genome.gov/genetics-glossary/Gene"
+        DEFINITION: "A sequence of DNA that codes for a specific protein or functional RNA molecule",
+        SOURCE: "https://www.genome.gov/genetics-glossary/Gene"
     },
     HEAT: {
-        definition: "The transfer of thermal energy between objects due to temperature differences",
-        source: "https://www.britannica.com/science/heat"
+        DEFINITION: "The transfer of thermal energy between objects due to temperature differences",
+        SOURCE: "https://www.britannica.com/science/heat"
     },
     HEATCAPACITY: {
-        definition: "Heat needed to raise temperature by one degree",
-        source: "https://www.britannica.com/science/heat-capacity"
+        DEFINITION: "Heat needed to raise temperature by one degree",
+        SOURCE: "https://www.britannica.com/science/heat-capacity"
     },
     HYDROSPHERE: {
-        definition: "All water on Earth",
-        source: "https://www.britannica.com/science/hydrosphere"
+        DEFINITION: "All water on Earth",
+        SOURCE: "https://www.britannica.com/science/hydrosphere"
     },
     INTERFERENCE: {
-        definition: "Combination of waves to form resultant wave",
-        source: "https://www.britannica.com/science/interference-physics"
+        DEFINITION: "Combination of waves to form resultant wave",
+        SOURCE: "https://www.britannica.com/science/interference-physics"
     },
     LATENT: {
-        definition: "Heat absorbed/released during phase change",
-        source: "https://www.britannica.com/science/latent-heat"
+        DEFINITION: "Heat absorbed/released during phase change",
+        SOURCE: "https://www.britannica.com/science/latent-heat"
     },
     LIGHT: {
-        definition: "Electromagnetic radiation visible to human eye",
-        source: "https://www.britannica.com/science/light"
+        DEFINITION: "Electromagnetic radiation visible to human eye",
+        SOURCE: "https://www.britannica.com/science/light"
     },
     LITHOSPHERE: {
-        definition: "Rigid outer part of Earth",
-        source: "https://www.britannica.com/science/lithosphere"
+        DEFINITION: "Rigid outer part of Earth",
+        SOURCE: "https://www.britannica.com/science/lithosphere"
     },
     MEMBRANE: {
-        definition: "Barrier around cells and organelles",
-        source: "https://www.britannica.com/science/membrane-biology"
+        DEFINITION: "Barrier around cells and organelles",
+        SOURCE: "https://www.britannica.com/science/membrane-biology"
     },
     METEOR: {
-        definition: "Space rock burning in Earth's atmosphere",
-        source: "https://www.britannica.com/science/meteor-astronomy"
+        DEFINITION: "Space rock burning in Earth's atmosphere",
+        SOURCE: "https://www.britannica.com/science/meteor-astronomy"
     },
     MINERAL: {
-        definition: "Naturally occurring inorganic solid",
-        source: "https://www.britannica.com/science/mineral"
+        DEFINITION: "Naturally occurring inorganic solid",
+        SOURCE: "https://www.britannica.com/science/mineral"
     },
     MITOSIS: {
-        definition: "Cell division for growth and repair",
-        source: "https://www.britannica.com/science/mitosis"
+        DEFINITION: "Cell division for growth and repair",
+        SOURCE: "https://www.britannica.com/science/mitosis"
     },
     MOLECULE: {
-        definition: "Group of atoms bonded together",
-        source: "https://www.britannica.com/science/molecule"
+        DEFINITION: "Group of atoms bonded together",
+        SOURCE: "https://www.britannica.com/science/molecule"
     },
     NEBULA: {
-        definition: "Cloud of gas and dust where stars form",
-        source: "https://www.britannica.com/science/nebula"
+        DEFINITION: "Cloud of gas and dust where stars form",
+        SOURCE: "https://www.britannica.com/science/nebula"
     },
     NEUTRON: {
-        definition: "Neutral particle in atomic nuclei",
-        source: "https://www.britannica.com/science/neutron"
+        DEFINITION: "Neutral particle in atomic nuclei",
+        SOURCE: "https://www.britannica.com/science/neutron"
     },
     OPTICS: {
-        definition: "Study of light behavior and properties",
-        source: "https://www.britannica.com/science/optics"
+        DEFINITION: "Study of light behavior and properties",
+        SOURCE: "https://www.britannica.com/science/optics"
     },
     PARTICLEPHYSICS: {
-        definition: "Study of fundamental particles and interactions",
-        source: "https://www.britannica.com/science/particle-physics"
+        DEFINITION: "Study of fundamental particles and interactions",
+        SOURCE: "https://www.britannica.com/science/particle-physics"
     },
     PLANCK: {
-        definition: "Quantum of action in physics. FORMULA: E = hf",
-        source: "https://www.britannica.com/biography/Max-Planck"
+        DEFINITION: "Quantum of action in physics. FORMULA: E = hf",
+        SOURCE: "https://www.britannica.com/biography/Max-Planck"
     },
     PLANET: {
-        definition: "Celestial body orbiting a star",
-        source: "https://www.britannica.com/science/planet"
+        DEFINITION: "Celestial body orbiting a star",
+        SOURCE: "https://www.britannica.com/science/planet"
     },
     POLARIZATION: {
-        definition: "Restriction of wave oscillation to one plane",
-        source: "https://www.britannica.com/science/polarization-physics"
+        DEFINITION: "Restriction of wave oscillation to one plane",
+        SOURCE: "https://www.britannica.com/science/polarization-physics"
     },
     PRESSURE: {
-        definition: "Force applied per unit area. FORMULA: P = F/A",
-        source: "https://www.britannica.com/science/pressure-physics"
+        DEFINITION: "Force applied per unit area. FORMULA: P = F/A",
+        SOURCE: "https://www.britannica.com/science/pressure-physics"
     },
     PROTEIN: {
-        definition: "Large molecules essential for life processes",
-        source: "https://www.britannica.com/science/protein"
+        DEFINITION: "Large molecules essential for life processes",
+        SOURCE: "https://www.britannica.com/science/protein"
     },
     PROTON: {
-        definition: "Positively charged particle in atomic nuclei",
-        source: "https://www.britannica.com/science/proton"
+        DEFINITION: "Positively charged particle in atomic nuclei",
+        SOURCE: "https://www.britannica.com/science/proton"
     },
     PULSAR: {
-        definition: "Rotating neutron star emitting radiation",
-        source: "https://www.britannica.com/science/pulsar"
+        DEFINITION: "Rotating neutron star emitting radiation",
+        SOURCE: "https://www.britannica.com/science/pulsar"
     },
     QUANTUM: {
-        definition: "Smallest possible discrete unit of any physical property",
-        source: "https://www.britannica.com/science/quantum-mechanics"
+        DEFINITION: "Smallest possible discrete unit of any physical property",
+        SOURCE: "https://www.britannica.com/science/quantum-mechanics"
     },
     QUASAR: {
-        definition: "Very bright galactic nucleus",
-        source: "https://www.britannica.com/science/quasar"
+        DEFINITION: "Very bright galactic nucleus",
+        SOURCE: "https://www.britannica.com/science/quasar"
     },
     RADIATION: {
-        definition: "Heat transfer through electromagnetic waves",
-        source: "https://www.britannica.com/science/radiation"
+        DEFINITION: "Heat transfer through electromagnetic waves",
+        SOURCE: "https://www.britannica.com/science/radiation"
     },
     REACTION: {
-        definition: "Process where substances change into new substances",
-        source: "https://www.britannica.com/science/chemical-reaction"
+        DEFINITION: "Process where substances change into new substances",
+        SOURCE: "https://www.britannica.com/science/chemical-reaction"
     },
     REDSHIFT: {
-        definition: "Wavelength increase from moving objects",
-        source: "https://www.britannica.com/science/redshift"
+        DEFINITION: "Wavelength increase from moving objects",
+        SOURCE: "https://www.britannica.com/science/redshift"
     },
     REFLECTION: {
-        definition: "Bouncing back of waves from a surface",
-        source: "https://www.britannica.com/science/reflection-physics"
+        DEFINITION: "Bouncing back of waves from a surface",
+        SOURCE: "https://www.britannica.com/science/reflection-physics"
     },
     REFRACTION: {
-        definition: "Bending of waves passing between media",
-        source: "https://www.britannica.com/science/refraction"
+        DEFINITION: "Bending of waves passing between media",
+        SOURCE: "https://www.britannica.com/science/refraction"
     },
     RELATIVITY: {
-        definition: "Einstein's theory relating space, time, mass, and energy",
-        source: "https://www.britannica.com/science/relativity"
+        DEFINITION: "Einstein's theory relating space, time, mass, and energy",
+        SOURCE: "https://www.britannica.com/science/relativity"
     },
     RNA: {
-        definition: "Molecule involved in protein synthesis",
-        source: "https://www.britannica.com/science/RNA"
+        DEFINITION: "Molecule involved in protein synthesis",
+        SOURCE: "https://www.britannica.com/science/RNA"
     },
     SOLUTION: {
-        definition: "Homogeneous mixture of substances",
-        source: "https://www.britannica.com/science/solution-chemistry"
+        DEFINITION: "Homogeneous mixture of substances",
+        SOURCE: "https://www.britannica.com/science/solution-chemistry"
     },
     SUPERPOSITION: {
-        definition: "Quantum state existing in multiple states simultaneously",
-        source: "https://www.britannica.com/science/quantum-superposition"
+        DEFINITION: "Quantum state existing in multiple states simultaneously",
+        SOURCE: "https://www.britannica.com/science/quantum-superposition"
     },
     SUPERNOVA: {
-        definition: "Explosive death of massive star",
-        source: "https://www.britannica.com/science/supernova"
+        DEFINITION: "Explosive death of massive star",
+        SOURCE: "https://www.britannica.com/science/supernova"
     },
     TEMPERATURE: {
-        definition: "Measure of average kinetic energy of particles",
-        source: "https://www.britannica.com/science/temperature-physics"
+        DEFINITION: "Measure of average kinetic energy of particles",
+        SOURCE: "https://www.britannica.com/science/temperature-physics"
     },
     THERMODYNAMICS: {
-        definition: "Study of heat, energy, and their relationships",
-        source: "https://www.britannica.com/science/thermodynamics"
+        DEFINITION: "Study of heat, energy, and their relationships",
+        SOURCE: "https://www.britannica.com/science/thermodynamics"
     },
     TORQUE: {
-        definition: "Rotational force. FORMULA: τ = r × F",
-        source: "https://www.britannica.com/science/torque"
+        DEFINITION: "Rotational force. FORMULA: τ = r × F",
+        SOURCE: "https://www.britannica.com/science/torque"
     },
     UNCERTAINTY: {
-        definition: "Heisenberg's principle of position-momentum uncertainty",
-        source: "https://www.britannica.com/science/uncertainty-principle"
+        DEFINITION: "Heisenberg's principle of position-momentum uncertainty",
+        SOURCE: "https://www.britannica.com/science/uncertainty-principle"
     },
     WAVES: {
-        definition: "A disturbance that transfers energy through matter or space",
-        source: "https://www.britannica.com/science/wave-physics"
+        DEFINITION: "A disturbance that transfers energy through matter or space",
+        SOURCE: "https://www.britannica.com/science/wave-physics"
     },
     WAVELENGTH: {
-        definition: "Distance between wave peaks. FORMULA: λ = v/f",
-        source: "https://www.britannica.com/science/wavelength"
+        DEFINITION: "Distance between wave peaks. FORMULA: λ = v/f",
+        SOURCE: "https://www.britannica.com/science/wavelength"
     },
     WEATHER: {
-        definition: "Short-term atmospheric conditions",
-        source: "https://www.britannica.com/science/weather-meteorology"
+        DEFINITION: "Short-term atmospheric conditions",
+        SOURCE: "https://www.britannica.com/science/weather-meteorology"
     },
     WORK: {
-        definition: "The transfer of energy when a force moves an object. FORMULA: W = Fd",
-        source: "https://www.britannica.com/science/work-physics"
+        DEFINITION: "The transfer of energy when a force moves an object. FORMULA: W = Fd",
+        SOURCE: "https://www.britannica.com/science/work-physics"
     },
 
     //Biology Dictionary
     AEROBIC: {
-        definition: "Depending on oxygen for survival or function.",
-        source: "https://www.britannica.com/science/aerobic"
+        DEFINITION: "Depending on oxygen for survival or function.",
+        SOURCE: "https://www.britannica.com/science/aerobic"
     },
     AGGLUTINATION: {
-        definition: "The clumping of particles, such as blood cells or bacteria, in response to an antibody-antigen reaction.",
-        source: "https://www.britannica.com/science/agglutination"
+        DEFINITION: "The clumping of particles, such as blood cells or bacteria, in response to an antibody-antigen reaction.",
+        SOURCE: "https://www.britannica.com/science/agglutination"
     },
     ALBINO: {
-        definition: "A person with a congenital absence of pigmentation in the skin, eyes, and hair.",
-        source: "https://www.britannica.com/science/albinism"
+        DEFINITION: "A person with a congenital absence of pigmentation in the skin, eyes, and hair.",
+        SOURCE: "https://www.britannica.com/science/albinism"
     },
     ALLELE: {
-        definition: "One of two or more alternative forms of a gene that occupy the same position on homologous chromosomes.",
-        source: "https://www.britannica.com/science/allele"
+        DEFINITION: "One of two or more alternative forms of a gene that occupy the same position on homologous chromosomes.",
+        SOURCE: "https://www.britannica.com/science/allele"
     },
     ANAEROBIC: {
-        definition: "Requiring the absence of or not dependent on oxygen for survival or function.",
-        source: "https://www.britannica.com/science/anaerobic"
+        DEFINITION: "Requiring the absence of or not dependent on oxygen for survival or function.",
+        SOURCE: "https://www.britannica.com/science/anaerobic"
     },
     ANTERIOR: {
-        definition: "Located near or toward the head of an organism.",
-        source: "https://www.britannica.com/science/anatomy"
+        DEFINITION: "Located near or toward the head of an organism.",
+        SOURCE: "https://www.britannica.com/science/anatomy"
     },
     ASEXUAL: {
-        definition: "A form of reproduction that does not involve the fusion of male and female gametes.",
-        source: "https://www.britannica.com/science/asexual-reproduction"
+        DEFINITION: "A form of reproduction that does not involve the fusion of male and female gametes.",
+        SOURCE: "https://www.britannica.com/science/asexual-reproduction"
     },
     ASSIMILATION: {
-        definition: "The process of converting digested food into protoplasm in an organism.",
-        source: "https://www.britannica.com/science/assimilation"
+        DEFINITION: "The process of converting digested food into protoplasm in an organism.",
+        SOURCE: "https://www.britannica.com/science/assimilation"
     },
     BACTERIA: {
-        definition: "Single-celled microorganisms that lack a nucleus and can be found in various environments.",
-        source: "https://www.britannica.com/science/bacteria"
+        DEFINITION: "Single-celled microorganisms that lack a nucleus and can be found in various environments.",
+        SOURCE: "https://www.britannica.com/science/bacteria"
     },
     BINARYFISSION: {
-        definition: "A form of asexual reproduction in which a single cell divides into two identical daughter cells.",
-        source: "https://www.britannica.com/science/binary-fission"
+        DEFINITION: "A form of asexual reproduction in which a single cell divides into two identical daughter cells.",
+        SOURCE: "https://www.britannica.com/science/binary-fission"
     },
     BIOMASS: {
-        definition: "The total mass of living organisms in a given area or ecosystem.",
-        source: "https://www.britannica.com/science/biomass"
+        DEFINITION: "The total mass of living organisms in a given area or ecosystem.",
+        SOURCE: "https://www.britannica.com/science/biomass"
     },
     BLOOD: {
-        definition: "A fluid that circulates through the body, supplying oxygen and nutrients while removing waste products.",
-        source: "https://www.britannica.com/science/blood-biochemistry"
+        DEFINITION: "A fluid that circulates through the body, supplying oxygen and nutrients while removing waste products.",
+        SOURCE: "https://www.britannica.com/science/blood-biochemistry"
     },
     BLOODVESSEL: {
-        definition: "A tubular structure that carries blood throughout the body (artery, vein, or capillary).",
-        source: "https://www.britannica.com/science/blood-vessel"
+        DEFINITION: "A tubular structure that carries blood throughout the body (artery, vein, or capillary).",
+        SOURCE: "https://www.britannica.com/science/blood-vessel"
     },
     BONE: {
-        definition: "A rigid structure that makes up the skeleton of most vertebrates.",
-        source: "https://www.britannica.com/science/bone-anatomy"
+        DEFINITION: "A rigid structure that makes up the skeleton of most vertebrates.",
+        SOURCE: "https://www.britannica.com/science/bone-anatomy"
     },
     CELL: {
-        definition: "The basic structural and functional unit of life in all living organisms.",
-        source: "https://www.britannica.com/science/cell-biology"
+        DEFINITION: "The basic structural and functional unit of life in all living organisms.",
+        SOURCE: "https://www.britannica.com/science/cell-biology"
     },
     CHROMOSOME: {
-        definition: "A thread-like structure of DNA that contains genetic information.",
-        source: "https://www.britannica.com/science/chromosome"
+        DEFINITION: "A thread-like structure of DNA that contains genetic information.",
+        SOURCE: "https://www.britannica.com/science/chromosome"
     },
     CIRCULATION: {
-        definition: "The movement of blood through the body to supply oxygen and nutrients to tissues.",
-        source: "https://www.britannica.com/science/circulation"
+        DEFINITION: "The movement of blood through the body to supply oxygen and nutrients to tissues.",
+        SOURCE: "https://www.britannica.com/science/circulation"
     },
     CIRCULATORYSYSTEM: {
-        definition: "The system responsible for transporting blood and lymph throughout the body.",
-        source: "https://www.britannica.com/science/circulatory-system"
+        DEFINITION: "The system responsible for transporting blood and lymph throughout the body.",
+        SOURCE: "https://www.britannica.com/science/circulatory-system"
     },
     CLONE: {
-        definition: "A genetically identical copy of an organism, produced asexually.",
-        source: "https://www.britannica.com/science/cloning"
+        DEFINITION: "A genetically identical copy of an organism, produced asexually.",
+        SOURCE: "https://www.britannica.com/science/cloning"
     },
     CODOMINANT: {
-        definition: "A genetic condition in which both alleles in a heterozygous organism are fully expressed in the phenotype.",
-        source: "https://www.britannica.com/science/codominance"
+        DEFINITION: "A genetic condition in which both alleles in a heterozygous organism are fully expressed in the phenotype.",
+        SOURCE: "https://www.britannica.com/science/codominance"
     },
     DIGESTION: {
-        definition: "The process of breaking down food into simpler molecules for absorption.",
-        source: "https://www.britannica.com/science/digestion"
+        DEFINITION: "The process of breaking down food into simpler molecules for absorption.",
+        SOURCE: "https://www.britannica.com/science/digestion"
     },
     DNA: {
-        definition: "The molecule that carries genetic information in living organisms.",
-        source: "https://www.britannica.com/science/DNA"
+        DEFINITION: "The molecule that carries genetic information in living organisms.",
+        SOURCE: "https://www.britannica.com/science/DNA"
     },
     EVOLUTION: {
-        definition: "The process by which species gradually change over generations through natural selection.",
-        source: "https://www.britannica.com/science/evolution-scientific-theory"
+        DEFINITION: "The process by which species gradually change over generations through natural selection.",
+        SOURCE: "https://www.britannica.com/science/evolution-scientific-theory"
     },
     FERMENTATION: {
-        definition: "A chemical process in which microorganisms break down substances, often producing energy without oxygen.",
-        source: "https://www.britannica.com/science/fermentation"
+        DEFINITION: "A chemical process in which microorganisms break down substances, often producing energy without oxygen.",
+        SOURCE: "https://www.britannica.com/science/fermentation"
     },
     FOSSIL: {
-        definition: "The preserved remains or traces of ancient organisms.",
-        source: "https://www.britannica.com/science/fossil"
+        DEFINITION: "The preserved remains or traces of ancient organisms.",
+        SOURCE: "https://www.britannica.com/science/fossil"
     },
     GENETICS: {
-        definition: "The study of heredity and the variation of inherited characteristics.",
-        source: "https://www.britannica.com/science/genetics"
+        DEFINITION: "The study of heredity and the variation of inherited characteristics.",
+        SOURCE: "https://www.britannica.com/science/genetics"
     },
     IMMUNESYSTEM: {
-        definition: "The body's defense system against infections and diseases.",
-        source: "https://www.britannica.com/science/immune-system"
+        DEFINITION: "The body's defense system against infections and diseases.",
+        SOURCE: "https://www.britannica.com/science/immune-system"
     },
     METABOLISM: {
-        definition: "The set of chemical reactions that occur within an organism to maintain life.",
-        source: "https://www.britannica.com/science/metabolism"
+        DEFINITION: "The set of chemical reactions that occur within an organism to maintain life.",
+        SOURCE: "https://www.britannica.com/science/metabolism"
     },
     MITOSIS: {
-        definition: "A type of cell division that results in two identical daughter cells.",
-        source: "https://www.britannica.com/science/mitosis"
+        DEFINITION: "A type of cell division that results in two identical daughter cells.",
+        SOURCE: "https://www.britannica.com/science/mitosis"
     },
     PHOTOSYNTHESIS: {
-        definition: "The process by which plants convert sunlight into energy.",
-        source: "https://www.britannica.com/science/photosynthesis"
+        DEFINITION: "The process by which plants convert sunlight into energy.",
+        SOURCE: "https://www.britannica.com/science/photosynthesis"
     },
     PROTEIN: {
-        definition: "A macromolecule made of amino acids essential for growth and repair in organisms.",
-        source: "https://www.britannica.com/science/protein"
+        DEFINITION: "A macromolecule made of amino acids essential for growth and repair in organisms.",
+        SOURCE: "https://www.britannica.com/science/protein"
     },
     RESPIRATION: {
-        definition: "The process of breaking down glucose to release energy.",
-        source: "https://www.britannica.com/science/cellular-respiration"
+        DEFINITION: "The process of breaking down glucose to release energy.",
+        SOURCE: "https://www.britannica.com/science/cellular-respiration"
     },
     VACCINE: {
-        definition: "A substance used to stimulate the immune system and provide immunity to diseases.",
-        source: "https://www.britannica.com/science/vaccine"
+        DEFINITION: "A substance used to stimulate the immune system and provide immunity to diseases.",
+        SOURCE: "https://www.britannica.com/science/vaccine"
     },
     VIRUS: {
-        definition: "A microscopic infectious agent that replicates only inside a living host cell.",
-        source: "https://www.britannica.com/science/virus"
+        DEFINITION: "A microscopic infectious agent that replicates only inside a living host cell.",
+        SOURCE: "https://www.britannica.com/science/virus"
     },
     VITAMINS: {
-        definition: "Organic compounds essential for normal growth and metabolism.",
-        source: "https://www.britannica.com/science/vitamin"
+        DEFINITION: "Organic compounds essential for normal growth and metabolism.",
+        SOURCE: "https://www.britannica.com/science/vitamin"
     },
     WBC: {
-        definition: "White Blood Cell (WBC) is a type of blood cell that helps fight infections and diseases.",
-        source: "https://www.britannica.com/science/white-blood-cell"
+        DEFINITION: "White Blood Cell (WBC) is a type of blood cell that helps fight infections and diseases.",
+        SOURCE: "https://www.britannica.com/science/white-blood-cell"
     },
     WATERCYCLE: {
-        definition: "The continuous movement of water through the environment, including evaporation, condensation, and precipitation.",
-        source: "https://www.britannica.com/science/hydrologic-cycle"
+        DEFINITION: "The continuous movement of water through the environment, including evaporation, condensation, and precipitation.",
+        SOURCE: "https://www.britannica.com/science/hydrologic-cycle"
     },
     XYLEM: {
-        definition: "A tissue in plants that transports water and nutrients from the roots to the leaves.",
-        source: "https://www.britannica.com/science/xylem"
+        DEFINITION: "A tissue in plants that transports water and nutrients from the roots to the leaves.",
+        SOURCE: "https://www.britannica.com/science/xylem"
     },
     YEAST: {
-        definition: "A type of fungus used in fermentation and baking.",
-        source: "https://www.britannica.com/science/yeast-fungus"
+        DEFINITION: "A type of fungus used in fermentation and baking.",
+        SOURCE: "https://www.britannica.com/science/yeast-fungus"
     },
     YOLK: {
-        definition: "The nutrient-rich part of an egg that provides food for a developing embryo.",
-        source: "https://www.britannica.com/science/yolk-biology"
+        DEFINITION: "The nutrient-rich part of an egg that provides food for a developing embryo.",
+        SOURCE: "https://www.britannica.com/science/yolk-biology"
     },
     ZYGOTE: {
-        definition: "A fertilized egg cell that will develop into an embryo.",
-        source: "https://www.britannica.com/science/zygote"
+        DEFINITION: "A fertilized egg cell that will develop into an embryo.",
+        SOURCE: "https://www.britannica.com/science/zygote"
     },
     ZOOPLANKTON: {
-        definition: "Microscopic aquatic animals that drift in water and serve as food for larger organisms.",
-        source: "https://www.britannica.com/science/zooplankton"
+        DEFINITION: "Microscopic aquatic animals that drift in water and serve as food for larger organisms.",
+        SOURCE: "https://www.britannica.com/science/zooplankton"
     },
 
 
@@ -561,7 +561,7 @@ const scienceTerms = {
         SOURCE: 'https://www.britannica.com/science/atomic-mass'
     },
     CARBOHYDRATE: {
-        DEFINITION: "A large group of organic compounds, including sugars and polysaccharides, that serve as an important source of food and energy for animals.",
+        DEFINITION: "A large group of organic compounds, including sugars and polysaccharides, that serve as an important SOURCE of food and energy for animals.",
         SOURCE: 'https://www.britannica.com/science/carbohydrate'
     },
     CATHODE: {
@@ -1040,7 +1040,7 @@ const scienceTerms = {
         SOURCE: 'https://www.vedantu.com/chemistry/bismuth'
     },
     POLONIUM: {
-        DEFINITION: 'is a radioactive metalloid used in anti-static devices and as a heat source in space equipment.',
+        DEFINITION: 'is a radioactive metalloid used in anti-static devices and as a heat SOURCE in space equipment.',
         SOURCE: 'https://www.vedantu.com/chemistry/polonium'
     },
     ASTATINE: {
@@ -1060,7 +1060,7 @@ const scienceTerms = {
         SOURCE: 'https://www.vedantu.com/chemistry/radium'
     },
     ACTINIUM: {
-        DEFINITION: 'is a radioactive element used as a neutron source and in radiation therapy.',
+        DEFINITION: 'is a radioactive element used as a neutron SOURCE and in radiation therapy.',
         SOURCE: 'https://www.vedantu.com/chemistry/actinium'
     },
     THORIUM: {
@@ -1084,11 +1084,11 @@ const scienceTerms = {
         SOURCE: 'https://www.vedantu.com/chemistry/plutonium'
     },
     AMERICIUM: {
-        DEFINITION: 'is a synthetic radioactive metal used in smoke detectors and as a neutron source.',
+        DEFINITION: 'is a synthetic radioactive metal used in smoke detectors and as a neutron SOURCE.',
         SOURCE: 'https://www.vedantu.com/chemistry/americium'
     },
     CURIUM: {
-        DEFINITION: 'is a radioactive metal used in research and as a power source in space missions.',
+        DEFINITION: 'is a radioactive metal used in research and as a power SOURCE in space missions.',
         SOURCE: 'https://www.vedantu.com/chemistry/curium'
     },
     BERKELIUM: {
@@ -1096,7 +1096,7 @@ const scienceTerms = {
         SOURCE: 'https://www.vedantu.com/chemistry/berkelium'
     },
     CALIFORNIUM: {
-        DEFINITION: 'is a radioactive metal used in neutron moisture gauges and as a neutron source in research.',
+        DEFINITION: 'is a radioactive metal used in neutron moisture gauges and as a neutron SOURCE in research.',
         SOURCE: 'https://www.vedantu.com/chemistry/californium'
     },
     EINSTEINIUM: {

@@ -99,16 +99,20 @@ const Almanac = ({ onMainMenu }) => {
   return (
     <div className="min-h-screen bg-cover bg-center flex items-center justify-center py-12">
       <div className="max-w-4xl w-full bg-[#fdf6e3] p-8 border-8 border-double border-gray-700 rounded-lg shadow-xl overflow-auto text-center">
-        <h1 className="text-4xl font-bold mb-4">Almanac of Knowledge</h1>
+      <div className="flex items-center justify-between mb-6">
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-6"
+          className="bg-blue-300 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-full mb-6 transition-all duration-300 shadow-md"
           onClick={onMainMenu}
         >
-          Back to Main Menu
+          {'< '}
         </button>
-
+        <h1 className="text-3xl font-bold text-indigo-900 text-center mt-3 mb-8"style={{ 
+                letterSpacing: '-1px'}}>ALMANAC OF KNOWLEDGE</h1>
+        <div className="w-[16px]"></div>
+        </div>
+        
         {/* Search Bar */}
-        {/*       <div className="mb-6">
+      {/*  <div className="mb-6">
           <input
             type="text"
             placeholder="Search terms..."
@@ -116,30 +120,30 @@ const Almanac = ({ onMainMenu }) => {
             onChange={handleSearch}
             className="w-full max-w-md px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </div> */}
+        </div>  */}
 
         <div className="w-full">
-          <ul className="space-y-4">
+          <ul className="space-y-6">
             {currentTerms.map((item, index) => (
               <li
                 key={index}
-                className={`bg-gray-100 rounded-lg p-4 shadow-md transition cursor-pointer
-                  ${selectedIndex === index ? 'ring-2 ring-blue-500 scale-105' : 'hover:bg-gray-200'}`}
+                className={`bg-gray-100 rounded-lg p-6 shadow-md transition-all duration-300 cursor-pointer border-l-4
+                  ${selectedIndex === index ? ' scale-105 border-l' : 'hover:bg-gray-200 border-l-gray-300'}`}
                 onClick={() => handleTermClick(item, index)}
               >
                 <div className="flex flex-col">
-                  <p className="font-semibold text-xl mb-2">
+                  <p className="font-semibold text-2xl mb-3 ">
                     {selectedTerm === item ? item.word : item.censoredWord}
                   </p>
-                  <p className="text-gray-700">{item.definition}</p>
+                  <p className="text-gray-700 leading-relaxed">{item.definition}</p>
                   {selectedTerm === item && item.source && (
                     <a
                       href={item.source}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-500 hover:text-blue-700 mt-2 text-sm"
+                      className="text-blue-600 hover:text-blue-800 mt-3 text-sm inline-flex items-center group"
                     >
-                      Learn More →
+                    Learn More <span className="ml-1 group-hover:ml-2 transition-all duration-300">→</span>
                     </a>
                   )}
                 </div>
@@ -149,31 +153,31 @@ const Almanac = ({ onMainMenu }) => {
         </div>
 
         {/* Navigation */}
-        <div className="mt-8 w-full flex justify-between items-center">
-          <button
-            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded 
-              ${currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
-            onClick={handlePrevious}
-            disabled={currentPage === 0}
-          >
-            Previous
-          </button>
+        <div className="mt-10 w-full flex justify-between items-center">
+      <button
+        className={`bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-full transition-all duration-300 shadow-md flex items-center
+          ${currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+        onClick={handlePrevious}
+        disabled={currentPage === 0}
+      >
+         {'< '}
+      </button>
 
-          <span className="text-gray-700">
-            Page {currentPage + 1} of {totalPages}
-          </span>
+      <span className="text-gray-700  py-2 px-4 rounded-full font-medium">
+        Page {currentPage + 1} of {totalPages}
+      </span>
 
-          <button
-            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded 
-              ${endIndex >= filteredTerms.length ? "opacity-50 cursor-not-allowed" : ""}`}
-            onClick={handleNext}
-            disabled={endIndex >= filteredTerms.length}
-          >
-            Next
-          </button>
-        </div>
-      </div>
+      <button
+        className={`bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-full transition-all duration-300 shadow-md flex items-center
+          ${endIndex >= filteredTerms.length ? "opacity-50 cursor-not-allowed" : ""}`}
+        onClick={handleNext}
+        disabled={endIndex >= filteredTerms.length}
+      >
+       {'>'}
+      </button>
     </div>
+  </div>
+</div>
   );
 };
 

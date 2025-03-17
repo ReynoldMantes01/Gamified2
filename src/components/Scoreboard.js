@@ -96,23 +96,26 @@ const Scoreboard = ({ onMainMenu }) => {
     }, [currentPage, scores]);
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full mx-4 relative"
-                 style={{
-                     backgroundImage: `url(${bgImage})`,
-                     backgroundSize: 'cover',
-                     backgroundPosition: 'center'
-                 }}>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
+        <div className="bg-gray-900 p-8 max-w-2xl w-full mx-4 relative border-4 border-gray-700"
+             style={{
+                 backgroundImage: `url(${bgImage})`,
+                 backgroundSize: 'cover',
+                 backgroundPosition: 'center',
+                 imageRendering: 'pixelated',
+                 boxShadow: '0 0 0 4px #000, 0 0 0 8px #333'
+             }}>
                 <button 
                     onClick={onMainMenu}
-                    className="absolute top-4 left-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    className="absolute top-4 left-4 bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded"
                 >
-                    Back
+                    {'<'} 
                 </button>
                 
-                <h2 className="text-6xl font-bold text-white text-center mb-8 text-stroke-black">Scoreboard</h2>
-                
-                <div className="bg-black bg-opacity-70 rounded-lg p-6 mb-4">
+                <h2 className="text-4xl font-bold text-white text-center mb-8"style={{ 
+                letterSpacing: '-1px'
+            }}>SCOREBOARD</h2>
+                <div className="bg-black bg-opacity-90 p-6 mb-4 border-4 border-gray-800">
                     {loading ? (
                         <>
                             <div className="grid grid-cols-4 gap-4 mb-6 text-white font-bold text-xl border-b-2 border-white pb-4">
@@ -122,19 +125,19 @@ const Scoreboard = ({ onMainMenu }) => {
                                 <div className="text-center">Date</div>
                             </div>
                             
-                            <div className="grid grid-cols-4 gap-4 p-4 rounded-lg mb-3 bg-yellow-500 bg-opacity-70 text-white">
+                            <div className="grid grid-cols-4 gap-4 p-4 mb-3 bg-yellow-900 border-2 border-yellow-500 text-yellow-300">
                                 <div className="text-center font-bold text-3xl">🏆</div>
                                 <div className="text-center">---</div>
                                 <div className="text-center">---</div>
                                 <div className="text-center">---</div>
                             </div>
-                            <div className="grid grid-cols-4 gap-4 p-4 rounded-lg mb-3 bg-gray-400 bg-opacity-70 text-white">
+                            <div className="grid grid-cols-4 gap-4 p-4 mb-3 bg-gray-800 border-2 border-gray-500 text-gray-300">
                                 <div className="text-center font-bold text-3xl">🥈</div>
                                 <div className="text-center">---</div>
                                 <div className="text-center">---</div>
                                 <div className="text-center">---</div>
                             </div>
-                            <div className="grid grid-cols-4 gap-4 p-4 rounded-lg mb-3 bg-yellow-700 bg-opacity-70 text-white">
+                            <div className="grid grid-cols-4 gap-4 p-4 mb-3 bg-yellow-950 border-2 border-yellow-700 text-yellow-600">
                                 <div className="text-center font-bold text-3xl">🥉</div>
                                 <div className="text-center">---</div>
                                 <div className="text-center">---</div>
@@ -152,15 +155,29 @@ const Scoreboard = ({ onMainMenu }) => {
                             </div>
                             
                             {currentScores.map((player) => (
-                                <div 
-                                    key={`${player.userId}-${player.score}`}
-                                    className={`grid grid-cols-4 gap-4 p-4 rounded-lg mb-3 transform transition-all duration-500 ${
-                                        player.rank === 1 ? 'bg-yellow-500 bg-opacity-70' :
-                                        player.rank === 2 ? 'bg-gray-400 bg-opacity-70' :
-                                        player.rank === 3 ? 'bg-yellow-700 bg-opacity-70' :
-                                        'bg-white bg-opacity-20'
-                                    } ${player.isNew ? 'scale-105' : ''} text-white`}
-                                >
+                               <div 
+                               key={`${player.userId}-${player.score}`}
+                               className={`grid grid-cols-4 gap-4 p-4 mb-3 transform transition-all duration-500 ${
+                                   player.isNew ? 'scale-105' : ''
+                               }`}
+                               style={{
+                                   fontSize: '14px',
+                                   background: player.rank === 1 ? '#854d0e ' : 
+                                             player.rank === 2 ? '#4b5563' : 
+                                             player.rank === 3 ? '#78350f' : 
+                                             '#1f2937', 
+                                   border: '2px solid',
+                                   borderColor: player.rank === 1 ? '#eab308' : 
+                                                player.rank === 2 ? '#9ca3af' : 
+                                                player.rank === 3 ? '#b45309' :
+                                                '#4b5563', 
+                                   boxShadow: player.rank <= 3 ? '0 0 6px #FFF' : 'none',
+                                   color: player.rank === 1 ? '#fef08a' :
+                                          player.rank === 2 ? '#e5e7eb' : 
+                                          player.rank === 3 ? '#fcd34d' : 
+                                          '#9ca3af' 
+                               }}
+                           >
                                     <div className="text-center font-bold">{player.rank}</div>
                                     <div className="text-center">{player.name}</div>
                                     <div className="text-center">{player.score}</div>
@@ -175,13 +192,13 @@ const Scoreboard = ({ onMainMenu }) => {
                     <button
                         onClick={handlePrevious}
                         disabled={currentPage === 0}
-                        className={`bg-blue-500 text-white px-4 py-2 rounded ${
+                        className={`bg-blue-800 text-white px-4 py-2 border-b-4 border-blue-900  ${
                             currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
                         }`}
                     >
-                        Previous
+                         {'< PREV'}
                     </button>
-                    <span className="text-white">
+                    <span className="text-white flex items-center">
                         Page {currentPage + 1} of {totalPages}
                     </span>
                     <button
@@ -191,7 +208,7 @@ const Scoreboard = ({ onMainMenu }) => {
                             endIndex >= scores.length ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
                         }`}
                     >
-                        Next
+                        {'NEXT >'}
                     </button>
                 </div>
             </div>
