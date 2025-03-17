@@ -26,7 +26,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [slidebarOpen, setSlidebarOpen] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
-    const [playerHearts, setPlayerHearts] = useState(3);
+    const [playerHearts, setPlayerHearts] = useState(4);
     const [laserActive, setLaserActive] = useState(false);
     const [isCharacterAttacking, setIsCharacterAttacking] = useState(false);
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -50,13 +50,13 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 try {
                     const snapshot = await get(userRef);
                     if (snapshot.exists()) {
-                        setPlayerHearts(snapshot.val()); // Load health from Firebase
+                        setPlayerHearts(4); // Load health from Firebase
                     } else {
-                        setPlayerHearts(3); // Default value if no health is found
+                        setPlayerHearts(4); // Default value if no health is found
                     }
                 } catch (error) {
                     console.error("Error loading player health:", error);
-                    setPlayerHearts(3); // Fallback to default value on error
+                    setPlayerHearts(4); // Fallback to default value on error
                 }
             }
         };
@@ -166,7 +166,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             }
 
             // Reset hints for new level
-            setHintsRemaining(2);
+            setHintsRemaining(3);
             setHighlightedIndices([]);
             setHint('');
             // Reset other game states
@@ -222,7 +222,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
                 // Increase player health
                 setPlayerHearts(prev => {
-                    const newHealth = Math.min(prev + 1, 15); // Increase health by 1, max of 5
+                    const newHealth = Math.min(prev + 1, 4); // Increase health by 1, max of 4
                     // Update health in Firebase
                     const db = getDatabase();
                     const userRef = ref(db, `users/${auth.currentUser.uid}/health`);
@@ -234,7 +234,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             }
 
             // Reset hints when player wins a battle
-            setHintsRemaining(2);
+            setHintsRemaining(3);
             setHighlightedIndices([]);
             setHint('');
 
@@ -470,7 +470,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             }
 
             setDefinition({
-                text: `${word}Definition: ${scienceTerm[word].DEFINITION}`,
+                text: `${word} Definition: ${scienceTerm[word].DEFINITION}`,
                 source: scienceTerm[word].SOURCE
             });
 
@@ -506,45 +506,55 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
 
     const handleNextLevel = () => {
-        console.log("handleNextLevel called");
-        setVictoryVisible(false);
+    console.log("handleNextLevel called");
+    setVictoryVisible(false);
 
-        // Find the current enemy index in the progression
-        const currentEnemyIndex = enemyProgression.findIndex(e => e.id === currentEnemy?.id);
-        console.log("Current enemy index:", currentEnemyIndex);
+    // Find the current enemy index in the progression
+    const currentEnemyIndex = enemyProgression.findIndex(e => e.id === currentEnemy?.id);
+    console.log("Current enemy index:", currentEnemyIndex);
 
-        if (currentEnemyIndex !== -1 && currentEnemyIndex < enemyProgression.length - 1) {
-            // Move to the next enemy
-            const nextEnemy = enemyProgression[currentEnemyIndex + 1];
-            console.log("Moving to next enemy:", nextEnemy.id);
+    if (currentEnemyIndex !== -1 && currentEnemyIndex < enemyProgression.length - 1) {
+        // Move to the next enemy
+        const nextEnemy = enemyProgression[currentEnemyIndex + 1];
+        console.log("Moving to next enemy:", nextEnemy.id);
 
-            // Check if we need to change maps
-            const currentMapId = currentEnemy.mapId;
-            const nextMapId = nextEnemy.mapId;
+        // Check if we need to change maps
+        const currentMapId = currentEnemy.mapId;
+        const nextMapId = nextEnemy.mapId;
 
-            if (currentMapId !== nextMapId) {
-                console.log("Map transition needed from", currentMapId, "to", nextMapId);
-                // Return to map selection screen for map transition
-                console.log("Forcing reload of user progress before returning to main menu");
-                reload();
-                setTimeout(() => {
-                    onMainMenu();
-                }, 500); // Small delay to ensure reload completes
-            } else {
-                // Stay on same map, just change enemy
-                console.log("Staying on same map, changing enemy");
-                setCurrentEnemy(nextEnemy);
-                resetGame();
-            }
-        } else {
-            console.log("No more enemies, returning to main menu");
-            // No more enemies, return to main menu
-            reload();
+        console.log("Current map ID:", currentMapId);
+        console.log("Next map ID:", nextMapId);
+
+        if (currentMapId !== nextMapId) {
+            // If map change is required
+            console.log("Map transition needed from", currentMapId, "to", nextMapId);
+
+            // Implementing reload logic and making sure everything resets before transitioning
+            console.log("Forcing reload of user progress before returning to main menu...");
+            reload();  // Assuming reload() properly resets user progress and game state
+
+            // Transition to the main menu after a delay to ensure reload finishes
             setTimeout(() => {
+                console.log("Transitioning to main menu...");
                 onMainMenu();
-            }, 500); // Small delay to ensure reload completes
+            }, 500); // Small delay to ensure reload completes before transitioning
+        } else {
+            // If we're staying on the same map, just change the enemy
+            console.log("Staying on same map, changing enemy...");
+            setCurrentEnemy(nextEnemy);
+            resetGame();  // Reset the game state for the new enemy
         }
-    };
+    } else {
+        // If there are no more enemies, return to the main menu
+        console.log("No more enemies, returning to main menu...");
+        reload();
+        setTimeout(() => {
+            console.log("Transitioning to main menu...");
+            onMainMenu();
+        }, 500); // Small delay to ensure reload completes before transitioning
+    }
+};
+
 
     const handleNextDialog = () => {
         if (showTutorial) {
@@ -611,39 +621,55 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         };
     }, [handleClickOutside]);
 
-    const handleTryAgain = async () => {
-        setDefeatVisible(false);
-
-        // Check if the player is logged in
+    const resetPlayerHealth = async () => {
         if (auth.currentUser) {
-            const db = getDatabase();
-            const userRef = ref(db, `users/${auth.currentUser.uid}/health`);
-
-            try {
-                const snapshot = await get(userRef);
-                if (snapshot.exists()) {
-                    const health = snapshot.val();
-                    setPlayerHearts(health); // Set to the loaded health value
-                }
-                // Remove the else block to avoid resetting to default value
-            } catch (error) {
-                console.error("Error loading player health:", error);
-                // Optionally, you can log an error or handle it differently
-            }
+          const db = getDatabase();
+          const userRef = ref(db, `users/${auth.currentUser.uid}/health`);
+          
+          // Always set health to 4 when resetting to first level
+          await set(userRef, 4);
+          setPlayerHearts(4);
+        } else {
+          // For users not logged in
+          setPlayerHearts(4);
         }
-        // Remove the else block to avoid resetting to default value
-        // setPlayerHearts(3); // Default value if no user is logged in
+      };
+      
+      // Modify the useEffect for level changes to reset health when returning to level 1
+      useEffect(() => {
+        if (level?.enemy) {
+          setCurrentEnemy(level.enemy);
+          setEnemyHearts(level.enemy.health);
+      
+          // Reset health to 4 if player is at level 1
+          if (level.levelNumber === 1) {
+            resetPlayerHealth(4);
+            setShowTutorial(true);
+            setTutorialStep(0);
+            setDialogVisible(true);
+          } else {
+            const enemyDialogs = [
+              `Ah, a new challenger approaches! I am ${level.enemy.name}, master of ${level.enemy.stats.strength}!`,
+              level.enemy.dialog,
+              "Prepare yourself for a battle of scientific wit!"
+            ];
+            setDialogSequence(enemyDialogs);
+            setCurrentDialogIndex(0);
+            setDialogVisible(true);
+          }
+      
+          // Reset hints for new level
+          setHintsRemaining(3);
+          setHighlightedIndices([]);
+          setHint('');
+          // Reset other game states
+          setSelectedLetters([]);
+          setEmptyIndices([]);
+          setGridLetters(generateRandomLetters());
+          setIsValidWord(false);
+        }
+      }, [level]);
 
-        setEnemyHearts(level?.enemy?.health || 0);
-        setSelectedLetters([]);
-        setEmptyIndices([]);
-        setGridLetters(generateRandomLetters());
-        setLetterEffects(Array(20).fill(null));
-        setHintsRemaining(2); // Reset hints to 2
-        setHighlightedIndices([]); // Clear highlights
-        setHint(''); // Clear hint message
-        setDefinition({ text: 'Form a word to see its definition!', source: '' });
-    };
     const handleSettingsSave = (newMusicVolume) => {
         setMusicVolume(newMusicVolume);
         setSettingsOpen(false);
@@ -845,7 +871,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         updateUserProgress(enemyWithMapId);
 
         // Reset hints when player wins a battle
-        setHintsRemaining(2);
+        setHintsRemaining(3);
         setHighlightedIndices([]);
         setHint('');
 
@@ -863,7 +889,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     };
 
     // State variables for current map and enemy index
-    const [currentMapId, setCurrentMapId] = useState('map1'); // Default to first map
+    const [currentMapId, setCurrentMapId] = useState('map'); // Default to first map
     const [currentEnemyIndex, setCurrentEnemyIndex] = useState(0); // Default to first enemy
 
     // Function to get current map data based on currentMapId
@@ -926,7 +952,6 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         const newGridLetters = generateRandomLetters(gridLetters, letterEffects);
 
         // Reset game state but keep letter effects
-        setPlayerHearts(prev => Math.min(prev + 1, 5)); // Increase hearts by 1, max of 5
         setSelectedLetters([]);
         setEmptyIndices([]);
         setGridLetters(newGridLetters);
@@ -1358,7 +1383,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                         <div className="space-y-3">
                             <button
                                 className="w-full bg-green-500 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-600 transition-colors"
-                                onClick={handleTryAgain}
+                                onClick={resetPlayerHealth}
                             >
                                 Try Again
                             </button>
