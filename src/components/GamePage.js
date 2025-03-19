@@ -254,6 +254,12 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         }
     }, [enemyHearts, currentEnemy]);
 
+    useEffect(() => {
+        if (currentEnemy) {
+          setEnemyHearts(currentEnemy.health);
+        }
+      }, [currentEnemy]);
+
     const addRandomEffect = () => {
         console.log('Checking for effect addition, word length:', selectedLetters.length);
         if (selectedLetters.length >= 2) {
@@ -401,12 +407,15 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     };
 
     // Handle player's attack logic
-    const handleAttack = () => {
-        setIsCharacterAttacking(true);
-        setTimeout(() => {
-            setIsCharacterAttacking(false);
-        }, 500);
-
+const handleAttack = () => {
+  setIsCharacterAttacking(true);
+  setTimeout(() => {
+    setIsCharacterAttacking(false);
+  }, 500);
+  
+  // Calculate damage (you can adjust this based on word length, effects, etc.)
+  const damage = 1; 
+  setEnemyHearts(prevHearts => Math.max(0, prevHearts - damage));
         const word = selectedLetters.join('').toUpperCase();
 
         // Check if the word is a valid science term
@@ -506,55 +515,45 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
 
     const handleNextLevel = () => {
-    console.log("handleNextLevel called");
-    setVictoryVisible(false);
+        console.log("handleNextLevel called");
+        setVictoryVisible(false);
 
-    // Find the current enemy index in the progression
-    const currentEnemyIndex = enemyProgression.findIndex(e => e.id === currentEnemy?.id);
-    console.log("Current enemy index:", currentEnemyIndex);
+        // Find the current enemy index in the progression
+        const currentEnemyIndex = enemyProgression.findIndex(e => e.id === currentEnemy?.id);
+        console.log("Current enemy index:", currentEnemyIndex);
 
-    if (currentEnemyIndex !== -1 && currentEnemyIndex < enemyProgression.length - 1) {
-        // Move to the next enemy
-        const nextEnemy = enemyProgression[currentEnemyIndex + 1];
-        console.log("Moving to next enemy:", nextEnemy.id);
+        if (currentEnemyIndex !== -1 && currentEnemyIndex < enemyProgression.length - 1) {
+            // Move to the next enemy
+            const nextEnemy = enemyProgression[currentEnemyIndex + 1];
+            console.log("Moving to next enemy:", nextEnemy.id);
 
-        // Check if we need to change maps
-        const currentMapId = currentEnemy.mapId;
-        const nextMapId = nextEnemy.mapId;
+            // Check if we need to change maps
+            const currentMapId = currentEnemy.mapId;
+            const nextMapId = nextEnemy.mapId;
 
-        console.log("Current map ID:", currentMapId);
-        console.log("Next map ID:", nextMapId);
-
-        if (currentMapId !== nextMapId) {
-            // If map change is required
-            console.log("Map transition needed from", currentMapId, "to", nextMapId);
-
-            // Implementing reload logic and making sure everything resets before transitioning
-            console.log("Forcing reload of user progress before returning to main menu...");
-            reload();  // Assuming reload() properly resets user progress and game state
-
-            // Transition to the main menu after a delay to ensure reload finishes
-            setTimeout(() => {
-                console.log("Transitioning to main menu...");
-                onMainMenu();
-            }, 500); // Small delay to ensure reload completes before transitioning
+            if (currentMapId !== nextMapId) {
+                console.log("Map transition needed from", currentMapId, "to", nextMapId);
+                // Return to map selection screen for map transition
+                console.log("Forcing reload of user progress before returning to main menu");
+                reload();
+                setTimeout(() => {
+                    onMainMenu();
+                }, 500); // Small delay to ensure reload completes
+            } else {
+                // Stay on same map, just change enemy
+                console.log("Staying on same map, changing enemy");
+                setCurrentEnemy(nextEnemy);
+                resetGame();
+            }
         } else {
-            // If we're staying on the same map, just change the enemy
-            console.log("Staying on same map, changing enemy...");
-            setCurrentEnemy(nextEnemy);
-            resetGame();  // Reset the game state for the new enemy
+            console.log("No more enemies, returning to main menu");
+            // No more enemies, return to main menu
+            reload();
+            setTimeout(() => {
+                onMainMenu();
+            }, 500); // Small delay to ensure reload completes
         }
-    } else {
-        // If there are no more enemies, return to the main menu
-        console.log("No more enemies, returning to main menu...");
-        reload();
-        setTimeout(() => {
-            console.log("Transitioning to main menu...");
-            onMainMenu();
-        }, 500); // Small delay to ensure reload completes before transitioning
-    }
-};
-
+    };
 
     const handleNextDialog = () => {
         if (showTutorial) {
@@ -806,9 +805,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 console.log("All enemies in progression:", allEnemies);
 
                 // Find the current enemy in the progression
-                const currentEnemyIndex = allEnemies.findIndex(e =>
-                    e.name === defeatedEnemyName || e.id === defeatedEnemy.id
-                );
+                const currentEnemyIndex = enemyProgression.findIndex(e => e.id === currentEnemy?.id);
 
                 console.log("Current enemy index in progression:", currentEnemyIndex);
 
