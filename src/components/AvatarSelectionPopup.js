@@ -10,7 +10,7 @@ const AvatarSelectionPopup = ({ onClose, onSelect, selectedAvatar }) => {
     const avatarOptions = [
         { src: alienAvatar, name: 'Alien' },
         { src: astronautAvatar, name: 'Astronaut' },
-        { src: cuteAvatar, name: 'Cute' },
+        { src: cuteAvatar, name: 'Rabbit Scientist' },
         { src: geishaAvatar, name: 'Geisha' },
         { src: ninjaAvatar, name: 'Ninja' },
         { src: sushicatAvatar, name: 'Sushi Cat' }
