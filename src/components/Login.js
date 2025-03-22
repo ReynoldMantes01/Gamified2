@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase/config';
-import { signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
 import { getDatabase, ref, set, get } from 'firebase/database';
 import ForgotPassword from './ForgotPassword';
 
@@ -63,19 +63,6 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                 default:
                     setError('Failed to log in. Please try again.');
             }
-        }
-    };
-
-    const handleGoogleLogin = async () => {
-        try {
-            const provider = new GoogleAuthProvider();
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
-            await initializeUserProfile(user);
-            onLoginSuccess(user);
-        } catch (error) {
-            console.error('Google login error:', error);
-            setError('Failed to process Google login');
         }
     };
 
@@ -143,16 +130,6 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                     <div className="border-t border-gray-300 flex-grow"></div>
                 </div>
                 <div className="flex justify-center gap-4">
-                    <button
-                        onClick={handleGoogleLogin}
-                        className="flex items-center justify-center bg-white text-gray-700 rounded-lg p-3 hover:bg-gray-50 transition-colors shadow-md"
-                    >
-                        <img
-                            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                            alt="Google"
-                            className="w-6 h-6"
-                        />
-                    </button>
                     <button
                         onClick={handleFacebookLogin}
                         className="flex items-center justify-center bg-[#1877F2] text-white rounded-lg p-3 hover:bg-[#1864D9] transition-colors shadow-md"
