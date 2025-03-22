@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase/config';
 import { signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
 import { getDatabase, ref, set, get } from 'firebase/database';
+import ForgotPassword from './ForgotPassword';
 
 const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     const [showLoadingScreen, setShowLoadingScreen] = useState(true);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -30,23 +32,37 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                 currentWorld: 1,
                 unlockedWorlds: ["map1"],  // Only first world unlocked
                 unlockedEnemies: ["microbe"],  // Only first enemy unlocked
-                defeatedEnemies: [],
-                experience: 0,
-                createdAt: new Date().toISOString(),
-                lastUpdated: new Date().toISOString()
+                profile: {
+                    username: user.email.split('@')[0],
+                    updatedAt: new Date().toISOString()
+                }
             });
         }
     };
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setError(null);
+
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             await initializeUserProfile(user);
             onLoginSuccess(user);
         } catch (error) {
-            setError(error.message);
+            switch (error.code) {
+                case 'auth/user-not-found':
+                    setError('No account found with this email');
+                    break;
+                case 'auth/wrong-password':
+                    setError('Incorrect password');
+                    break;
+                case 'auth/invalid-email':
+                    setError('Invalid email address');
+                    break;
+                default:
+                    setError('Failed to log in. Please try again.');
+            }
         }
     };
 
@@ -59,7 +75,7 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
             onLoginSuccess(user);
         } catch (error) {
             console.error('Google login error:', error);
-            setError(error.message || 'Failed to process Google login');
+            setError('Failed to process Google login');
         }
     };
 
@@ -72,7 +88,7 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
             onLoginSuccess(user);
         } catch (error) {
             console.error('Facebook login error:', error);
-            setError(error.message || 'Failed to process Facebook login');
+            setError('Failed to process Facebook login');
         }
     };
 
@@ -105,9 +121,22 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                         className="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-black"
                         required
                     />
-                    {error && <p className="text-red-500 text-center text-sm">{error}</p>}
-                    <button type="submit" className="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors">Login</button>
+                    {error && <p className="text-red-500 text-center">{error}</p>}
+                    <button
+                        type="submit"
+                        className="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors"
+                    >
+                        Login
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setShowForgotPassword(true)}
+                        className="text-blue-500 hover:text-blue-600 text-sm text-center"
+                    >
+                        Forgot Password?
+                    </button>
                 </form>
+
                 <div className="my-6 flex items-center justify-center">
                     <div className="border-t border-gray-300 flex-grow"></div>
                     <span className="px-4 text-gray-500">or</span>
@@ -116,33 +145,40 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                 <div className="flex justify-center gap-4">
                     <button
                         onClick={handleGoogleLogin}
-                        className="flex items-center justify-center gap-3 border-2 border-gray-300 rounded-lg px-6 py-3 hover:border-blue-500 transition-colors"
+                        className="flex items-center justify-center bg-white text-gray-700 rounded-lg p-3 hover:bg-gray-50 transition-colors shadow-md"
                     >
                         <img
                             src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                             alt="Google"
-                            className="w-4 h-5"
+                            className="w-6 h-6"
                         />
-                       
                     </button>
                     <button
                         onClick={handleFacebookLogin}
-                        className="flex items-center justify-center gap-3 border-2 border-gray-300 rounded-lg px-6 py-3 hover:border-blue-500 transition-colors"
+                        className="flex items-center justify-center bg-[#1877F2] text-white rounded-lg p-3 hover:bg-[#1864D9] transition-colors shadow-md"
                     >
                         <img
                             src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/facebook.svg"
                             alt="Facebook"
-                            className="w-4 h-5"
+                            className="w-6 h-6"
                         />
                     </button>
                 </div>
-                <p className="mt-6 text-center">
-                    New Here? 
-                    <button onClick={onSwitchToSignup} className="text-blue-500 hover:text-blue-600 transition-colors ml-2">
-                        Sign Up
+
+                <p className="text-center mt-4">
+                    Don't have an account?{' '}
+                    <button
+                        onClick={onSwitchToSignup}
+                        className="text-blue-500 hover:text-blue-600"
+                    >
+                        Sign up
                     </button>
                 </p>
             </div>
+
+            {showForgotPassword && (
+                <ForgotPassword onClose={() => setShowForgotPassword(false)} />
+            )}
         </div>
     );
 };

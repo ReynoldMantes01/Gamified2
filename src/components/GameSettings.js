@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { auth } from '../firebase/config';
+import ChangePassword from './ChangePassword';
 
 const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
   const [tempMusicVolume, setTempMusicVolume] = useState(() => {
@@ -6,7 +8,11 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
     return savedVolume ? parseInt(savedVolume) : (musicVolume || 50);
   });
   const [saveMessage, setSaveMessage] = useState('');
-  const [selectedButton, setSelectedButton] = useState(-1); // -1 for volume, 0-2 for buttons
+  const [selectedButton, setSelectedButton] = useState(-1);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+
+  // Check if user is using email/password authentication
+  const isEmailProvider = auth.currentUser?.providerData[0]?.providerId === 'password';
 
   useEffect(() => {
     if (musicVolume !== undefined) {
@@ -89,6 +95,8 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
       <div className="bg-gray-800 text-white p-8 rounded w-[450px]">
         <h2 className="text-4xl mb-8 text-center">Settings</h2>
+        
+        {/* Music Volume Section */}
         <div className="mb-6">
           <label htmlFor="volume" className="block mb-4 text-center">Music Volume</label>
           <div className={`p-2 rounded ${selectedButton === -1 ? 'ring-2 ring-white' : ''}`}>
@@ -99,27 +107,51 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
               max="100"
               value={tempMusicVolume}
               onChange={(e) => handleVolumeChange(Number(e.target.value))}
-              className="w-80 mx-auto block"
+              className="w-full"
             />
-            <p className="mt-4 text-center">Volume: {tempMusicVolume}%</p>
+            <div className="text-center mt-2">{tempMusicVolume}%</div>
           </div>
-          {saveMessage && (
-            <p className="mt-4 text-green-400 text-center">{saveMessage}</p>
-          )}
         </div>
-        <div className="flex space-x-4 justify-center">
+
+        {/* Change Password Button - Only show for email/password users */}
+        {isEmailProvider && (
+          <div className="mb-6">
+            <button
+            type="button"
+              onClick={() => setShowChangePassword(true)}
+              className="text-blue-500 hover:text-blue-600 text-sm text-center"
+            >
+              Change Password
+            </button>
+
+          
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex justify-center space-x-4">
           {buttons.map((button, index) => (
             <button
-              key={index}
+              key={button.label}
               onClick={button.onClick}
-              className={`${button.className} text-white font-bold py-2 px-4 rounded transition-all duration-200
-                ${selectedButton === index ? 'ring-2 ring-white scale-110' : ''}`}
+              className={`${button.className} text-white px-6 py-2 rounded transition-all duration-200 ${
+                selectedButton === index ? 'ring-2 ring-white scale-105' : ''
+              }`}
             >
               {button.label}
             </button>
           ))}
         </div>
+
+        {saveMessage && (
+          <div className="mt-4 text-center text-green-500">{saveMessage}</div>
+        )}
       </div>
+
+      {/* Change Password Modal */}
+      {showChangePassword && (
+        <ChangePassword onClose={() => setShowChangePassword(false)} />
+      )}
     </div>
   );
 };

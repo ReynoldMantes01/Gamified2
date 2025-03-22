@@ -72,9 +72,9 @@
       }
     },
     "verificationCodes": {
+      ".read": true,
+      ".write": true,
       "$code": {
-        ".read": true,
-        ".write": true,
         ".validate": "newData.hasChildren(['code', 'email', 'expiresAt'])",
         "code": {
           ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}$/)"
