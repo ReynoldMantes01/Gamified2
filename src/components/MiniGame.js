@@ -237,12 +237,17 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     // Save score to database
     const saveScore = async () => {
         if (auth.currentUser) {
-            const db = getDatabase();
-            const scoreRef = ref(db, `users/${auth.currentUser.uid}/miniGameScores/${Date.now()}`);
-            await set(scoreRef, {
-                score: score,
-                timestamp: Date.now()
-            });
+            try {
+                const db = getDatabase();
+                // Save the score under miniGameScores with proper validation format
+                const scoreRef = ref(db, `users/${auth.currentUser.uid}/miniGameScores/${Date.now()}`);
+                await set(scoreRef, {
+                    score: Math.max(0, score), // Ensure score is non-negative as per rules
+                    timestamp: Date.now() // Timestamp must be a number > 0
+                });
+            } catch (error) {
+                console.error("Error saving score:", error);
+            }
         }
     };
 

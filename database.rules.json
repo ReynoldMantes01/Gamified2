@@ -1,0 +1,91 @@
+{
+  "rules": {
+    "usernames": {
+      ".read": true,
+      ".write": "auth != null",
+      "$username": {
+        ".validate": "newData.val() === auth.uid"
+      }
+    },
+    "users": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "$uid === auth.uid",
+        "profile": {
+          ".validate": "newData.hasChildren(['username'])",
+          "username": {
+            ".validate": "newData.isString() && newData.val().length > 0"
+          },
+          "age": {
+            ".validate": "!newData.exists() || (newData.isNumber() && newData.val() > 0)"
+          },
+          "gender": {
+            ".validate": "!newData.exists() || (newData.isString() && (newData.val() === 'male' || newData.val() === 'female'))"
+          },
+          "selectedAvatar": {
+            ".validate": "!newData.exists() || newData.isString()"
+          },
+          "imageUrl": {
+            ".validate": "!newData.exists() || (newData.isString() && newData.val().beginsWith('https://firebasestorage.googleapis.com/'))"
+          },
+          "updatedAt": {
+            ".validate": "newData.isString() && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$/)"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "settings": {
+          ".validate": "newData.hasChildren(['musicVolume'])",
+          "musicVolume": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "gameProgress": {
+          "level": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "score": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "completedLessons": {
+            ".validate": "newData.hasChildren()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "miniGameScores": {
+          "$timestamp": {
+            ".validate": "newData.hasChildren(['score', 'timestamp'])",
+            "score": {
+              ".validate": "newData.isNumber() && newData.val() >= 0"
+            },
+            "timestamp": {
+              ".validate": "newData.isNumber() && newData.val() > 0"
+            }
+          }
+        }
+      }
+    },
+    "verificationCodes": {
+      "$code": {
+        ".read": true,
+        ".write": true,
+        ".validate": "newData.hasChildren(['code', 'email', 'expiresAt'])",
+        "code": {
+          ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}$/)"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.][A-Za-z]{2,}$/)"
+        },
+        "expiresAt": {
+          ".validate": "newData.isNumber() && newData.val() > now"
+        }
+      }
+    }
+  }
+}
