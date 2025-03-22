@@ -11,7 +11,7 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showAvatarPopup, setShowAvatarPopup] = useState(false);
-    const [selectedField, setSelectedField] = useState(0); // 0: avatar, 1: username, 2: age, 3: gender, 4: save button, 5: back button
+    const [selectedField, setSelectedField] = useState(0);
 
     useEffect(() => {
         const loadProfileData = async () => {
@@ -33,7 +33,8 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                         username: data.username,
                         age: data.age,
                         gender: data.gender,
-                        selectedAvatar: data.selectedAvatar || alienAvatar
+                        selectedAvatar: data.selectedAvatar || alienAvatar,
+                        previousUsername: data.username
                     }));
 
                     if (!data.selectedAvatar) {
@@ -67,15 +68,22 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
             ...prevData,
             [name]: value
         }));
+        setError(null); // Clear any previous errors
     };
 
     const handleGenderChange = (e) => {
-        if (!profileData.gender) {
-            setProfileData(prevData => ({
-                ...prevData,
-                gender: e.target.value
-            }));
-        }
+        setProfileData(prevData => ({
+            ...prevData,
+            gender: e.target.value
+        }));
+        setError(null);
+    };
+
+    const checkUsernameAvailability = async (username) => {
+        const db = getDatabase();
+        const usernameRef = ref(db, `usernames/${username}`);
+        const snapshot = await get(usernameRef);
+        return !snapshot.exists() || snapshot.val() === auth.currentUser.uid;
     };
 
     const handleSave = async () => {
@@ -94,6 +102,23 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
             const db = getDatabase();
             const userId = auth.currentUser.uid;
 
+            // Check if username is available
+            const isUsernameAvailable = await checkUsernameAvailability(profileData.username);
+            if (!isUsernameAvailable) {
+                setError('Username is already taken. Please choose another one.');
+                setSaving(false);
+                return;
+            }
+
+            // If user had a previous username, remove it from usernames node
+            if (profileData.previousUsername && profileData.previousUsername !== profileData.username) {
+                await set(ref(db, `usernames/${profileData.previousUsername}`), null);
+            }
+
+            // Set the new username in usernames node
+            await set(ref(db, `usernames/${profileData.username}`), userId);
+
+            // Update profile data
             await set(ref(db, `users/${userId}/profile`), {
                 username: profileData.username,
                 age: profileData.age ? Number(profileData.age) : null,
@@ -102,6 +127,13 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                 updatedAt: new Date().toISOString()
             });
 
+            // Update previous username
+            setProfileData(prevData => ({
+                ...prevData,
+                previousUsername: profileData.username
+            }));
+
+            setError(null);
             onClose();
         } catch (err) {
             console.error('Error saving profile:', err);
@@ -215,7 +247,6 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                         onChange={handleGenderChange} 
                         className={`w-80 mx-auto p-2 text-black rounded transition-all duration-200
                             ${selectedField === 3 ? 'ring-4 ring-blue-500' : ''}`}
-                        disabled={!!profileData.gender}
                     >
                         <option value="">Select Gender</option>
                         <option value="male">Male</option>
