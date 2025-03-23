@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { auth } from '../firebase/config';
-import ChangePassword from './ChangePassword';
 
 const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
   const [tempMusicVolume, setTempMusicVolume] = useState(() => {
@@ -9,7 +8,7 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
   });
   const [saveMessage, setSaveMessage] = useState('');
   const [selectedButton, setSelectedButton] = useState(-1);
-  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
   // Check if user is using email/password authentication
   const isEmailProvider = auth.currentUser?.providerData[0]?.providerId === 'password';
@@ -45,6 +44,14 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
   const handleKeyPress = (event) => {
     // Prevent event propagation to background elements
     event.stopPropagation();
+
+    // Don't handle keyboard events if keyboard help modal is open
+    if (showKeyboardHelp) {
+      if (event.key === 'Escape') {
+        setShowKeyboardHelp(false);
+      }
+      return;
+    }
 
     switch (event.key) {
       case 'ArrowLeft':
@@ -116,20 +123,15 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
           </div>
         </div>
 
-        {/* Change Password Button - Only show for email/password users */}
-        {isEmailProvider && (
-          <div className="mb-6">
-            <button
-            type="button"
-              onClick={() => setShowChangePassword(true)}
-              className="text-blue-500 hover:text-blue-600 text-sm text-center"
-            >
-              Change Password
-            </button>
-
-          
-          </div>
-        )}
+        {/* Keyboard Navigation Help Button */}
+        <div className="mb-6 text-center">
+          <button
+            onClick={() => setShowKeyboardHelp(true)}
+            className="text-blue-500 hover:text-blue-600 text-sm"
+          >
+            Keyboard Navigation Guide
+          </button>
+        </div>
 
         {/* Action Buttons */}
         <div className="flex justify-center space-x-4">
@@ -151,9 +153,68 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
         )}
       </div>
 
-      {/* Change Password Modal */}
-      {showChangePassword && (
-        <ChangePassword onClose={() => setShowChangePassword(false)} />
+      {/* Keyboard Navigation Help Modal */}
+      {showKeyboardHelp && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
+          <div className="bg-gray-800 text-white p-8 rounded-lg w-[600px] max-h-[80vh] overflow-y-auto">
+            <h3 className="text-2xl mb-6 text-center">Keyboard Navigation Guide</h3>
+            
+            <div className="space-y-6">
+              <div>
+                <h4 className="text-xl mb-2 text-blue-400">Main Menu</h4>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>↑/↓ - Navigate between menu options</li>
+                  <li>Enter - Select menu option</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="text-xl mb-2 text-blue-400">Settings</h4>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>↑/↓ - Toggle between volume slider and buttons</li>
+                  <li>←/→ - Adjust volume or navigate between buttons</li>
+                  <li>Enter - Click selected button</li>
+                  <li>Escape - Close settings</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="text-xl mb-2 text-blue-400">Profile</h4>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>↑/↓ - Navigate between fields</li>
+                  <li>Enter - Select avatar or save changes</li>
+                  <li>Escape - Close profile</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="text-xl mb-2 text-blue-400">Avatar Selection</h4>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>←/→ - Browse through avatars</li>
+                  <li>Enter - Select current avatar</li>
+                  <li>Escape - Close avatar selection</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="text-xl mb-2 text-blue-400">Important Note</h4>
+                <p className="text-gray-300">
+                  When a popup or modal is open, keyboard navigation only works for that specific window.
+                  The background elements won't respond to keyboard input until the popup is closed.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-8 text-center">
+              <button
+                onClick={() => setShowKeyboardHelp(false)}
+                className="bg-blue-500 hover:bg-blue-700 text-white px-6 py-2 rounded"
+              >
+                Close Guide
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

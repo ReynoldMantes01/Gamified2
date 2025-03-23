@@ -5,12 +5,14 @@ import alienAvatar from '../assets/avatar/ALIEN AVATAR.jpg';
 import astronautAvatar from '../assets/avatar/ASTRONOUT AVATAR.jpg';
 import geishaAvatar from '../assets/avatar/GEISHA AVATAR.jpg';
 import AvatarSelectionPopup from './AvatarSelectionPopup';
+import ChangePassword from './ChangePassword';
 
 const Profile = ({ onClose, profileData, setProfileData }) => {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showAvatarPopup, setShowAvatarPopup] = useState(false);
+    const [showChangePassword, setShowChangePassword] = useState(false);
     const [selectedField, setSelectedField] = useState(0);
 
     useEffect(() => {
@@ -147,12 +149,22 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
         // Prevent event propagation to background elements
         event.stopPropagation();
         
+        // Don't handle keyboard events if change password modal is open
+        if (showChangePassword) {
+            if (event.key === 'Escape') {
+                setShowChangePassword(false);
+            }
+            return;
+        }
+
+        const isEmailProvider = auth.currentUser?.providerData[0]?.providerId === 'password';
+
         switch (event.key) {
             case 'ArrowUp':
-                setSelectedField(prev => (prev > 0 ? prev - 1 : 5));
+                setSelectedField(prev => (prev > 0 ? prev - 1 : isEmailProvider ? 6 : 5));
                 break;
             case 'ArrowDown':
-                setSelectedField(prev => (prev < 5 ? prev + 1 : 0));
+                setSelectedField(prev => (prev < (isEmailProvider ? 6 : 5) ? prev + 1 : 0));
                 break;
             case 'Enter':
                 if (selectedField === 0) {
@@ -161,6 +173,8 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                     handleSave();
                 } else if (selectedField === 5) {
                     onClose();
+                } else if (selectedField === 6 && isEmailProvider) {
+                    setShowChangePassword(true);
                 }
                 break;
             case 'Escape':
@@ -258,6 +272,19 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                     </select>
                 </div>
 
+                {auth.currentUser?.providerData[0]?.providerId === 'password' && (
+                    <div className="mb-6">
+                        <button
+                            type="button"
+                            onClick={() => setShowChangePassword(true)}
+                            className={`text-blue-500 hover:text-blue-600 text-sm text-center transition-all duration-200
+                                ${selectedField === 6 ? 'scale-105 underline' : ''}`}
+                        >
+                            Change Password
+                        </button>
+                    </div>
+                )}
+
                 {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
                 <div className="flex space-x-4 mb-4 justify-center">
@@ -285,6 +312,10 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                     onSelect={handleAvatarSelect}
                     selectedAvatar={profileData.selectedAvatar}
                 />
+            )}
+
+            {showChangePassword && (
+                <ChangePassword onClose={() => setShowChangePassword(false)} />
             )}
         </div>
     );
