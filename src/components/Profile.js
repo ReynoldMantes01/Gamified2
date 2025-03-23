@@ -144,6 +144,9 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
     };
 
     const handleKeyPress = (event) => {
+        // Prevent event propagation to background elements
+        event.stopPropagation();
+        
         switch (event.key) {
             case 'ArrowUp':
                 setSelectedField(prev => (prev > 0 ? prev - 1 : 5));

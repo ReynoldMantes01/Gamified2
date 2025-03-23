@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { getDatabase, ref, set, get, onValue } from 'firebase/database';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { ModalProvider } from './context/ModalContext';
 import MainMenu from "./components/MainMenu";
 import GamePage from "./components/GamePage";
 import MapSelection from "./components/MapSelection";
@@ -353,44 +354,46 @@ const App = () => {
   };
 
   return (
-    <GoogleOAuthProvider clientId="157299428708-eraakaj5sblugtout401ailphf12j81n.apps.googleusercontent.com">
-      <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: `url(${bgImage})` }}>
-        {/* Background Music */}
-        <audio ref={audioRef} src={bgMusic} loop preload="auto" />
+    <ModalProvider value={{ settingsOpen, profileOpen, loginOpen, signupOpen, scoreboardOpen }}>
+      <GoogleOAuthProvider clientId="157299428708-eraakaj5sblugtout401ailphf12j81n.apps.googleusercontent.com">
+        <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: `url(${bgImage})` }}>
+          {/* Background Music */}
+          <audio ref={audioRef} src={bgMusic} loop preload="auto" />
 
-        {loginOpen && renderLoginPopup()}
-        {signupOpen && renderSignupPopup()}
-        {renderPage()}
-        {settingsOpen && (
-          <GameSettings 
-            onClose={() => setSettingsOpen(false)}
-            onSave={handleSettingsSave}
-            onReset={handleSettingsReset}
+          {loginOpen && renderLoginPopup()}
+          {signupOpen && renderSignupPopup()}
+          {renderPage()}
+          {settingsOpen && (
+            <GameSettings 
+              onClose={() => setSettingsOpen(false)}
+              onSave={handleSettingsSave}
+              onReset={handleSettingsReset}
+              musicVolume={musicVolume}
+            />
+          )}
+          {profileOpen && (
+            <Profile
+              onClose={() => setProfileOpen(false)}
+              onSave={() => setProfileOpen(false)}
+              profileData={profileData}
+              setProfileData={setProfileData}
+            />
+          )}
+          {scoreboardOpen && (
+            <Scoreboard onMainMenu={() => setScoreboardOpen(false)} />
+          )}
+          <Slidebar
+            isOpen={slidebarOpen}
+            toggleSlidebar={() => setSlidebarOpen(!slidebarOpen)}
+            onMainMenu={() => setCurrentPage("mainMenu")}
+            setSettingsOpen={setSettingsOpen}
+            setProfileOpen={setProfileOpen}
+            onLogout={handleLogout}
             musicVolume={musicVolume}
           />
-        )}
-        {profileOpen && (
-          <Profile
-            onClose={() => setProfileOpen(false)}
-            onSave={() => setProfileOpen(false)}
-            profileData={profileData}
-            setProfileData={setProfileData}
-          />
-        )}
-        {scoreboardOpen && (
-          <Scoreboard onMainMenu={() => setScoreboardOpen(false)} />
-        )}
-        <Slidebar
-          isOpen={slidebarOpen}
-          toggleSlidebar={() => setSlidebarOpen(!slidebarOpen)}
-          onMainMenu={() => setCurrentPage("mainMenu")}
-          setSettingsOpen={setSettingsOpen}
-          setProfileOpen={setProfileOpen}
-          onLogout={handleLogout}
-          musicVolume={musicVolume}
-        />
-      </div>
-    </GoogleOAuthProvider>
+        </div>
+      </GoogleOAuthProvider>
+    </ModalProvider>
   );
 };
 

@@ -43,6 +43,9 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
   };
 
   const handleKeyPress = (event) => {
+    // Prevent event propagation to background elements
+    event.stopPropagation();
+
     switch (event.key) {
       case 'ArrowLeft':
         if (selectedButton === -1) {

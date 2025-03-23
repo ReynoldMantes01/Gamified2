@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useModal } from '../context/ModalContext';
 
 const MainMenu = ({ onPlay, onSettings, onProfile, onAlmanac, onLogout, onMiniGame, onScoreboard }) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const { settingsOpen, profileOpen, loginOpen, signupOpen, scoreboardOpen } = useModal();
 
     const menuItems = [
         { label: 'Play', onClick: onPlay, className: 'bg-blue-500 hover:bg-blue-700' },
@@ -14,6 +16,11 @@ const MainMenu = ({ onPlay, onSettings, onProfile, onAlmanac, onLogout, onMiniGa
     ];
 
     const handleKeyPress = (event) => {
+        // Don't handle keyboard events if any popup is open
+        if (settingsOpen || profileOpen || loginOpen || signupOpen || scoreboardOpen) {
+            return;
+        }
+
         switch (event.key) {
             case 'ArrowUp':
                 setSelectedIndex(prev => 
@@ -38,7 +45,7 @@ const MainMenu = ({ onPlay, onSettings, onProfile, onAlmanac, onLogout, onMiniGa
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
         };
-    }, [selectedIndex]);
+    }, [selectedIndex, settingsOpen, profileOpen, loginOpen, signupOpen, scoreboardOpen]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-cover bg-center pixelated" style={{ backgroundImage: "url('/bg.gif')" }}>

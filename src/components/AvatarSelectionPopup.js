@@ -39,6 +39,9 @@ const AvatarSelectionPopup = ({ onClose, onSelect, selectedAvatar }) => {
     };
 
     const handleKeyPress = (event) => {
+        // Prevent event propagation to background elements
+        event.stopPropagation();
+        
         switch (event.key) {
             case 'ArrowLeft':
                 handlePrevPage();
