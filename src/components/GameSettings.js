@@ -169,6 +169,29 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
               </div>
 
               <div>
+                <h4 className="text-xl mb-2 text-blue-400">Game Page</h4>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>↑/↓/←/→ - Select Level</li>
+                  <li>←/→ - Navigate the selected letters</li>
+                  <li>Enter - Submit word/Attack</li>
+                  <li>Backspace - Remove selected letter</li>
+                  <li>H - Request a hint (if available)</li>
+                  <li>Ctrl - Scramble the letters</li>
+                  <li>Escape - Open Tabbar</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="text-xl mb-2 text-blue-400">Mini Game</h4>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>←/→ - Navigate the selected letters</li>
+                  <li>Enter - Submit word/Attack</li>
+                  <li>Backspace - Remove selected letter</li>
+                  <li>Escape - Open Tabbar</li>
+                </ul>
+              </div>
+
+              <div>
                 <h4 className="text-xl mb-2 text-blue-400">Settings</h4>
                 <ul className="list-disc pl-6 space-y-2">
                   <li>↑/↓ - Toggle between volume slider and buttons</li>
@@ -197,11 +220,17 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
               </div>
 
               <div>
-                <h4 className="text-xl mb-2 text-blue-400">Important Note</h4>
-                <p className="text-gray-300">
-                  When a popup or modal is open, keyboard navigation only works for that specific window.
-                  The background elements won't respond to keyboard input until the popup is closed.
-                </p>
+                <h4 className="text-xl mb-2 text-blue-400">Important Notes</h4>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li className="text-gray-300">
+                    When a popup or modal is open, keyboard navigation only works for that specific window.
+                    The background elements won't respond to keyboard input until the popup is closed.
+                  </li>
+                  <li className="text-gray-300">
+                    In both Game Page and Mini Game, you can use keyboard navigation to select letters and form words.
+                    The controls are consistent between both modes for ease of use.
+                  </li>
+                </ul>
               </div>
             </div>
 
