@@ -42,6 +42,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [currentAvatar, setCurrentAvatar] = useState(profileData?.selectedAvatar);
     const [selectedLetterIndex, setSelectedLetterIndex] = useState(-1);
 
+    const [currentWorldBackground, setCurrentWorldBackground] = useState('Bio_World.gif');
+
     useEffect(() => {
         const fetchPlayerHealth = async () => {
             if (auth.currentUser) {
@@ -407,21 +409,18 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     };
 
     // Handle player's attack logic
-const handleAttack = () => {
-  setIsCharacterAttacking(true);
-  setTimeout(() => {
-    setIsCharacterAttacking(false);
-  }, 500);
-  
-  // Calculate damage (you can adjust this based on word length, effects, etc.)
-  const damage = 1; 
-  setEnemyHearts(prevHearts => Math.max(0, prevHearts - damage));
+    const handleAttack = () => {
+        setIsCharacterAttacking(true);
+        setTimeout(() => {
+            setIsCharacterAttacking(false);
+        }, 500);
+        
         const word = selectedLetters.join('').toUpperCase();
 
         // Check if the word is a valid science term
         if (scienceTerm[word]) {
-            // Word length determines damage (longer words = more damage)
-            const damage = Math.min(word.length, 3);
+            // Calculate damage as 0.2 per letter
+            const damage = word.length * 0.2;
 
             // Apply status effects if any
             let totalDamage = damage;
@@ -975,6 +974,33 @@ const handleAttack = () => {
         }
     };
 
+    // Function to get the appropriate background based on the current enemy's map
+    const getWorldBackground = (enemy) => {
+        if (!enemy) return 'Bio_World.gif';
+        
+        const currentMap = mapData.maps.find(map => 
+            map.enemies.some(e => e.id === enemy.id)
+        );
+        
+        return currentMap?.background || 'Bio_World.gif';
+    };
+
+    // Update background when enemy changes
+    useEffect(() => {
+        if (currentEnemy) {
+            const newBackground = getWorldBackground(currentEnemy);
+            setCurrentWorldBackground(newBackground);
+        }
+    }, [currentEnemy]);
+
+    // Update background when level changes
+    useEffect(() => {
+        if (level?.enemy) {
+            const newBackground = getWorldBackground(level.enemy);
+            setCurrentWorldBackground(newBackground);
+        }
+    }, [level]);
+
     // Word Box
     function generateRandomLetters(existingLetters = [], existingEffects = []) {
         // Get a random science term
@@ -1089,11 +1115,11 @@ const handleAttack = () => {
         <div
             className="game-container relative h-screen w-full flex flex-col items-center justify-between p-4 md:p-6 lg:p-8"
             style={{
-                backgroundImage: level?.selectedMap?.background ?
-                    `url(${require(`../assets/${level.selectedMap.background}`)})` :
-                    'none',
+                backgroundImage: `url(${require('../assets/' + currentWorldBackground)})`,
                 backgroundSize: 'cover',
-                backgroundPosition: 'center'
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                backgroundColor: '#000'
             }}
         >
             <style>
@@ -1223,7 +1249,6 @@ const handleAttack = () => {
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
-                    height: '40vh',
                     backgroundColor: 'rgba(255, 255, 255, 0.9)'
                 }}>
 
