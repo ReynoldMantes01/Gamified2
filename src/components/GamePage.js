@@ -1001,49 +1001,67 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         }
     }, [level]);
 
-    // Word Box
+    // Word Box component
+    const usedTerms = new Set(); // Stores recently used terms
+    const cooldownLimit = 50;   // Number of terms before reuse (adjustable)
+
     function generateRandomLetters(existingLetters = [], existingEffects = []) {
-        // Get a random science term
-        const scienceTerms = Object.keys(scienceTerm);
-        const randomTerm = scienceTerms[Math.floor(Math.random() * scienceTerms.length)];
+    const scienceTerms = Object.keys(scienceTerm);
+    
+    // Prioritize longer words by sorting in descending order of length
+    const sortedTerms = scienceTerms.sort((a, b) => b.length - a.length);
 
-        // Convert the term to an array of unique letters (we'll need at least one of each)
-        const termLetters = Array.from(new Set(randomTerm.split('')));
+    // Filter out already used terms
+    let availableTerms = sortedTerms.filter(term => !usedTerms.has(term));
 
-        // Create new grid keeping existing letters and effects
-        const newGrid = [...existingLetters];
-
-        // First, place the term letters in random empty positions
-        let emptyPositions = [];
-        for (let i = 0; i < 20; i++) {
-            if (newGrid[i] === '' || newGrid[i] === undefined) {
-                emptyPositions.push(i);
-            }
-        }
-
-        // Shuffle the empty positions
-        for (let i = emptyPositions.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [emptyPositions[i], emptyPositions[j]] = [emptyPositions[j], emptyPositions[i]];
-        }
-
-        // Place each letter from the term
-        for (let i = 0; i < termLetters.length && i < emptyPositions.length; i++) {
-            newGrid[emptyPositions[i]] = termLetters[i];
-        }
-
-        // Fill remaining slots with random letters, maintaining a good vowel/consonant ratio
-        const vowels = 'AEIOU';
-        const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
-
-        for (let i = termLetters.length; i < emptyPositions.length; i++) {
-            newGrid[emptyPositions[i]] = Math.random() < 0.4
-                ? vowels.charAt(Math.floor(Math.random() * vowels.length))
-                : consonants.charAt(Math.floor(Math.random() * consonants.length));
-        }
-
-        return newGrid;
+    // If all terms are in cooldown, reset partially by freeing up some terms
+    if (availableTerms.length === 0) {
+        // Free up half of the used terms history
+        const termsArray = Array.from(usedTerms);
+        usedTerms.clear();
+        termsArray.slice(0, Math.floor(cooldownLimit / 2)).forEach(term => usedTerms.add(term));
+        availableTerms = sortedTerms; // Now all terms are available again
     }
+
+    // Pick a word with at least 5 letters (if available)
+    let randomTerm = availableTerms.find(term => term.length >= 5) || 
+                     availableTerms[Math.floor(Math.random() * availableTerms.length)];
+
+    usedTerms.add(randomTerm); // Mark term as used
+
+    // Convert the term to unique letters
+    const termLetters = Array.from(new Set(randomTerm.split('')));
+    const newGrid = [...existingLetters];
+
+    // Find empty positions
+    let emptyPositions = [];
+    for (let i = 0; i < 20; i++) {
+        if (!newGrid[i]) emptyPositions.push(i);
+    }
+
+    // Shuffle positions
+    for (let i = emptyPositions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [emptyPositions[i], emptyPositions[j]] = [emptyPositions[j], emptyPositions[i]];
+    }
+
+    // Place term letters
+    for (let i = 0; i < termLetters.length && i < emptyPositions.length; i++) {
+        newGrid[emptyPositions[i]] = termLetters[i];
+    }
+
+    // Fill remaining slots with random letters
+    const vowels = 'AEIOU';
+    const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
+
+    for (let i = termLetters.length; i < emptyPositions.length; i++) {
+        newGrid[emptyPositions[i]] = Math.random() < 0.4
+            ? vowels.charAt(Math.floor(Math.random() * vowels.length))
+            : consonants.charAt(Math.floor(Math.random() * consonants.length));
+    }
+
+    return newGrid;
+}
 
     // Handle keyboard input
     const handleKeyPress = useCallback((event) => {
