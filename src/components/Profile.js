@@ -273,11 +273,11 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
                 </div>
 
                 {auth.currentUser?.providerData[0]?.providerId === 'password' && (
-                    <div className="mb-6">
+                    <div className="mb-6 text-center">
                         <button
                             type="button"
                             onClick={() => setShowChangePassword(true)}
-                            className={`text-blue-500 hover:text-blue-600 text-sm text-center transition-all duration-200
+                            className={`text-blue-500 hover:text-blue-600 text-sm  transition-all duration-200
                                 ${selectedField === 6 ? 'scale-105 underline' : ''}`}
                         >
                             Change Password

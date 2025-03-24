@@ -558,7 +558,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 setTutorialStep(prev => prev + 1);
             } else {
                 setShowTutorial(false);
-                setDialogVisible(false);
+                setDialogVisible(true);
+                setCurrentDialogIndex(0);
             }
         } else if (currentDialogIndex < dialogSequence.length - 1) {
             setCurrentDialogIndex(prev => prev + 1);
@@ -567,6 +568,23 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             setCurrentDialogIndex(0);
         }
     };
+     
+    useEffect(() => {
+        // Clear any existing highlights first
+        document.querySelectorAll('.tutorial-highlight').forEach(el => {
+            el.classList.remove('tutorial-highlight');
+        });
+        
+        // Apply new highlight if needed
+        if (showTutorial && tutorialSteps[tutorialStep].highlight) {
+            const selector = tutorialSteps[tutorialStep].highlight;
+            const element = document.querySelector(`.${selector}`) || document.getElementById(selector);
+            
+            if (element) {
+                element.classList.add('tutorial-highlight');
+            }
+        }
+    }, [tutorialStep, showTutorial]);
 
     const tutorialSteps = [
         {
@@ -574,20 +592,20 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             highlight: null
         },
         {
-            message: "Your mission is to defeat enemies by forming scientific words. The longer and more complex the word, the more damage you'll deal!",
-            highlight: "letter-grid"
+            message: "Your mission is to defeat enemies by forming scientific words(BIOLOGY, CHEMISTRY, PHYSICS). The longer and more complex the word, the more damage you'll deal!",
+            highlight: "word-box"
         },
         {
-            message: "Click on letters to form words. Each correct scientific term will launch an attack!",
-            highlight: "word-box"
+            message: "Click/Type on letters to form words. Each correct scientific term will launch an attack!",
+            highlight: "letter-grid"
         },
         {
             message: "Some letters have special effects! Hover over them to see what they do.",
             highlight: null
         },
         {
-            message: "Use HINTS when you're stuck, but use them wisely - you only have 2 per level!",
-            highlight: "hint-button"
+            message: "Use HINTS when you're stuck, but use them wisely - you only have 3 per level!",
+            highlight: "hint-box "
         },
         {
             message: "If you can't find any words, use SCRAMBLE to get new letters.",
@@ -618,6 +636,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     }, [handleClickOutside]);
 
     const resetPlayerHealth = async () => {
+        setDefeatVisible(false);
         if (auth.currentUser) {
           const db = getDatabase();
           const userRef = ref(db, `users/${auth.currentUser.uid}/health`);
@@ -640,9 +659,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
           // Reset health to 4 if player is at level 1
           if (level.levelNumber === 1) {
             resetPlayerHealth(4);
-            setShowTutorial(true);
+            setShowTutorial(false);
             setTutorialStep(0);
-            setDialogVisible(true);
+            setDialogVisible(false);
           } else {
             const enemyDialogs = [
               `Ah, a new challenger approaches! I am ${level.enemy.name}, master of ${level.enemy.stats.strength}!`,

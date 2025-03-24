@@ -50,7 +50,7 @@ const MainMenu = ({ onPlay, onSettings, onProfile, onAlmanac, onLogout, onMiniGa
     return (
         <div className="flex items-center justify-center min-h-screen bg-cover bg-center pixelated" style={{ backgroundImage: "url('/bg.gif')" }}>
             <div className="text-center">
-                <h1 className="text-8xl font-bold text-gray-300 mb-10 drop-shadow-[4px_4px_4px_black]">Gamified</h1>
+                <h1 className="text-6xl font-bold text-gray-300 mb-10 drop-shadow-[4px_4px_4px_black]">Science Quest</h1>
                 <h1 className="text-4xl font-bold text-gray-300 mb-5 drop-shadow-[2px_4px_4px_black]">Main Menu</h1>
                 <div className="flex flex-col items-center space-y-2">
                     {menuItems.map((item, index) => (
