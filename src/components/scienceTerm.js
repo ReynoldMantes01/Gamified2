@@ -1178,7 +1178,27 @@ const scienceTerms = {
     OGANESSON: {
         DEFINITION: 'is a synthetic noble gas used in research on the limits of the periodic table.',
         SOURCE: 'https://www.vedantu.com/chemistry/oganesson'
-    }
+    },
+    OXIDIZE: {
+        DEFINITION: 'To react with oxygen and rust. It means to cause an atom or group of atoms to lose electrons during a chemical reaction.',
+        SOURCE: 'https://dictionary.cambridge.org/us/dictionary/english/oxidize'
+    },
+    IODIZE: {
+        DEFINITION: 'To undergo or cause to undergo oxidation.',
+        SOURCE: 'https://www.dictionary.com/browse/oxidize'
+    },
+    ATOMIC: {
+        DEFINITION: 'using the energy that is created when an atom is divided.',
+        SOURCE: 'https://www.merriam-webster.com/dictionary/atomic'
+    },
+    NITRICACID: {   
+        DEFINITION: 'To react with nitrogen and rust. It means to cause an atom or group of atoms to lose electrons during a chemical reaction.',
+        SOURCE: 'https://dictionary.cambridge.org/us/dictionary/english/nitric-acid'
+    },
+    NITRIC: {   
+        DEFINITION: 'containing nitrogen, usually in the pentavalent state. of or relating to niter.',
+        SOURCE: 'https://www.dictionary.com/browse/nitric'
+    },
 };
 
 
