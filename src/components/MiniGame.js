@@ -57,7 +57,7 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     const currentEnemyImage = enemyImages[currentEnemy.image];
 
     const usedWordsQueue = []; // Stores recently used words
-    const cooldownLimit = 10; // Cooldown limit for words
+    const cooldownLimit = 200; // Cooldown limit for words
     
     const getRandomScienceWord = () => {
         const words = Object.keys(scienceTerm);
@@ -92,27 +92,23 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
 // Function to generate a grid with a guaranteed word
 const generateWordGrid = () => {
     const chosenWord = getRandomScienceWord().toUpperCase();
-    const gridSize = 20;
-    const newGrid = Array(gridSize).fill(''); // Create empty grid
+    let newGrid = Array(20).fill(''); // Empty grid
 
-    // Ensure word fits in the grid
-    const maxStartIndex = gridSize - chosenWord.length;
-    const startIndex = maxStartIndex > 0 
-        ? Math.floor(Math.random() * (maxStartIndex + 1)) 
-        : 0; // Ensure no negative range
+    // Find a random start position
+    let startIndex = Math.floor(Math.random() * (20 - chosenWord.length));
 
-    // Place the word in the grid
+    // Place the word inside the grid
     for (let i = 0; i < chosenWord.length; i++) {
         newGrid[startIndex + i] = chosenWord[i];
     }
 
-    // Fill remaining empty slots with random letters
+    // Fill remaining spaces with random letters
     const vowels = 'AEIOU';
     const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
 
-    for (let i = 0; i < gridSize; i++) {
+    for (let i = 0; i < 20; i++) {
         if (newGrid[i] === '') {
-            newGrid[i] = Math.random() < 0.45 // Adjusted to 45% vowels, 55% consonants
+            newGrid[i] = Math.random() < 0.4
                 ? vowels.charAt(Math.floor(Math.random() * vowels.length))
                 : consonants.charAt(Math.floor(Math.random() * consonants.length));
         }
