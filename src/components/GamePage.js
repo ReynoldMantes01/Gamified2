@@ -1020,7 +1020,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     // Word Box component
     const usedTerms = new Set(); // Stores recently used terms
-    const cooldownLimit = 50;   // Number of terms before reuse (adjustable)
+    const cooldownLimit = 5;   // Number of terms before reuse (adjustable)
 
     function generateRandomLetters(existingLetters = [], existingEffects = []) {
     const scienceTerms = Object.keys(scienceTerm);
