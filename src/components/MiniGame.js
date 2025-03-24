@@ -57,7 +57,7 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     const currentEnemyImage = enemyImages[currentEnemy.image];
 
     const usedWordsQueue = []; // Stores recently used words
-    const cooldownLimit = 200; // Cooldown limit for words
+    const cooldownLimit = 500; // Cooldown limit for words
     
     const getRandomScienceWord = () => {
         const words = Object.keys(scienceTerm);
