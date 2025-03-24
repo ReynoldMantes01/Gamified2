@@ -57,41 +57,49 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     const currentEnemyImage = enemyImages[currentEnemy.image];
 
     const usedWordsQueue = []; // Stores recently used words
-    const cooldownLimit = 10;  // Eto yung cooldwon
-
-// Function to get a valid science word while ensuring variety
-const getRandomScienceWord = () => {
-    const words = Object.keys(scienceTerm);
-
-    // Filter out words that are in cooldown
-    let availableWords = words.filter(word => !usedWordsQueue.includes(word));
-
-    // If all words are in cooldown, free up half of the queue
-    if (availableWords.length === 0) {
-        usedWordsQueue.splice(0, Math.floor(cooldownLimit / 2)); 
-        availableWords = words; // Now all words are available again
-    }
-
-    // Pick a longer word first (>=5 letters) if possible, else choose randomly
-    const chosenWord = availableWords.find(word => word.length >= 5) || 
-                       availableWords[Math.floor(Math.random() * availableWords.length)];
-
-    // Add the word to cooldown queue
-    usedWordsQueue.push(chosenWord);
-    if (usedWordsQueue.length > cooldownLimit) {
-        usedWordsQueue.shift(); // Remove oldest word from cooldown
-    }
-
-    return chosenWord;
-};
+    const cooldownLimit = 10; // Cooldown limit for words
+    
+    const getRandomScienceWord = () => {
+        const words = Object.keys(scienceTerm);
+    
+        // Exclude words currently in cooldown
+        let availableWords = words.filter(word => !usedWordsQueue.includes(word));
+    
+        // If all words are in cooldown, remove the oldest half
+        if (availableWords.length === 0) {
+            usedWordsQueue.splice(0, Math.floor(cooldownLimit / 2)); 
+            availableWords = words.filter(word => !usedWordsQueue.includes(word));
+        }
+    
+        // Prioritize longer words (>=5 letters)
+        let longWords = availableWords.filter(word => word.length >= 5);
+        let chosenWord = longWords.length > 0 
+            ? longWords[Math.floor(Math.random() * longWords.length)] 
+            : availableWords[Math.floor(Math.random() * availableWords.length)]; // Fallback to any word
+    
+        // Add the word to cooldown queue
+        usedWordsQueue.push(chosenWord);
+        if (usedWordsQueue.length > cooldownLimit) {
+            usedWordsQueue.shift(); // Remove the oldest word
+        }
+    
+        return chosenWord;
+    };
+    
+    
+    
 
 // Function to generate a grid with a guaranteed word
 const generateWordGrid = () => {
     const chosenWord = getRandomScienceWord().toUpperCase();
-    const newGrid = Array(20).fill(''); // Create empty grid
+    const gridSize = 20;
+    const newGrid = Array(gridSize).fill(''); // Create empty grid
 
-    // Find a random start position where the word can fit
-    let startIndex = Math.floor(Math.random() * (20 - chosenWord.length));
+    // Ensure word fits in the grid
+    const maxStartIndex = gridSize - chosenWord.length;
+    const startIndex = maxStartIndex > 0 
+        ? Math.floor(Math.random() * (maxStartIndex + 1)) 
+        : 0; // Ensure no negative range
 
     // Place the word in the grid
     for (let i = 0; i < chosenWord.length; i++) {
@@ -102,9 +110,9 @@ const generateWordGrid = () => {
     const vowels = 'AEIOU';
     const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
 
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < gridSize; i++) {
         if (newGrid[i] === '') {
-            newGrid[i] = Math.random() < 0.4
+            newGrid[i] = Math.random() < 0.45 // Adjusted to 45% vowels, 55% consonants
                 ? vowels.charAt(Math.floor(Math.random() * vowels.length))
                 : consonants.charAt(Math.floor(Math.random() * consonants.length));
         }
@@ -112,30 +120,41 @@ const generateWordGrid = () => {
 
     return newGrid;
 };
+
     
     // Function to scramble a word and fill remaining spaces with random letters
     const scrambleWord = (word) => {
-        const letters = word.split('');
+        let letters = word.split('');
     
         // Fisher-Yates Shuffle for better randomness
-        for (let i = letters.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [letters[i], letters[j]] = [letters[j], letters[i]];
-        }
+        do {
+            for (let i = letters.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [letters[i], letters[j]] = [letters[j], letters[i]];
+            }
+        } while (letters.join('') === word); // Ensure it's different from the original word
     
         // Ensure good vowel-consonant balance when filling empty spaces
         const vowels = 'AEIOU';
         const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
     
+        let vowelCount = letters.filter(letter => vowels.includes(letter)).length;
+        let consonantCount = letters.length - vowelCount;
+    
         while (letters.length < 20) {
-            letters.push(Math.random() < 0.4 
-                ? vowels.charAt(Math.floor(Math.random() * vowels.length)) 
-                : consonants.charAt(Math.floor(Math.random() * consonants.length))
-            );
+            let isVowel = Math.random() < 0.45; // 45% vowels, 55% consonants
+            if (isVowel && vowelCount < 9) { // Limit vowels to 9 max
+                letters.push(vowels.charAt(Math.floor(Math.random() * vowels.length)));
+                vowelCount++;
+            } else if (!isVowel && consonantCount < 11) { // Limit consonants to 11 max
+                letters.push(consonants.charAt(Math.floor(Math.random() * consonants.length)));
+                consonantCount++;
+            }
         }
     
         return letters;
     };
+    
 
     // Slidebar toggle function with pause functionality and countdown
     const toggleSlidebar = () => {
