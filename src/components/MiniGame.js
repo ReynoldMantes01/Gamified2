@@ -57,7 +57,7 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     const currentEnemyImage = enemyImages[currentEnemy.image];
 
     const usedWordsQueue = []; // Stores recently used words
-    const cooldownLimit = 2;  // Eto yung cooldwon
+    const cooldownLimit = 10;  // Eto yung cooldwon
 
 // Function to get a valid science word while ensuring variety
 const getRandomScienceWord = () => {
