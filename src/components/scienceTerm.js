@@ -1,3 +1,4 @@
+
 const scienceTerms = {
 
     // Physics - Mechanics and Motion
@@ -1199,7 +1200,281 @@ const scienceTerms = {
         DEFINITION: 'containing nitrogen, usually in the pentavalent state. of or relating to niter.',
         SOURCE: 'https://www.dictionary.com/browse/nitric'
     },
-};
+        // Physics - Additional Terms
+        ADIABATIC: {
+            DEFINITION: "A process in which no heat is exchanged with the surroundings.",
+            SOURCE: "https://www.britannica.com/science/adiabatic-process"
+        },
+        ANGSTROM: {
+            DEFINITION: "A unit of length equal to 10⁻¹⁰ meters, used to measure wavelengths.",
+            SOURCE: "https://www.britannica.com/science/angstrom"
+        },
+        BARYON: {
+            DEFINITION: "A class of subatomic particles made up of three quarks, including protons and neutrons.",
+            SOURCE: "https://www.britannica.com/science/baryon"
+        },
+        ENTROPY: {
+            DEFINITION: "A measure of disorder in a system. FORMULA: ΔS = Q/T",
+            SOURCE: "https://www.britannica.com/science/entropy-physics"
+        },
+        ISOTOPE: {
+            DEFINITION: "Atoms of the same element with different numbers of neutrons.",
+            SOURCE: "https://www.britannica.com/science/isotope"
+        },
+        QUARK: {
+            DEFINITION: "A fundamental constituent of matter that combines to form protons and neutrons.",
+            SOURCE: "https://www.britannica.com/science/quark"
+        },
+        SUPERCONDUCTOR: {
+            DEFINITION: "A material that exhibits zero electrical resistance below a certain temperature.",
+            SOURCE: "https://www.britannica.com/science/superconductivity"
+        },
+    
+        // Chemistry - Additional Terms
+        AVOGADRO: {
+            DEFINITION: "The number of particles in one mole of a substance (6.022×10²³).",
+            SOURCE: "https://www.britannica.com/science/Avogadros-number"
+        },
+        CATALYSIS: {
+            DEFINITION: "The process by which a catalyst increases the rate of a chemical reaction.",
+            SOURCE: "https://www.britannica.com/science/catalysis"
+        },
+        COLLOID: {
+            DEFINITION: "A mixture where microscopic particles are suspended in a liquid, solid, or gas.",
+            SOURCE: "https://www.britannica.com/science/colloid"
+        },
+        POLYMERIZATION: {
+            DEFINITION: "The process of forming large molecules from small repeating units.",
+            SOURCE: "https://www.britannica.com/science/polymerization"
+        },
+        STOICHIOMETRY: {
+            DEFINITION: "The calculation of reactants and products in chemical reactions.",
+            SOURCE: "https://www.britannica.com/science/stoichiometry"
+        },
+    
+        // Biology - Additional Terms
+        AUTOTROPH: {
+            DEFINITION: "An organism that produces its own food using light or chemical energy.",
+            SOURCE: "https://www.britannica.com/science/autotroph"
+        },
+        HOMEOSTASIS: {
+            DEFINITION: "The ability of an organism to maintain stable internal conditions.",
+            SOURCE: "https://www.britannica.com/science/homeostasis"
+        },
+        OSMOSIS: {
+            DEFINITION: "The diffusion of water across a semipermeable membrane.",
+            SOURCE: "https://www.britannica.com/science/osmosis"
+        },
+        MUTATION: {
+            DEFINITION: "A change in the DNA sequence of an organism, leading to genetic variation.",
+            SOURCE: "https://www.britannica.com/science/mutation"
+        },
+        TAXONOMY: {
+            DEFINITION: "The science of classifying and naming organisms.",
+            SOURCE: "https://www.britannica.com/science/taxonomy-biology"
+        },
+    
+        // Earth Science - Additional Terms
+        GEOLOGY: {
+            DEFINITION: "The study of the Earth's physical structure and substance.",
+            SOURCE: "https://www.britannica.com/science/geology"
+        },
+        MAGNETOSPHERE: {
+            DEFINITION: "The region surrounding a planet dominated by its magnetic field.",
+            SOURCE: "https://www.britannica.com/science/magnetosphere"
+        },
+        PERMAFROST: {
+            DEFINITION: "Ground that remains completely frozen for at least two consecutive years.",
+            SOURCE: "https://www.britannica.com/science/permafrost"
+        },
+        TSUNAMI: {
+            DEFINITION: "A large sea wave caused by an underwater earthquake or volcanic eruption.",
+            SOURCE: "https://www.britannica.com/science/tsunami"
+        },
+    
+        // Astronomy - Additional Terms
+        EXOPLANET: {
+            DEFINITION: "A planet that orbits a star outside our solar system.",
+            SOURCE: "https://www.britannica.com/science/exoplanet"
+        },
+        PARSEC: {
+            DEFINITION: "A unit of astronomical distance equivalent to 3.26 light-years.",
+            SOURCE: "https://www.britannica.com/science/parsec"
+        },
+        NEBULA: {
+            DEFINITION: "A cloud of gas and dust in space, where stars are formed.",
+            SOURCE: "https://www.britannica.com/science/nebula"
+        },
+        WHITE_DWARF: {
+            DEFINITION: "A small, dense star that is the leftover core of a low-mass star.",
+            SOURCE: "https://www.britannica.com/science/white-dwarf"
+        },
+        ABSORBANCE: {
+            DEFINITION: "A measure of the amount of light absorbed by a solution at a particular wavelength.",
+            SOURCE: "https://www.britannica.com/science/absorption-spectroscopy"
+        },
+        ABSORPTION: {
+            DEFINITION: "The process by which one substance takes in or assimilates another, such as a liquid being absorbed by a solid or light being absorbed by a material.",
+            SOURCE: "https://www.britannica.com/science/absorption"
+        },
+        ABSORPTIVITY: {
+            DEFINITION: "A property that quantifies how much light is absorbed by a material at a specific wavelength.",
+            SOURCE: "https://www.britannica.com/science/absorptivity"
+        },
+        ACCURACY: {
+            DEFINITION: "The degree to which a measurement or calculation conforms to the correct value or standard.",
+            SOURCE: "https://www.britannica.com/science/measurement#ref532904"
+        },
+        ACTINIDES: {
+            DEFINITION: "A series of 15 metallic elements from actinium to lawrencium (atomic numbers 89-103), known for their radioactive properties.",
+            SOURCE: "https://www.britannica.com/science/actinide-series"
+        },
+        ACTINIUM: {
+            DEFINITION: "A radioactive chemical element (Ac) with atomic number 89, part of the actinide series, used in radiation therapy.",
+            SOURCE: "https://www.britannica.com/science/actinium"
+        },
+        ADSORPTION: {
+            DEFINITION: "The process in which molecules or particles adhere to a surface rather than being absorbed into it.",
+            SOURCE: "https://www.britannica.com/science/adsorption"
+        },
+        ADULTERANT: {
+            DEFINITION: "A substance added to a product that makes it impure or inferior.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/adulterant"
+        },
+        ETHER: {
+            DEFINITION: "A historical concept of a medium once thought to fill all space and transmit light waves.",
+            SOURCE: "https://www.britannica.com/science/ether-theoretical-substance"
+        },
+        AIR: {
+            DEFINITION: "The mixture of gases surrounding Earth, primarily composed of nitrogen (78%) and oxygen (21%), along with trace amounts of other gases.",
+            SOURCE: "https://www.britannica.com/science/air"
+        },
+        ALCHEMY: {
+            DEFINITION: "A medieval and early modern practice that combined elements of chemistry, philosophy, and mysticism, aiming to transform base metals into gold and discover the elixir of life.",
+            SOURCE: "https://www.britannica.com/topic/alchemy"
+        },
+        ALCOHOL: {
+            DEFINITION: "An organic compound characterized by one or more hydroxyl (-OH) functional groups attached to a carbon atom.",
+            SOURCE: "https://www.britannica.com/science/alcohol"
+        },
+        ALKALINE: {
+            DEFINITION: "A term used to describe a substance with a pH greater than 7, often associated with bases that neutralize acids.",
+            SOURCE: "https://www.britannica.com/science/alkali"
+        },
+        ALKALINITY: {
+            DEFINITION: "The capacity of a solution to neutralize acids, typically measured by the concentration of bicarbonates, carbonates, and hydroxides.",
+            SOURCE: "https://www.britannica.com/science/alkalinity"
+        },
+        ALKENE: {
+            DEFINITION: "An unsaturated hydrocarbon containing at least one carbon-carbon double bond, with the general formula CₙH₂ₙ.",
+            SOURCE: "https://www.collinsdictionary.com/us/dictionary/english/alkene"
+        },
+        ALKOXIDE: {
+            DEFINITION: "A basic salt derived from an alcohol by replacing the hydroxyl hydrogen with a metal.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/alkoxide"
+        },
+        ALKOXYGROUP: {
+            DEFINITION: "An alkoxy group is a functional group in organic chemistry consisting of an alkyl group (a carbon chain) bonded to an oxygen atom, represented as R–O.",
+            SOURCE: "https://en.wikipedia.org/wiki/Alkoxy_group"
+        },
+        ALLOTROPE: {
+            DEFINITION: "One of two or more distinct forms of the same chemical element in the same physical state, exhibiting different physical properties and structures.",
+            SOURCE: "https://www.britannica.com/science/allotropy"
+        },
+        ALLOY: {
+            DEFINITION: "A metallic substance composed of two or more elements, either as a compound or a solution.",
+            SOURCE: "https://www.britannica.com/technology/alloy"
+        },
+        ALPHADECAY: {
+            DEFINITION: "A type of radioactive decay in which an unstable atomic nucleus emits an alpha particle, consisting of two protons and two neutrons, resulting in a new element with a lower atomic number.",
+            SOURCE: "https://www.britannica.com/science/alpha-decay"
+        },
+        ALUMINUM: {
+            DEFINITION: "A lightweight, silvery white metal that is highly reactive chemically and the most abundant metallic element in Earth's crust.",
+            SOURCE: "https://www.britannica.com/summary/aluminum"
+        },
+        ALUMINIUM: {
+            DEFINITION: "A lightweight, silvery white metal that is highly reactive chemically and the most abundant metallic element in Earth's crust.",
+            SOURCE: "https://www.britannica.com/summary/aluminum"
+        },
+        AMALGAM: {
+            DEFINITION: "An alloy of mercury with another metal, often used in dental fillings.",
+            SOURCE: "https://www.britannica.com/technology/amalgam"
+        },
+        AMERICIUM: {
+            DEFINITION: "A synthetic radioactive metallic element with atomic number 95, produced by bombarding plutonium with high-energy neutrons.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/americium"
+        },
+        AMIDE: {
+            DEFINITION: "An organic compound derived from ammonia or an amine by replacement of hydrogen with an acyl group.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/amide"
+        },
+        AMINE: {
+            DEFINITION: "An organic compound derived from ammonia by replacement of one or more hydrogen atoms with hydrocarbon groups.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/amine"
+        },
+        AMINOACID: {
+            DEFINITION: "An organic molecule consisting of a basic amino group (−NH₂), an acidic carboxyl group (−COOH), and a unique side chain, serving as the building blocks of proteins.",
+            SOURCE: "https://www.britannica.com/science/amino-acid"
+        },
+        AMORPHOUS: {
+            DEFINITION: "Lacking a definite form; having no specific shape; formless.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/amorphous"
+        },
+        AMPHIPROTIC: {
+            DEFINITION: "A substance capable of acting as both an acid and a base by either donating or accepting a proton.",
+            SOURCE: "https://www.britannica.com/science/amphoterism"
+        },
+        AMPHOTERIC: {
+            DEFINITION: "Capable of reacting chemically either as an acid or as a base.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/amphoteric"
+        },
+        AMU: {
+            DEFINITION: "A unit of mass for expressing masses of atoms, molecules, or nuclear particles equal to 1/12 the mass of a single atom of the most abundant carbon isotope ^12C.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/atomic%20mass%20unit"
+        },
+        ANION: {
+            DEFINITION: "An ion with a negative charge.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/anion"
+        },
+        ANODE: {
+            DEFINITION: "The electrode of an electrochemical cell at which oxidation occurs; in an electrolytic cell, it is the positive terminal, while in a galvanic cell, it is the negative terminal.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/anode"
+        },
+        ANTIMONY: {
+            DEFINITION: "A lustrous, silvery, bluish-white metalloid that is very brittle and has a flaky texture, occurring chiefly as the gray sulfide mineral stibnite.",
+            SOURCE: "https://www.britannica.com/science/antimony"
+        },
+        AQUEOUS: {
+            DEFINITION: "Relating to, resembling, or dissolved in water; often used to describe a solution where water is the solvent.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/aqueous"
+        },
+        ARGON: {
+            DEFINITION: "A colorless, odorless, inert gaseous element found in the air and used especially in welding, lasers, and electric bulbs.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/argon"
+        },
+        ARYL: {
+            DEFINITION: "A functional group derived from an aromatic ring, such as phenyl or naphthyl, often represented as 'Ar' in chemical structures.",
+            SOURCE: "https://www.britannica.com/science/aromatic-ring"
+        },
+        ASTATINE: {
+            DEFINITION: "Astatine (At) is a highly unstable, rare, radioactive element that is the heaviest of the halogen elements. Its most stable isotope has a half-life of 8.3 hours.",
+            SOURCE: "https://www.dictionary.com/browse/astatine"
+        },
+        ATP: {
+            DEFINITION: "A phosphorylated nucleotide composed of adenosine and three phosphate groups that supplies energy for many biochemical cellular processes by undergoing enzymatic hydrolysis.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/ATP"
+        },
+        AUSTENITE: {
+            DEFINITION: "A solid solution of carbon and other elements in gamma-phase iron (γ-Fe), characterized by a face-centered cubic crystal structure, stable at high temperatures.",
+            SOURCE: "https://www.britannica.com/technology/austenite"
+        },
+                                                                          
+                  
+                
+        
+
+    };
 
 
 export default scienceTerms;

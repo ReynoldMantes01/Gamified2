@@ -56,53 +56,63 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     const currentEnemy = enemies[currentEnemyIndex % enemies.length];
     const currentEnemyImage = enemyImages[currentEnemy.image];
 
-    const usedWordsQueue = []; // Stores recently used words
-    const cooldownLimit = 200; // Cooldown limit for words
+    const [usedWordsQueue, setUsedWordsQueue] = useState([]);
+    const cooldownLimit = 5; // Adjust to allow reuse after 5 different words
     
     const getRandomScienceWord = () => {
         const words = Object.keys(scienceTerm);
-    
-        // Exclude words currently in cooldown
+        
+        // Exclude words in cooldown
         let availableWords = words.filter(word => !usedWordsQueue.includes(word));
     
-        // If all words are in cooldown, remove the oldest half
+        // If all words are in cooldown, allow some words back in
         if (availableWords.length === 0) {
-            usedWordsQueue.splice(0, Math.floor(cooldownLimit / 2)); 
+            setUsedWordsQueue(prev => prev.slice(Math.floor(cooldownLimit / 2))); 
             availableWords = words.filter(word => !usedWordsQueue.includes(word));
         }
     
-        // Prioritize longer words (>=5 letters)
         let longWords = availableWords.filter(word => word.length >= 5);
         let chosenWord = longWords.length > 0 
             ? longWords[Math.floor(Math.random() * longWords.length)] 
-            : availableWords[Math.floor(Math.random() * availableWords.length)]; // Fallback to any word
+            : availableWords[Math.floor(Math.random() * availableWords.length)];
     
-        // Add the word to cooldown queue
-        usedWordsQueue.push(chosenWord);
-        if (usedWordsQueue.length > cooldownLimit) {
-            usedWordsQueue.shift(); // Remove the oldest word
-        }
+        // Add to cooldown and limit stored words
+        setUsedWordsQueue(prev => [...prev, chosenWord].slice(-cooldownLimit));
     
         return chosenWord;
     };
     
     
     
+    
+    
 
 // Function to generate a grid with a guaranteed word
 const generateWordGrid = () => {
-    const chosenWord = getRandomScienceWord().toUpperCase();
-    let newGrid = Array(20).fill(''); // Empty grid
+    let chosenWord;
+    let validWordFound = false;
 
-    // Find a random start position
+    for (let attempt = 0; attempt < 10; attempt++) { // Try up to 10 times
+        chosenWord = getRandomScienceWord().toUpperCase();
+
+        // Ensure the word is NOT in cooldown
+        if (!usedWordsQueue.includes(chosenWord)) {
+            validWordFound = true;
+            break;
+        }
+    }
+
+    if (!validWordFound) {
+        return gridLetters; // Keep current grid if no valid words are found
+    }
+
+    let newGrid = Array(20).fill(''); // Empty grid
     let startIndex = Math.floor(Math.random() * (20 - chosenWord.length));
 
-    // Place the word inside the grid
     for (let i = 0; i < chosenWord.length; i++) {
         newGrid[startIndex + i] = chosenWord[i];
     }
 
-    // Fill remaining spaces with random letters
     const vowels = 'AEIOU';
     const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
 
@@ -116,6 +126,7 @@ const generateWordGrid = () => {
 
     return newGrid;
 };
+
 
     
     // Function to scramble a word and fill remaining spaces with random letters
@@ -253,38 +264,41 @@ const generateWordGrid = () => {
     };
 
 
-    // Handle word submission and attacks
     const handleSubmitWord = useCallback(() => {
         if (isPaused) return;
         const word = selectedLetters.join('').toUpperCase();
-        setCurrentWord(word);
-
-
+    
         if (word.length === 0) return;
-
+    
+        // Prevent word spam - check if it's in cooldown
+        if (usedWordsQueue.includes(word)) {
+            setDefinition(`"${word}" is on cooldown! Use ${cooldownLimit} different words first.`);
+            return; 
+        }
+    
         if (scienceTerm.hasOwnProperty(word)) {
-            // Correct answer - player attacks
             setDefinition('Correct!');
             setPlayerAttacking(true);
-            setTimeLeft(30); // Reset timer on correct answer
-            
-            // Reduce enemy health
+            setTimeLeft(30); // Reset timer
+    
             setCurrentEnemyHealth(prev => {
                 const newHealth = prev - 1;
                 if (newHealth <= 0) {
-                    // Enemy defeated, move to next enemy
                     setCurrentEnemyIndex(prev => prev + 1);
-                    return currentEnemy.health; // Reset health for new enemy
+                    return currentEnemy.health;
                 }
                 return newHealth;
             });
-
+    
             setTimeout(() => {
                 setPlayerAttacking(false);
                 setScore(s => s + word.length * 10);
             }, 500);
+    
+            // Add word to cooldown list (even if scrambled)
+            setUsedWordsQueue(prev => [...prev, word].slice(-cooldownLimit));
+    
         } else {
-            // Wrong answer - enemy attacks
             setDefinition('Wrong answer! The enemy attacks!');
             setEnemyAttacking(true);
             setTimeout(() => {
@@ -299,13 +313,63 @@ const generateWordGrid = () => {
                 });
             }, 500);
         }
-
+    
+        // Generate a new grid with a fresh valid word but KEEP cooldown
         setSelectedLetters([]);
         setEmptyIndices([]);
-        const randomWord = getRandomScienceWord();
-        const scrambledGrid = scrambleWord(randomWord);
+        const newGrid = generateWordGrid();
+        setGridLetters(newGrid);
+    }, [selectedLetters, currentEnemyIndex, currentEnemy.health, usedWordsQueue]);
+    
+
+
+    const handleScramble = () => {
+        if (isPaused || gameOver) return; // Prevent scrambling during pause or game over
+    
+        if (playerHearts <= 1) {
+            setDefinition("Scramble disabled! Too risky, you're low on health!");
+            return; // Stop the function if the player has only 1 HP
+        }
+    
+        setSelectedLetters([]); // Clear selected letters
+        setEmptyIndices([]); // Reset empty letter spots
+    
+        // ✅ Apply penalty: Reduce player's health
+        setPlayerHearts(prev => {
+            const newHealth = prev - 1;
+            if (newHealth <= 0) {
+                setGameOver(true);
+                saveScore();
+            }
+            return Math.max(0, newHealth);
+        });
+    
+        // ✅ Generate a new scrambled grid but KEEP cooldown words
+        let scrambledGrid;
+        let validScramble = false;
+    
+        for (let attempt = 0; attempt < 10; attempt++) {
+            scrambledGrid = generateWordGrid();
+            let scrambledWord = scrambledGrid.join('').toUpperCase();
+    
+            if (!usedWordsQueue.includes(scrambledWord)) {
+                validScramble = true;
+                break;
+            }
+        }
+    
+        if (!validScramble) {
+            setDefinition("Scramble failed: All words are in cooldown!");
+            return;
+        }
+    
         setGridLetters(scrambledGrid);
-    }, [selectedLetters, currentEnemyIndex, currentEnemy.health]);
+        setDefinition("Letters scrambled! -1 Health as a penalty.");
+    };
+    
+    
+    
+    
 
     // Save score to database
     const saveScore = async () => {
@@ -370,6 +434,9 @@ const generateWordGrid = () => {
             setSelectedLetterIndex(prev => 
                 prev >= selectedLetters.length - 1 ? 0 : prev + 1
             );
+        }
+         else if (event.key === 'Control') {
+        handleScramble();
         }
     }, [isPaused, gameOver, showTutorial, gridLetters, emptyIndices, selectedLetters, selectedLetterIndex]);
 
@@ -551,6 +618,13 @@ const generateWordGrid = () => {
                         </div>
                     ))}
                 </div>
+                    {/* Scramble Button */}
+    <button
+        className="bg-purple-500 text-white px-4 py-2 rounded-lg text-lg font-bold hover:bg-purple-600 transform transition-transform hover:scale-105"
+        onClick={handleScramble}
+    >
+        Scramble
+    </button>
                 <button
                     className="bg-blue-500 text-white px-2 py-1 flex justify-end rounded-lg text-lg hover:bg-blue-600 transform transition-transform hover:scale-105"
                     onClick={handleSubmitWord}
