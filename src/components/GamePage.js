@@ -1068,8 +1068,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     }
 
     // Fill remaining slots with random letters
-    const vowels = 'AEIOU';
-    const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
+    const vowels = 'AEIOU_';
+    const consonants = 'BCDFGHJKLMNPQRSTVWXYZ_';
 
     for (let i = termLetters.length; i < emptyPositions.length; i++) {
         newGrid[emptyPositions[i]] = Math.random() < 0.4

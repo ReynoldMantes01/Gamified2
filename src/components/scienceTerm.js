@@ -1469,9 +1469,116 @@ const scienceTerms = {
             DEFINITION: "A solid solution of carbon and other elements in gamma-phase iron (γ-Fe), characterized by a face-centered cubic crystal structure, stable at high temperatures.",
             SOURCE: "https://www.britannica.com/technology/austenite"
         },
-                                                                          
-                  
-                
+        AZEOTROPE: {
+            DEFINITION: "A liquid mixture that maintains a constant boiling point and composition during distillation, as the vapor has the same composition as the liquid mixture.",
+            SOURCE: "https://www.britannica.com/science/azeotrope"
+        },
+        BARIUM: {
+            DEFINITION: "A soft, silvery-white metallic element of the alkaline earth metal group with atomic number 56, used in drilling fluids, vacuum tubes, and as a contrast agent in medical imaging.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/barium"
+        },
+        BAROMETER: {
+            DEFINITION: "An instrument that measures atmospheric pressure, used especially in forecasting the weather and determining altitude.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/barometer"
+        },
+        BASE: {
+            DEFINITION: "In chemistry, a base is any substance that in water solution is slippery to the touch, tastes bitter, changes the color of indicators (e.g., turns red litmus paper blue), reacts with acids to form salts, and promotes certain chemical reactions (base catalysis).",
+            SOURCE: "https://www.britannica.com/science/base-chemical-compound"
+        },
+        BASEMETAL: {
+            DEFINITION: "A common and inexpensive metal, such as lead, tin, or copper, that reacts easily with other chemicals and is not a precious metal.",
+            SOURCE: "https://dictionary.cambridge.org/us/dictionary/english/base-metal"
+        },
+        BASIC: {
+            DEFINITION: "Relating to, or having the properties of a base; in chemistry, a substance that in aqueous solution is slippery to the touch, tastes bitter, changes the color of indicators (e.g., turns red litmus paper blue), reacts with acids to form salts, and promotes certain chemical reactions (base catalysis).",
+            SOURCE: "https://www.britannica.com/science/base-chemical-compound"
+        },
+        BASICSOLUTION: {
+            DEFINITION: "A solution with a pH greater than 7, indicating the presence of more hydroxide ions (OH⁻) than hydrogen ions (H⁺); also known as an alkaline solution.",
+            SOURCE: "https://www.britannica.com/science/acid-base-reaction"
+        },
+        BEERSLAW: {
+            DEFINITION: "A principle in spectroscopy stating that the absorptive capacity of a dissolved substance is directly proportional to its concentration in a solution.",
+            SOURCE: "https://www.britannica.com/science/Beers-law"
+        },                                                                                          
+        BERKELIUM: {
+            DEFINITION: "A synthetic, radioactive metallic element with the symbol Bk and atomic number 97; it is part of the actinoid series and does not occur naturally.",
+            SOURCE: "https://www.britannica.com/science/berkelium"
+        },
+        BERYLLIUM: {
+            DEFINITION: "A steel-gray, light, strong but brittle alkaline earth metal with atomic number 4, used chiefly as a hardening agent in alloys.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/beryllium"
+        },
+        BETADECAY: {
+            DEFINITION: "A type of radioactive decay in which an unstable atomic nucleus transforms into a more stable one by emitting a beta particle (an electron or positron) and a neutrino or antineutrino.",
+            SOURCE: "https://www.britannica.com/science/beta-decay"
+        },
+        BETAPARTICLE: {
+            DEFINITION: "A high-speed electron or positron emitted from the nucleus of a radioactive atom during beta decay.",
+            SOURCE: "https://www.nrc.gov/reading-rm/basic-ref/glossary/beta-particle.html"
+        },                   
+        BINARY_ACID: {
+            DEFINITION: "A binary acid is a molecular compound in which hydrogen is bonded to one other nonmetallic element, forming an acid that releases hydrogen ions (H⁺) when dissolved in water.",
+            SOURCE: "https://www.britannica.com/science/binary-acid"
+        },          
+        BIOCHEMISTRY: {
+            DEFINITION: "The study of the chemical substances and processes that occur in living organisms.",
+            SOURCE: "https://www.britannica.com/science/biochemistry"
+        },
+        BISMUTH: {
+            DEFINITION: "A brittle, silvery-white metallic element with a pinkish tinge, known for its low thermal conductivity and diamagnetic properties.",
+            SOURCE: "https://www.britannica.com/science/bismuth"
+        },
+        BITUMEN: {
+            DEFINITION: "A black, sticky substance derived from petroleum, often used in road construction, roofing, and waterproofing.",
+            SOURCE: "https://www.britannica.com/science/bitumen"
+        },
+        BLACKLIGHT: {
+            DEFINITION: "A type of ultraviolet light that is emitted from a lamp or light source, commonly used for detecting fluorescent materials or in certain types of lighting.",
+            SOURCE: "https://www.merriam-webster.com/dictionary/black%20light#:~:text=Kids%20Definition-,black%20light,invisible%20ultraviolet%20or%20infrared%20light"
+        },
+        BOHRIUM: {
+            DEFINITION: 'A synthetic element produced in particle accelerators, studied for its properties in atomic research.',
+            SOURCE: 'https://www.vedantu.com/chemistry/bohrium'
+        },
+        BOILING: {
+            DEFINITION: "The rapid vaporization of a liquid when it is heated to its boiling point, where the liquid turns to gas and forms bubbles.",
+            SOURCE: "https://www.britannica.com/science/boiling"
+        },
+        BOND: {
+            DEFINITION: "Force holding atoms together in molecules",
+            SOURCE: "https://www.britannica.com/science/chemical-bond"
+        },
+        BOND_ANGLE: {
+            DEFINITION: "The angle formed between two bonds that share a common atom, typically measured in degrees.",
+            SOURCE: "https://www.britannica.com/science/bond-angle"
+        },
+        BOND_ENERGY: {
+            DEFINITION: "The amount of energy required to break one mole of bonds in a molecule in its gaseous state.",
+            SOURCE: "https://www.britannica.com/science/bond-energy"
+        },
+        BOYLES_LAW: {
+            DEFINITION: "The pressure of a gas is inversely proportional to its volume at a constant temperature. FORMULA: P₁V₁ = P₂V₂.",
+            SOURCE: "https://www.britannica.com/science/Boyles-law"
+        },
+        BRASS: {
+            DEFINITION: "An alloy of copper and zinc, used for its strength, corrosion resistance, and acoustic properties.",
+            SOURCE: "https://www.britannica.com/technology/brass"
+        },
+        BRONZE: {
+            DEFINITION: "An alloy consisting primarily of copper, usually with tin as the main additive, known for its strength and resistance to corrosion.",
+            SOURCE: "https://www.britannica.com/technology/bronze"
+        },
+        BROMINE: {
+            DEFINITION: "A reddish-brown liquid halogen used in flame retardants, pharmaceuticals, and water treatment.",
+            SOURCE: "https://www.vedantu.com/chemistry/bromine"
+        },
+        BUFFER: {
+            DEFINITION: "A solution that resists changes in its pH when small amounts of an acid or base are added.",
+            SOURCE: "https://www.britannica.com/science/buffer-solution"
+        },
+                        
+        
         
 
     };
