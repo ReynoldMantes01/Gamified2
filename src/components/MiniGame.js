@@ -39,6 +39,8 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     const [profileOpen, setProfileOpen] = useState(false);
     const [scoreboardOpen, setScoreboardOpen] = useState(false); // State for scoreboard visibility
     const [selectedLetterIndex, setSelectedLetterIndex] = useState(-1);
+    const [longestWord, setLongestWord] = useState('');
+    const [showLongestWordScoreboard, setShowLongestWordScoreboard] = useState(false);
 
     const enemies = [
         { name: "Microbe", image: 'microbe.gif', health: 3 },
@@ -57,7 +59,7 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     const currentEnemyImage = enemyImages[currentEnemy.image];
 
     const [usedWordsQueue, setUsedWordsQueue] = useState([]);
-    const cooldownLimit = 5; // Adjust to allow reuse after 5 different words
+    const cooldownLimit = 3; // Adjust to allow reuse after 5 different words
     
     const getRandomScienceWord = () => {
         const words = Object.keys(scienceTerm);
@@ -265,39 +267,27 @@ const generateWordGrid = () => {
 
 
     const handleSubmitWord = useCallback(() => {
-        if (isPaused) return;
+        if (isPaused || gameOver) return;
         const word = selectedLetters.join('').toUpperCase();
     
         if (word.length === 0) return;
     
-        // Prevent word spam - check if it's in cooldown
+        //Prevent word spam - check if it's in cooldown
         if (usedWordsQueue.includes(word)) {
             setDefinition(`"${word}" is on cooldown! Use ${cooldownLimit} different words first.`);
             return; 
         }
     
         if (scienceTerm.hasOwnProperty(word)) {
-            setDefinition('Correct!');
-            setPlayerAttacking(true);
-            setTimeLeft(30); // Reset timer
+            //Update the longest word if the new word is longer
+            if (word.length > longestWord.length) {
+                setLongestWord(word);
+                saveLongestWord(word);  // Save the longest word to Firebase
+                setDefinition(`New longest word: "${word}"!`);
+            }
     
-            setCurrentEnemyHealth(prev => {
-                const newHealth = prev - 1;
-                if (newHealth <= 0) {
-                    setCurrentEnemyIndex(prev => prev + 1);
-                    return currentEnemy.health;
-                }
-                return newHealth;
-            });
-    
-            setTimeout(() => {
-                setPlayerAttacking(false);
-                setScore(s => s + word.length * 10);
-            }, 500);
-    
-            // Add word to cooldown list (even if scrambled)
-            setUsedWordsQueue(prev => [...prev, word].slice(-cooldownLimit));
-    
+            // Proceed with the attack logic here (as usual)
+            // ...
         } else {
             setDefinition('Wrong answer! The enemy attacks!');
             setEnemyAttacking(true);
@@ -314,13 +304,25 @@ const generateWordGrid = () => {
             }, 500);
         }
     
-        // Generate a new grid with a fresh valid word but KEEP cooldown
+        // Reset selected letters after submission
         setSelectedLetters([]);
         setEmptyIndices([]);
+    
+        // Regenerate the grid
         const newGrid = generateWordGrid();
         setGridLetters(newGrid);
-    }, [selectedLetters, currentEnemyIndex, currentEnemy.health, usedWordsQueue]);
+    }, [selectedLetters, longestWord, usedWordsQueue]);
     
+    const saveLongestWord = (word) => {
+        if (auth.currentUser) {
+            const db = getDatabase();
+            const userRef = ref(db, `users/${auth.currentUser.uid}/longestWord`);
+            set(userRef, {
+                word: word,
+                timestamp: Date.now()
+            });
+        }
+    };
 
 
     const handleScramble = () => {

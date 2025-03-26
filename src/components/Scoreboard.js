@@ -8,6 +8,63 @@ const Scoreboard = ({ onMainMenu }) => {
     const [currentPage, setCurrentPage] = useState(0);
     const [scores, setScores] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [longestWords, setLongestWords] = useState([]);
+    const [showLongestWordScoreboard, setShowLongestWordScoreboard] = useState(false);
+
+    useEffect(() => {
+        const db = getDatabase();
+        const longestWordRef = query(ref(db, 'users'), orderByChild('longestWord/timestamp'));
+        
+        const unsubscribe = onValue(longestWordRef, (snapshot) => {
+            const data = snapshot.val();
+            const words = [];
+            Object.entries(data).forEach(([userId, userData]) => {
+                if (userData.longestWord) {
+                    words.push({
+                        name: userData.profile?.username || 'Anonymous',
+                        word: userData.longestWord.word,
+                        timestamp: new Date(userData.longestWord.timestamp).toLocaleDateString(),
+                        userId
+                    });
+                }
+            });
+            setLongestWords(words);
+        });
+    
+        return () => unsubscribe();
+    }, []);
+
+        {/* Conditionally render the longest word scoreboard */}
+    {showLongestWordScoreboard && (
+        <div className="longest-word-scoreboard-overlay">
+            <div className="scoreboard-container">
+                <button 
+                    onClick={() => setShowLongestWordScoreboard(false)} 
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg text-lg font-bold hover:bg-red-600"
+                >
+                    Close
+                </button>
+                <h2 className="text-4xl text-white text-center mb-8">Longest Word Spelled</h2>
+                <div className="bg-gray-800 p-6 mb-4 border-4 border-gray-700 text-white">
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                        <div className="font-bold">Player</div>
+                        <div className="font-bold">Longest Word</div>
+                        <div className="font-bold">Date</div>
+                    </div>
+
+                    {/* Map through the longest word data */}
+                    {longestWords.map((entry, index) => (
+                        <div key={entry.userId} className={`grid grid-cols-3 gap-4 p-4 mb-3 ${index % 2 === 0 ? 'bg-gray-700' : 'bg-gray-800'}`}>
+                            <div>{entry.name}</div>
+                            <div>{entry.word}</div>
+                            <div>{entry.timestamp}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    )}
+
 
     const processScores = useCallback((data) => {
         if (!data) return [];
@@ -115,6 +172,12 @@ const Scoreboard = ({ onMainMenu }) => {
                 <h2 className="text-4xl font-bold text-white text-center mb-8"style={{ 
                 letterSpacing: '-1px'
             }}>SCOREBOARD</h2>
+            <button 
+                onClick={() => setShowLongestWordScoreboard(true)}
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg text-lg font-bold hover:bg-blue-600 transform transition-transform hover:scale-105"
+            >
+                Longest Word Scoreboard
+            </button>
                 <div className="bg-black bg-opacity-90 p-6 mb-4 border-4 border-gray-800">
                     {loading ? (
                         <>
