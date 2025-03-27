@@ -14,6 +14,7 @@ import mapLibrary from '../components/maps.json';
 import mapData from './maps.json';
 import { auth } from '../firebase/config';
 import { getDatabase, ref, onValue, set, get } from 'firebase/database';
+
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level, reload }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
@@ -39,30 +40,10 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [highlightedIndices, setHighlightedIndices] = useState([]);
     const [currentAvatar, setCurrentAvatar] = useState(profileData?.selectedAvatar);
     const [selectedLetterIndex, setSelectedLetterIndex] = useState(-1);
-    const [elapsedTime, setElapsedTime] = useState(0); // Time in seconds
-    const [timerRunning, setTimerRunning] = useState(false);
     const [currentWorldBackground, setCurrentWorldBackground] = useState('Bio_World.gif');
     const [gameCleared, setGameCleared] = useState(false);
+    
 
-
-    useEffect(() => {
-        let timer;
-        if (timerRunning) {
-            timer = setInterval(() => {
-                setElapsedTime(prev => prev + 1); // Increase time every second
-            }, 1000);
-        } else {
-            clearInterval(timer); // Stop timer when paused
-        }
-        return () => clearInterval(timer);
-    }, [timerRunning]);
-
-    const handleStartGame = () => {
-        setTimerRunning(true); // Start timer when game starts
-    };
-    const handlePauseGame = () => {
-        setTimerRunning(false); // Pause timer
-    };
     useEffect(() => {
         const fetchPlayerHealth = async () => {
             if (auth.currentUser) {
@@ -170,8 +151,6 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             setCurrentEnemy(level.enemy);
             setEnemyHearts(level.enemy.health);
 
-            setElapsedTime(0);
-            setTimerRunning(true);
 
             // Set dialog sequence based on level
             if (level.levelNumber === 1) {
@@ -268,18 +247,18 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             if (enemyProgression.length === 0 || currentEnemyIndex >= enemyProgression.length - 1) {
                 console.log("Game fully cleared! Stopping Timer.");
                 setTimerRunning(false); // Stop the timer only when all enemies are defeated
-
+            
                 if (auth.currentUser) {
                     const db = getDatabase();
                     const userRef = ref(db, `gameBeatScores/${auth.currentUser.uid}`);
-
+            
                     await set(userRef, {
                         username: profileData?.username || 'Anonymous',
                         time: elapsedTime, // Save final time
                         timestamp: Date.now()
                     });
                 }
-
+            
                 setGameCleared(true); // Show "Game Cleared" screen
             } else {
                 // Keep the timer running and proceed to next enemy
@@ -448,7 +427,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             setPlayerHearts((prev) => {
                 const newHeartCount = Math.max(0, prev - damage);
                 if (newHeartCount === 0) {
-                    setTimerRunning(false); // Stop the timer
+    ; // Stop the timer
                     setDefeatVisible(true);
                 }
                 return newHeartCount;
@@ -1231,16 +1210,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             </style>
 
             {/* Timer Display */}
-            <div className="absolute top-2 right-2 
-                            
-                            sm:top-4 sm:right-4 
-                            bg-black bg-opacity-50 
-                            text-white 
-                            px-2 py-1 s
-                            m:px-4 sm:py-2 
-                            rounded-lg t
-                            ext-sm sm:text-base
-                            items-center">
+            <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-4 py-2 rounded-lg text-lg">
                 ⏱ Time: {elapsedTime} sec
             </div>
 
@@ -1608,7 +1578,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     <div className="bg-gray-900 p-8 text-center text-white border-4 border-gray-700">
                         <h2 className="text-4xl font-bold mb-4">🏆 Game Completed! 🏆</h2>
                         <p className="text-lg mb-4">You completed the game in <strong>{elapsedTime} seconds</strong>!</p>
-                        <button
+                        <button 
                             onClick={onMainMenu}
                             className="bg-green-500 px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-600"
                         >
@@ -1655,7 +1625,12 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                         <div className="space-y-3">
                             <button
                                 className="w-full bg-green-500 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-600 transition-colors"
-                                onClick={resetPlayerHealth}
+                                onClick={() => {
+                                    resetPlayerHealth(); // Reset player health
+                                    setEnemyHearts(currentEnemy.maxHealth); // Reset enemy health using its maxHealth
+                    ; // Resume timer (DO NOT reset elapsed time)
+                                    setDefeatVisible(false); // Hide defeat screen
+                                }}
                             >
                                 Try Again
                             </button>

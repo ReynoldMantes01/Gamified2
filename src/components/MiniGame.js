@@ -84,11 +84,6 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
         return chosenWord;
     };
     
-    
-    
-    
-    
-
 // Function to generate a grid with a guaranteed word
 const generateWordGrid = () => {
     let chosenWord;
@@ -129,326 +124,308 @@ const generateWordGrid = () => {
     return newGrid;
 };
 
+// Function to scramble a word and fill remaining spaces with random letters
+const scrambleWord = (word) => {
+    let letters = word.split('');
 
-    
-    // Function to scramble a word and fill remaining spaces with random letters
-    const scrambleWord = (word) => {
-        let letters = word.split('');
-    
-        // Fisher-Yates Shuffle for better randomness
-        do {
-            for (let i = letters.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [letters[i], letters[j]] = [letters[j], letters[i]];
-            }
-        } while (letters.join('') === word); // Ensure it's different from the original word
-    
-        // Ensure good vowel-consonant balance when filling empty spaces
-        const vowels = 'AEIOU';
-        const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
-    
-        let vowelCount = letters.filter(letter => vowels.includes(letter)).length;
-        let consonantCount = letters.length - vowelCount;
-    
-        while (letters.length < 20) {
-            let isVowel = Math.random() < 0.45; // 45% vowels, 55% consonants
-            if (isVowel && vowelCount < 9) { // Limit vowels to 9 max
-                letters.push(vowels.charAt(Math.floor(Math.random() * vowels.length)));
-                vowelCount++;
-            } else if (!isVowel && consonantCount < 11) { // Limit consonants to 11 max
-                letters.push(consonants.charAt(Math.floor(Math.random() * consonants.length)));
-                consonantCount++;
-            }
+    // Fisher-Yates Shuffle for better randomness
+    do {
+        for (let i = letters.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [letters[i], letters[j]] = [letters[j], letters[i]];
         }
-    
-        return letters;
-    };
-    
+    } while (letters.join('') === word); // Ensure it's different from the original word
 
-    // Slidebar toggle function with pause functionality and countdown
-    const toggleSlidebar = () => {
-        if (!slidebarOpen) {
-            // Opening slidebar - pause immediately
-            setSlidebarOpen(true);
-            setIsPaused(true);
-        } else {
-            // Closing slidebar - close first, then start countdown
-            setSlidebarOpen(false);
-            setCountdown(3);
+    // Ensure good vowel-consonant balance when filling empty spaces
+    const vowels = 'AEIOU';
+    const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
+
+    let vowelCount = letters.filter(letter => vowels.includes(letter)).length;
+    let consonantCount = letters.length - vowelCount;
+
+    while (letters.length < 20) {
+        let isVowel = Math.random() < 0.45; // 45% vowels, 55% consonants
+        if (isVowel && vowelCount < 9) { // Limit vowels to 9 max
+            letters.push(vowels.charAt(Math.floor(Math.random() * vowels.length)));
+            vowelCount++;
+        } else if (!isVowel && consonantCount < 11) { // Limit consonants to 11 max
+            letters.push(consonants.charAt(Math.floor(Math.random() * consonants.length)));
+            consonantCount++;
+        }
+    }
+
+    return letters;
+};
+
+// Slidebar toggle function with pause functionality and countdown
+const toggleSlidebar = () => {
+    if (!slidebarOpen) {
+        // Opening slidebar - pause immediately
+        setSlidebarOpen(true);
+        setIsPaused(true);
+    } else {
+        // Closing slidebar - close first, then start countdown
+        setSlidebarOpen(false);
+        setCountdown(3);
+        setTimeout(() => {
+            setCountdown(2);
             setTimeout(() => {
-                setCountdown(2);
+                setCountdown(1);
                 setTimeout(() => {
-                    setCountdown(1);
-                    setTimeout(() => {
-                        setCountdown(0);
-                        setIsPaused(false);
-                    }, 1500);
+                    setCountdown(0);
+                    setIsPaused(false);
                 }, 1500);
             }, 1500);
+        }, 1500);
+    }
+};
+
+const handleClickOutside = useCallback(
+    (event) => {
+        if (slidebarOpen && !event.target.closest('.slidebar') && !event.target.closest('.slidebar-icon')) {
+            setSlidebarOpen(false);
         }
-    };
+    },
+    [slidebarOpen]
+);
 
+// Initialize grid with a guaranteed science word
+useEffect(() => {
+    const randomWord = getRandomScienceWord();
+    const scrambledGrid = scrambleWord(randomWord);
+    setGridLetters(scrambledGrid);
+}, [currentEnemyIndex]);
 
-    
-    const handleClickOutside = useCallback(
-        (event) => {
-            if (slidebarOpen && !event.target.closest('.slidebar') && !event.target.closest('.slidebar-icon')) {
-                setSlidebarOpen(false);
-            }
-        },
-        [slidebarOpen]
-    );
+useEffect(() => {
+    // Set initial enemy health when enemy changes
+    if (currentEnemy) {
+        setCurrentEnemyHealth(currentEnemy.health);
+    }
+}, [currentEnemyIndex]);
 
-    // Initialize grid with a guaranteed science word
-    useEffect(() => {
-        const randomWord = getRandomScienceWord();
-        const scrambledGrid = scrambleWord(randomWord);
-        setGridLetters(scrambledGrid);
-    }, [currentEnemyIndex]);
+// Timer effect
+useEffect(() => {
+    if (!showTutorial && !gameOver) {
+        if (isPaused) return;
 
-    useEffect(() => {
-        // Set initial enemy health when enemy changes
-        if (currentEnemy) {
-            setCurrentEnemyHealth(currentEnemy.health);
-        }
-    }, [currentEnemyIndex]);
-
-    // Timer effect
-    useEffect(() => {
-        if (!showTutorial && !gameOver) {
-            if (isPaused) return;
-
-
-            const timer = setInterval(() => {
-                setTimeLeft((prevTime) => {
-                    if (prevTime <= 0) {
-                        // Enemy attacks when time runs out
-                        setEnemyAttacking(true);
-                        setDefinition('Time\'s up! The enemy attacks!');
-                        setTimeout(() => {
-                            setEnemyAttacking(false);
-                            setPlayerHearts(prev => {
-                                const newHearts = prev - 1;
-                                if (newHearts <= 0) {
-                                    setGameOver(true);
-                                    saveScore();
-                                }
-                                return Math.max(0, newHearts);
-                            });
-                        }, 500);
-                        return 30; // Reset timer
-                    }
-                    return prevTime - 1;
-                });
-            }, 1000);
-
-            return () => clearInterval(timer);
-        }
-    }, [showTutorial, gameOver, isPaused]);
-
-
-    // Handle letter selection
-    const handleLetterClick = (letter, index) => {
-        if (!isPaused && !emptyIndices.includes(index)) {
-            setSelectedLetters(prev => [...prev, letter]);
-            setEmptyIndices(prev => [...prev, index]);
-        }
-    };
-
-
-    // Handle letter removal from word
-    const handleRemoveLetter = (letterIndex) => {
-        if (!isPaused) {
-            const originalIndex = emptyIndices[letterIndex];
-            setSelectedLetters(prev => prev.filter((_, i) => i !== letterIndex));
-            setEmptyIndices(prev => prev.filter((_, i) => i !== letterIndex));
-        }
-    };
-
-
-    const handleSubmitWord = useCallback(() => {
-        if (isPaused || gameOver) return;
-        const word = selectedLetters.join('').toUpperCase();
-    
-        if (word.length === 0) return;
-    
-        //Prevent word spam - check if it's in cooldown
-        if (usedWordsQueue.includes(word)) {
-            setDefinition(`"${word}" is on cooldown! Use ${cooldownLimit} different words first.`);
-            return; 
-        }
-    
-        if (scienceTerm.hasOwnProperty(word)) {
-            //Update the longest word if the new word is longer
-            if (word.length > longestWord.length) {
-                setLongestWord(word);
-                saveLongestWord(word);  // Save the longest word to Firebase
-                setDefinition(`New longest word: "${word}"!`);
-            }
-    
-            // Proceed with the attack logic here (as usual)
-            // ...
-        } else {
-            setDefinition('Wrong answer! The enemy attacks!');
-            setEnemyAttacking(true);
-            setTimeout(() => {
-                setEnemyAttacking(false);
-                setPlayerHearts(prev => {
-                    const newHearts = prev - 1;
-                    if (newHearts <= 0) {
-                        setGameOver(true);
-                        saveScore();
-                    }
-                    return Math.max(0, newHearts);
-                });
-            }, 500);
-        }
-    
-        // Reset selected letters after submission
-        setSelectedLetters([]);
-        setEmptyIndices([]);
-    
-        // Regenerate the grid
-        const newGrid = generateWordGrid();
-        setGridLetters(newGrid);
-    }, [selectedLetters, longestWord, usedWordsQueue]);
-    
-    const saveLongestWord = (word) => {
-        if (auth.currentUser) {
-            const db = getDatabase();
-            const userRef = ref(db, `users/${auth.currentUser.uid}/longestWord`);
-            set(userRef, {
-                word: word,
-                timestamp: Date.now()
+        const timer = setInterval(() => {
+            setTimeLeft((prevTime) => {
+                if (prevTime <= 0) {
+                    // Enemy attacks when time runs out
+                    setEnemyAttacking(true);
+                    setDefinition('Time\'s up! The enemy attacks!');
+                    setTimeout(() => {
+                        setEnemyAttacking(false);
+                        setPlayerHearts(prev => {
+                            const newHearts = prev - 1;
+                            if (newHearts <= 0) {
+                                setGameOver(true);
+                                saveScore();
+                            }
+                            return Math.max(0, newHearts);
+                        });
+                    }, 500);
+                    return 30; // Reset timer
+                }
+                return prevTime - 1;
             });
-        }
-    };
+        }, 1000);
 
-
-    const handleScramble = () => {
-        if (isPaused || gameOver) return; // Prevent scrambling during pause or game over
-    
-        if (playerHearts <= 1) {
-            setDefinition("Scramble disabled! Too risky, you're low on health!");
-            return; // Stop the function if the player has only 1 HP
-        }
-    
-        setSelectedLetters([]); // Clear selected letters
-        setEmptyIndices([]); // Reset empty letter spots
-    
-        // ✅ Apply penalty: Reduce player's health
-        setPlayerHearts(prev => {
-            const newHealth = prev - 1;
-            if (newHealth <= 0) {
-                setGameOver(true);
-                saveScore();
-            }
-            return Math.max(0, newHealth);
-        });
-    
-        // ✅ Generate a new scrambled grid but KEEP cooldown words
-        let scrambledGrid;
-        let validScramble = false;
-    
-        for (let attempt = 0; attempt < 10; attempt++) {
-            scrambledGrid = generateWordGrid();
-            let scrambledWord = scrambledGrid.join('').toUpperCase();
-    
-            if (!usedWordsQueue.includes(scrambledWord)) {
-                validScramble = true;
-                break;
-            }
-        }
-    
-        if (!validScramble) {
-            setDefinition("Scramble failed: All words are in cooldown!");
-            return;
-        }
-    
-        setGridLetters(scrambledGrid);
-        setDefinition("Letters scrambled! -1 Health as a penalty.");
-    };
-    
-    
-    
-    
-
-    // Save score to database
-    const saveScore = async () => {
-        if (auth.currentUser) {
-            try {
-                const db = getDatabase();
-                // Save the score under miniGameScores with proper validation format
-                const scoreRef = ref(db, `users/${auth.currentUser.uid}/miniGameScores/${Date.now()}`);
-                await set(scoreRef, {
-                    score: Math.max(0, score), // Ensure score is non-negative as per rules
-                    timestamp: Date.now() // Timestamp must be a number > 0
-                });
-            } catch (error) {
-                console.error("Error saving score:", error);
-            }
-        }
-    };
-
-    // Handle keyboard input
-    const handleKeyPress = useCallback((event) => {
-        // Handle Escape key for slidebar
-        if (event.key === 'Escape') {
-            setSlidebarOpen(prev => !prev);
-            return;
-        }
-
-        if (isPaused || gameOver || showTutorial) return;
-
-        const key = event.key.toUpperCase();
-        
-        // Handle letter selection
-        if (/^[A-Z]$/.test(key)) {
-            // Find the first available instance of the pressed letter
-            const letterIndex = gridLetters.findIndex((letter, index) => 
-                letter === key && !emptyIndices.includes(index)
-            );
-            
-            if (letterIndex !== -1) {
-                handleLetterClick(key, letterIndex);
-            }
-        }
-        // Handle backspace for letter removal
-        else if (event.key === 'Backspace' && selectedLetters.length > 0) {
-            if (selectedLetterIndex >= 0) {
-                handleRemoveLetter(selectedLetterIndex);
-                setSelectedLetterIndex(Math.min(selectedLetterIndex, selectedLetters.length - 2));
-            } else {
-                handleRemoveLetter(selectedLetters.length - 1);
-            }
-        }
-        // Handle enter for word submission
-        else if (event.key === 'Enter') {
-            handleSubmitWord();
-        }
-        // Handle arrow keys for navigation
-        else if (event.key === 'ArrowLeft') {
-            setSelectedLetterIndex(prev => 
-                prev <= 0 ? selectedLetters.length - 1 : prev - 1
-            );
-        }
-        else if (event.key === 'ArrowRight') {
-            setSelectedLetterIndex(prev => 
-                prev >= selectedLetters.length - 1 ? 0 : prev + 1
-            );
-        }
-         else if (event.key === 'Control') {
-        handleScramble();
-        }
-    }, [isPaused, gameOver, showTutorial, gridLetters, emptyIndices, selectedLetters, selectedLetterIndex]);
-
-    // Add keyboard event listener
-    useEffect(() => {
-        window.addEventListener('keydown', handleKeyPress);
         return () => {
-            window.removeEventListener('keydown', handleKeyPress);
+            clearInterval(timer);
+            setTimeLeft(30); // Reset timer when exiting
         };
-    }, [handleKeyPress]);
+    }
+}, [showTutorial, gameOver, isPaused]);
+
+// Handle letter selection
+const handleLetterClick = (letter, index) => {
+    if (!isPaused && !emptyIndices.includes(index)) {
+        setSelectedLetters(prev => [...prev, letter]);
+        setEmptyIndices(prev => [...prev, index]);
+    }
+};
+
+// Handle letter removal from word
+const handleRemoveLetter = (letterIndex) => {
+    if (!isPaused) {
+        const originalIndex = emptyIndices[letterIndex];
+        setSelectedLetters(prev => prev.filter((_, i) => i !== letterIndex));
+        setEmptyIndices(prev => prev.filter((_, i) => i !== letterIndex));
+    }
+};
+
+const handleSubmitWord = useCallback(() => {
+    let scoreIncrement = 0; // Initialize score increment
+
+    if (isPaused || gameOver) return;
+    const word = selectedLetters.join('').toUpperCase();
+
+    if (word.length === 0) return;
+
+    //Prevent word spam - check if it's in cooldown
+    if (usedWordsQueue.includes(word)) {
+        setDefinition(`"${word}" is on cooldown! Use ${cooldownLimit} different words first.`);
+        return; 
+    }
+
+    if (scienceTerm.hasOwnProperty(word)) {
+        // Update the longest word only if the new word is longer
+        if (word.length > longestWord.length) {
+            setLongestWord(word);
+            saveLongestWord(word);  // Save the longest word to Firebase
+        }
+        setDefinition(`New longest word: "${word}"!`);
+    }
+
+    // Calculate score based on the length of the valid word
+    scoreIncrement = word.length * 10; // 10 points for each letter
+    setScore(prevScore => prevScore + scoreIncrement); // Update score
+
+    // Add the word to the cooldown queue
+    setUsedWordsQueue(prev => [...prev, word].slice(-cooldownLimit));
+    
+    // Reset selected letters after submission
+    setTimeLeft(30); // Reset the timer
+    setSelectedLetters([]);
+    setEmptyIndices([]);
+
+    // Regenerate the grid
+    const newGrid = generateWordGrid();
+    setGridLetters(newGrid);
+}, [selectedLetters, longestWord, usedWordsQueue]);
+
+const saveLongestWord = (word) => {
+    if (auth.currentUser) {
+        const db = getDatabase();
+        const userRef = ref(db, `users/${auth.currentUser.uid}/longestWord`);
+        set(userRef, {
+            word: word,
+            timestamp: Date.now()
+        });
+    }
+};
+
+const handleScramble = () => {
+    if (isPaused || gameOver) return; // Prevent scrambling during pause or game over
+
+    if (playerHearts <= 1) {
+        setDefinition("Scramble disabled! Too risky, you're low on health!");
+        return; // Stop the function if the player has only 1 HP
+    }
+
+    setSelectedLetters([]); // Clear selected letters
+    setEmptyIndices([]); // Reset empty letter spots
+
+    // ✅ Apply penalty: Reduce player's health
+    setPlayerHearts(prev => {
+        const newHealth = prev - 1;
+        if (newHealth <= 0) {
+            setGameOver(true);
+            saveScore();
+        }
+        return Math.max(0, newHealth);
+    });
+
+    // ✅ Generate a new scrambled grid but KEEP cooldown words
+    let scrambledGrid;
+    let validScramble = false;
+
+    for (let attempt = 0; attempt < 10; attempt++) {
+        scrambledGrid = generateWordGrid();
+        let scrambledWord = scrambledGrid.join('').toUpperCase();
+
+        if (!usedWordsQueue.includes(scrambledWord)) {
+            validScramble = true;
+            break;
+        }
+    }
+
+    if (!validScramble) {
+        setDefinition("Scramble failed: All words are in cooldown!");
+        return;
+    }
+
+    setGridLetters(scrambledGrid);
+    setDefinition("Letters scrambled! -1 Health as a penalty.");
+};
+
+// Save score to database
+const saveScore = async () => {
+    if (auth.currentUser) {
+        try {
+            const db = getDatabase();
+            // Save the score under miniGameScores with proper validation format
+            const scoreRef = ref(db, `users/${auth.currentUser.uid}/miniGameScores/${Date.now()}`);
+            await set(scoreRef, {
+                score: Math.max(0, score), // Ensure score is non-negative as per rules
+                timestamp: Date.now() // Timestamp must be a number > 0
+            });
+        } catch (error) {
+            console.error("Error saving score:", error);
+        }
+    }
+};
+
+// Handle keyboard input
+const handleKeyPress = useCallback((event) => {
+    // Handle Escape key for slidebar
+    if (event.key === 'Escape') {
+        setSlidebarOpen(prev => !prev);
+        return;
+    }
+
+    if (isPaused || gameOver || showTutorial) return;
+
+    const key = event.key.toUpperCase();
+    
+    // Handle letter selection
+    if (/^[A-Z]$/.test(key)) {
+        // Find the first available instance of the pressed letter
+        const letterIndex = gridLetters.findIndex((letter, index) => 
+            letter === key && !emptyIndices.includes(index)
+        );
+        
+        if (letterIndex !== -1) {
+            handleLetterClick(key, letterIndex);
+        }
+    }
+    // Handle backspace for letter removal
+    else if (event.key === 'Backspace' && selectedLetters.length > 0) {
+        if (selectedLetterIndex >= 0) {
+            handleRemoveLetter(selectedLetterIndex);
+            setSelectedLetterIndex(Math.min(selectedLetterIndex, selectedLetters.length - 2));
+        } else {
+            handleRemoveLetter(selectedLetters.length - 1);
+        }
+    }
+    // Handle enter for word submission
+    else if (event.key === 'Enter') {
+        handleSubmitWord();
+    }
+    // Handle arrow keys for navigation
+    else if (event.key === 'ArrowLeft') {
+        setSelectedLetterIndex(prev => 
+            prev <= 0 ? selectedLetters.length - 1 : prev - 1
+        );
+    }
+    else if (event.key === 'ArrowRight') {
+        setSelectedLetterIndex(prev => 
+            prev >= selectedLetters.length - 1 ? 0 : prev + 1
+        );
+    }
+     else if (event.key === 'Control') {
+    handleScramble();
+    }
+}, [isPaused, gameOver, showTutorial, gridLetters, emptyIndices, selectedLetters, selectedLetterIndex]);
+
+// Add keyboard event listener
+useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+        window.removeEventListener('keydown', handleKeyPress);
+    };
+}, [handleKeyPress]);
 
     return (
         <div className="relative h-screen w-screen overflow-hidden bg-cover bg-center flex flex-col items-center"
@@ -492,7 +469,7 @@ const generateWordGrid = () => {
                 </div>
                 {/* NAV BAR KANAN*/}                     
                 <div className="flex items-center space-x-4">
-                <div className="transition-all duration-300 hover:scale-110 hover:rotate-90 focus:outline-none focus:ring-4 focus:ring slidebar-icon text-2xl cursor-pointer  text-white" onClick={toggleSlidebar}>
+                    <div className="slidebar-icon text-2xl cursor-pointer" onClick={toggleSlidebar}>
                         <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
                     </div>
                     <Slidebar 
@@ -510,156 +487,156 @@ const generateWordGrid = () => {
                 <Scoreboard onMainMenu={() => setScoreboardOpen(false)} />
             )}
 
-            {settingsOpen && (
-                <GameSettings
-                    onClose={() => setSettingsOpen(false)}
-                    musicVolume={musicVolume}
-                    setMusicVolume={setMusicVolume}
+        {settingsOpen && (
+            <GameSettings
+                onClose={() => setSettingsOpen(false)}
+                musicVolume={musicVolume}
+                setMusicVolume={setMusicVolume}
+            />
+        )}
+        {profileOpen && (
+            <Profile
+                onClose={() => setProfileOpen(false)}
+                profileData={profileData}
+                setProfileData={setProfileData}
+            />
+        )}
+        {/* Timer */}
+        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 px-6 py-2 rounded-full">
+            <span className={`text-3xl font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-white'}`}>
+                {timeLeft}s
+            </span>
+        </div>
+
+        {/* Battle Area */}
+        <div className="w-full flex-1 flex justify-between items-center px-10 mt-4">
+            {/* Player Character */}
+            <div className="relative">
+                <img 
+                    src={character} 
+                    alt="Player" 
+                    className="w-64 h-64 md:w-72 md:h-72 lg:w-80 lg:h-80"
+                    style={{ transform: 'scaleX(1)' }} 
                 />
-            )}
-            {profileOpen && (
-                <Profile
-                    onClose={() => setProfileOpen(false)}
-                    profileData={profileData}
-                    setProfileData={setProfileData}
+                {playerAttacking && (
+                    <img 
+                        src={attackImage} 
+                        alt="Player Attack" 
+                        className="absolute top-1/2 -right-24 transform -translate-y-1/2 w-32 h-32"
+                    />
+                )}
+            </div>
+
+            {/* Enemy Health Bar */}
+            <div className="absolute top-40 left-1/2 transform bg-black bg-opacity-30 -translate-x-1/2 flex flex-col items-center">
+                <div className="text-white text-xl mb-2">{currentEnemy.name}</div>
+                <div className="w-64 h-4 bg-gray-700 rounded-full">
+                    <div 
+                        className="h-full bg-red-500 rounded-full transition-all duration-300"
+                        style={{ width: `${(currentEnemyHealth / currentEnemy.health) * 100}%` }}
+                    ></div>
+                </div>
+            </div>
+
+            {/* Enemy */}
+            <div className="relative">
+                <img 
+                    src={currentEnemyImage} 
+                    alt={currentEnemy.name}
+                    className="w-64 h-64 md:w-72 md:h-72 lg:w-80 lg:h-80"
+                    style={{ transform: 'scaleX(-1)' }} 
                 />
-            )}
-            {/* Timer */}
-            <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 px-6 py-2 rounded-full">
-                <span className={`text-3xl font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-white'}`}>
-                    {timeLeft}s
-                </span>
-            </div>
-
-            {/* Battle Area */}
-            <div className="w-full flex-1 flex justify-between items-center px-10 mt-4">
-                {/* Player Character */}
-                <div className="relative">
+                {enemyAttacking && (
                     <img 
-                        src={character} 
-                        alt="Player" 
-                        className="w-64 h-64 md:w-72 md:h-72 lg:w-80 lg:h-80"
-                        style={{ transform: 'scaleX(1)' }} 
+                        src={attackEnemyImage} 
+                        alt="Enemy Attack" 
+                        className="absolute top-1/2 -left-24 transform -translate-y-1/2 w-32 h-32"
+                        style={{ transform: 'scaleX(-1)' }}
                     />
-                    {playerAttacking && (
-                        <img 
-                            src={attackImage} 
-                            alt="Player Attack" 
-                            className="absolute top-1/2 -right-24 transform -translate-y-1/2 w-32 h-32"
-                        />
-                    )}
-                </div>
-
-                {/* Enemy Health Bar */}
-                <div className="absolute top-40 left-1/2 transform bg-black bg-opacity-30 -translate-x-1/2 flex flex-col items-center">
-                    <div className="text-white text-xl mb-2">{currentEnemy.name}</div>
-                    <div className="w-64 h-4 bg-gray-700 rounded-full">
-                        <div 
-                            className="h-full bg-red-500 rounded-full transition-all duration-300"
-                            style={{ width: `${(currentEnemyHealth / currentEnemy.health) * 100}%` }}
-                        ></div>
-                    </div>
-                </div>
-
-                {/* Enemy */}
-                <div className="relative">
-                    <img 
-                        src={currentEnemyImage} 
-                        alt={currentEnemy.name}
-                        className="w-64 h-64 md:w-72 md:h-72 lg:w-80 lg:h-80"
-                        style={{ transform: 'scaleX(-1)' }} 
-                    />
-                    {enemyAttacking && (
-                        <img 
-                            src={attackEnemyImage} 
-                            alt="Enemy Attack" 
-                            className="absolute top-1/2 -left-24 transform -translate-y-1/2 w-32 h-32"
-                            style={{ transform: 'scaleX(-1)' }}
-                        />
-                    )}
-                </div>
+                )}
             </div>
+        </div>
 
-            {/* Definition Display */}
-            <div className="w-full p-2 text-center mt-auto">
-                <div className="bg-white bg-opacity-75 rounded p-2 max-w-2xl mx-auto text-lg">
-                    {definition || "Form a science term from the letters below!"}
-                </div>
+        {/* Definition Display */}
+        <div className="w-full p-2 text-center mt-auto">
+            <div className="bg-white bg-opacity-75 rounded p-2 max-w-2xl mx-auto text-lg">
+                {definition || "Form a science term from the letters below!"}
             </div>
+        </div>
 
-            {/* Game Grid */}
-            <div className="grid grid-cols-5 gap-2 p-4 mb-16">
-                {gridLetters.map((letter, index) => (
-                    <button
+        {/* Game Grid */}
+        <div className="grid grid-cols-5 gap-2 p-4 mb-16">
+            {gridLetters.map((letter, index) => (
+                <button
+                    key={index}
+                    className={`w-16 h-16 text-2xl font-bold rounded-lg shadow-lg transform transition-all duration-200 ${
+                        emptyIndices.includes(index)
+                            ? 'bg-gray-200 text-gray-400 cursor-default'
+                            : 'bg-white hover:scale-105 hover:bg-blue-100'
+                    }`}
+                    onClick={() => handleLetterClick(letter, index)}
+                    disabled={emptyIndices.includes(index)}
+                >
+                    {emptyIndices.includes(index) ? '' : letter}
+                </button>
+            ))}
+        </div>
+
+        {/* Word Input */}
+        <div className="absolute bottom-4 w-full flex justify-center items-center space-x-4">
+            <div className="flex items-center space-x-1 px-3 py-2 min-w-[150px]">
+                {selectedLetters.map((letter, index) => (
+                    <div
                         key={index}
-                        className={`w-16 h-16 text-2xl font-bold rounded-lg shadow-lg transform transition-all duration-200 ${
-                            emptyIndices.includes(index)
-                                ? 'bg-gray-200 text-gray-400 cursor-default'
-                                : 'bg-white hover:scale-105 hover:bg-blue-100'
-                        }`}
-                        onClick={() => handleLetterClick(letter, index)}
-                        disabled={emptyIndices.includes(index)}
+                        onClick={() => handleRemoveLetter(index)}
+                        className={`selected-letter cursor-pointer w-10 h-10 flex items-center justify-center 
+                            text-xl font-bold rounded-lg bg-white border-2 
+                            ${index === selectedLetterIndex ? 'border-blue-500 bg-blue-100' : 'border-gray-300'}`}
                     >
-                        {emptyIndices.includes(index) ? '' : letter}
-                    </button>
+                        {letter}
+                    </div>
                 ))}
             </div>
+                {/* Scramble Button */}
+<button
+    className="bg-purple-500 text-white px-4 py-2 rounded-lg text-lg font-bold hover:bg-purple-600 transform transition-transform hover:scale-105"
+    onClick={handleScramble}
+>
+    Scramble
+</button>
+            <button
+                className="bg-blue-500 text-white px-2 py-1 flex justify-end rounded-lg text-lg hover:bg-blue-600 transform transition-transform hover:scale-105"
+                onClick={handleSubmitWord}
+            >
+                Submit
+            </button>
+        </div>
 
-            {/* Word Input */}
-            <div className="absolute bottom-4 w-full flex justify-center items-center space-x-4">
-                <div className="flex items-center space-x-1 px-3 py-2 min-w-[150px]">
-                    {selectedLetters.map((letter, index) => (
-                        <div
-                            key={index}
-                            onClick={() => handleRemoveLetter(index)}
-                            className={`selected-letter cursor-pointer w-10 h-10 flex items-center justify-center 
-                                text-xl font-bold rounded-lg bg-white border-2 
-                                ${index === selectedLetterIndex ? 'border-blue-500 bg-blue-100' : 'border-gray-300'}`}
-                        >
-                            {letter}
-                        </div>
-                    ))}
+        {/* Countdown Screen */}
+        {countdown > 0 && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="text-white text-9xl font-bold animate-bounce">
+                    {countdown}
                 </div>
-                    {/* Scramble Button */}
-    <button
-        className="bg-purple-500 text-white px-4 py-2 rounded-lg text-lg font-bold hover:bg-purple-600 transform transition-transform hover:scale-105"
-        onClick={handleScramble}
-    >
-        Scramble
-    </button>
+            </div>
+        )}
+
+        {/* Game Over Screen */}
+
+        {gameOver && (
+            <div className="absolute inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center">
+                <h2 className="text-white text-4xl mb-4">Game Over!</h2>
+                <p className="text-white text-2xl mb-8">Final Score: {score}</p>
                 <button
-                    className="bg-blue-500 text-white px-2 py-1 flex justify-end rounded-lg text-lg hover:bg-blue-600 transform transition-transform hover:scale-105"
-                    onClick={handleSubmitWord}
+                    className="bg-blue-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-blue-600"
+                    onClick={onMainMenu}
                 >
-                    Submit
+                    Return to Main Menu
                 </button>
             </div>
-
-            {/* Countdown Screen */}
-            {countdown > 0 && (
-                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="text-white text-9xl font-bold animate-bounce">
-                        {countdown}
-                    </div>
-                </div>
-            )}
-
-            {/* Game Over Screen */}
-
-            {gameOver && (
-                <div className="absolute inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center">
-                    <h2 className="text-white text-4xl mb-4">Game Over!</h2>
-                    <p className="text-white text-2xl mb-8">Final Score: {score}</p>
-                    <button
-                        className="bg-blue-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-blue-600"
-                        onClick={onMainMenu}
-                    >
-                        Return to Main Menu
-                    </button>
-                </div>
-            )}
-        </div>
-    );
+        )}
+    </div>
+);
 };
 
 export default MiniGame;
