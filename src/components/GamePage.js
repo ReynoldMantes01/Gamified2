@@ -15,6 +15,8 @@ import mapData from './maps.json';
 import { auth } from '../firebase/config';
 import { getDatabase, ref, onValue, set, get } from 'firebase/database';
 import TimerComponent from '../components/TimerComponent';
+import FunFact from './FunFact';
+import useFunFact from '../hooks/useFunFact';
 
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level, reload }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
@@ -45,8 +47,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [timerRunning, setTimerRunning] = useState(false);
     const [currentWorldBackground, setCurrentWorldBackground] = useState('Bio_World.gif');
     const [gameCleared, setGameCleared] = useState(false);
-    
-
+    const { showFunFact, showFunFactWithDelay } = useFunFact();
 
     useEffect(() => {
         let timer;
@@ -57,9 +58,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         } else {
             clearInterval(timer); // Stop timer when paused
         }
+        showFunFactWithDelay();
         return () => clearInterval(timer);
     }, [timerRunning]);
-
 
     useEffect(() => {
         const fetchPlayerHealth = async () => {
@@ -1289,8 +1290,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                 key={index}
                                 className={`relative w-12 h-12 border-2 flex items-center justify-center text-2xl font-bold rounded-lg cursor-pointer transition-all duration-300
                                     ${index === selectedLetterIndex ? 'border-blue-500 bg-blue-100 scale-110' : 'border-black'}
-                                    ${highlightedIndices.includes(index) ? 'bg-yellow-300 scale-110' : 'hover:bg-[#e5c8a1]'}
-                                    ${effect ? effectStyles[effect] : 'bg-[#f4d9a3]'}`}
+                                    ${highlightedIndices.includes(index) ? 'bg-yellow-300 scale-110 shadow-lg' : 'bg-[#f4d9a3] hover:bg-[#e5c8a1]'}
+                                    ${effect ? effectStyles[effect] : ''}
+                                `}
                                 onClick={() => handleSelectedLetterClick(letter, index)}
                             >
                                 {letter}
@@ -1638,6 +1640,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                         )}
                     </div>
                 </div>
+            )}
+
+            {/* Fun Fact */}
+            {showFunFact && (
+                <FunFact />
             )}
 
             {/* Sidebar */}

@@ -3,6 +3,7 @@ import { auth } from '../firebase/config';
 import { signInWithEmailAndPassword, FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
 import { getDatabase, ref, set, get } from 'firebase/database';
 import ForgotPassword from './ForgotPassword';
+import FunFact from './FunFact';
 
 const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
     const [email, setEmail] = useState(() => localStorage.getItem('savedEmail') || '');
@@ -10,11 +11,13 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
     const [error, setError] = useState(null);
     const [showLoadingScreen, setShowLoadingScreen] = useState(true);
     const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [showFunFact, setShowFunFact] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
             setShowLoadingScreen(false);
-        }, 3000);
+            setShowFunFact(true);
+        }, 1000);
         return () => clearTimeout(timer);
     }, []);
 
@@ -48,8 +51,7 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             localStorage.setItem('savedEmail', email);
-            await initializeUserProfile(user);
-            onLoginSuccess(user);
+            handleLoginSuccess(user);
         } catch (error) {
             switch (error.code) {
                 case 'auth/user-not-found':
@@ -67,13 +69,19 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
         }
     };
 
+    const handleLoginSuccess = (user) => {
+        setShowFunFact(true);
+        initializeUserProfile(user).then(() => {
+            onLoginSuccess(user);
+        });
+    };
+
     const handleFacebookLogin = async () => {
         try {
             const provider = new FacebookAuthProvider();
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
-            await initializeUserProfile(user);
-            onLoginSuccess(user);
+            handleLoginSuccess(user);
         } catch (error) {
             console.error('Facebook login error:', error);
             setError('Failed to process Facebook login');
@@ -156,6 +164,9 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
 
             {showForgotPassword && (
                 <ForgotPassword onClose={() => setShowForgotPassword(false)} />
+            )}
+            {showFunFact && (
+                <FunFact />
             )}
         </div>
     );
