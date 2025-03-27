@@ -155,35 +155,22 @@ const MapSelection = ({ onLevelSelect, setTimerRunning, onMainMenu, maps, starti
     console.log("Enemy selected:", enemy.name);
 
     if (isEnemyLocked(enemy.name)) {
-      console.log("Enemy is locked, cannot select");
-      return;
+        console.log("Enemy is locked, cannot select");
+        return;
     }
 
     console.log("Enemy is unlocked, proceeding with selection");
     const selectedMap = mapData.maps[currentMapIndex];
 
-    setTimerRunning((prev) => {
-      if (!prev) {
-          console.log("Resuming Timer...");
-          return true;
-      }
-      return prev;
-  });
-  
-      setTimerRunning((prev) => {
-        if (!prev) {
-            console.log("Resuming Timer...");
-            return true;
-        }
-        return prev;
-    });
+    // Resume the timer from the stored value instead of resetting it
+    setTimerRunning(true);
 
     onLevelSelect({
-      selectedMap,
-      enemy,
+        selectedMap,
+        enemy,
     });
+};
 
-  };
 
   const handleKeyPress = (event) => {
     event.preventDefault();

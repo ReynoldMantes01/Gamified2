@@ -14,6 +14,8 @@ import mapLibrary from '../components/maps.json';
 import mapData from './maps.json';
 import { auth } from '../firebase/config';
 import { getDatabase, ref, onValue, set, get } from 'firebase/database';
+import TimerComponent from '../components/TimerComponent';
+
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level, reload }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
@@ -43,6 +45,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [timerRunning, setTimerRunning] = useState(false);
     const [currentWorldBackground, setCurrentWorldBackground] = useState('Bio_World.gif');
     const [gameCleared, setGameCleared] = useState(false);
+    
 
 
     useEffect(() => {
@@ -57,12 +60,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         return () => clearInterval(timer);
     }, [timerRunning]);
 
-    const handleStartGame = () => {
-        setTimerRunning(true); // Start timer when game starts
-    };
-    const handlePauseGame = () => {
-        setTimerRunning(false); // Pause timer
-    };
+
     useEffect(() => {
         const fetchPlayerHealth = async () => {
             if (auth.currentUser) {
@@ -448,7 +446,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             setPlayerHearts((prev) => {
                 const newHeartCount = Math.max(0, prev - damage);
                 if (newHeartCount === 0) {
-                    setTimerRunning(false); // Stop the timer
+                    setTimerRunning(true); // Stop the timer
                     setDefeatVisible(true);
                 }
                 return newHeartCount;
@@ -1232,7 +1230,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
             {/* Timer Display */}
             <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-4 py-2 rounded-lg text-lg">
-                ⏱ Time: {elapsedTime} sec
+            <TimerComponent timerRunning={timerRunning} />
             </div>
 
             {/* Top Bar */}
@@ -1513,7 +1511,12 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                         <div className="space-y-3">
                             <button
                                 className="w-full bg-green-500 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-600 transition-colors"
-                                onClick={resetPlayerHealth}
+                                onClick={() => {
+                                    resetPlayerHealth(); // Reset player health
+                                    setEnemyHearts(currentEnemy.maxHealth); // Reset enemy health using its maxHealth
+                                    setTimerRunning(true); // Resume timer (DO NOT reset elapsed time)
+                                    setDefeatVisible(false); // Hide defeat screen
+                                }}
                             >
                                 Try Again
                             </button>
