@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getDatabase, ref, onValue, query, orderByChild } from 'firebase/database';
 import bgImage from '../assets/bg.gif';
+import FunFact from './FunFact';
+import useFunFact from '../hooks/useFunFact';
 
 const SCORES_PER_PAGE = 5;
 
@@ -12,9 +14,10 @@ const Scoreboard = ({ onMainMenu }) => {
     const [showLongestWordScoreboard, setShowLongestWordScoreboard] = useState(false);
     const [gameBeatScores, setGameBeatScores] = useState([]);
     const [showGameBeatScoreboard, setShowGameBeatScoreboard] = useState(false);
-
+    const { showFunFact, showFunFactWithDelay } = useFunFact();
 
     useEffect(() => {
+        showFunFactWithDelay();
         const db = getDatabase();
     
         // Fetch Longest Words
@@ -151,6 +154,7 @@ const Scoreboard = ({ onMainMenu }) => {
     return (
         
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
+            {showFunFact && <FunFact />}
             <div className="bg-gray-900 p-8 max-w-2xl w-full mx-4 relative border-4 border-gray-700"
                  style={{
                      backgroundImage: `url(${bgImage})`,

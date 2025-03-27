@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase/config';
-import { getDatabase, ref, set, get } from 'firebase/database';
+import { getDatabase, ref, set, get, onValue } from 'firebase/database';
 import alienAvatar from '../assets/avatar/ALIEN AVATAR.jpg';
 import astronautAvatar from '../assets/avatar/ASTRONOUT AVATAR.jpg';
 import geishaAvatar from '../assets/avatar/GEISHA AVATAR.jpg';
 import AvatarSelectionPopup from './AvatarSelectionPopup';
 import ChangePassword from './ChangePassword';
+import FunFact from './FunFact';
+import useFunFact from '../hooks/useFunFact';
 
 const Profile = ({ onClose, profileData, setProfileData }) => {
     const [saving, setSaving] = useState(false);
@@ -14,6 +16,7 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
     const [showAvatarPopup, setShowAvatarPopup] = useState(false);
     const [showChangePassword, setShowChangePassword] = useState(false);
     const [selectedField, setSelectedField] = useState(0);
+    const { showFunFact, showFunFactWithDelay } = useFunFact();
 
     useEffect(() => {
         const loadProfileData = async () => {
@@ -55,6 +58,7 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
         };
 
         loadProfileData();
+        showFunFactWithDelay();
     }, [setProfileData]);
 
     const handleAvatarSelect = (avatarSrc) => {
@@ -101,6 +105,7 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
 
         try {
             setSaving(true);
+            await showFunFactWithDelay();
             const db = getDatabase();
             const userId = auth.currentUser.uid;
 
@@ -204,6 +209,7 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20" onClick={onClose}>
+            {showFunFact && <FunFact />}
             <div className="bg-gray-800 text-white p-8 rounded w-[450px]" onClick={(e) => e.stopPropagation()}>
                 <h1 className="text-4xl mb-8 text-center">Profile</h1>
                 

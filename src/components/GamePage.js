@@ -15,6 +15,10 @@ import mapData from './maps.json';
 import { auth } from '../firebase/config';
 import { getDatabase, ref, onValue, set, get } from 'firebase/database';
 
+import FunFact from './FunFact';
+import useFunFact from '../hooks/useFunFact';
+
+
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level, reload }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
@@ -42,7 +46,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [selectedLetterIndex, setSelectedLetterIndex] = useState(-1);
     const [currentWorldBackground, setCurrentWorldBackground] = useState('Bio_World.gif');
     const [gameCleared, setGameCleared] = useState(false);
-    
+
+    const { showFunFact, showFunFactWithDelay } = useFunFact();
+
+
+
 
     useEffect(() => {
         const fetchPlayerHealth = async () => {
@@ -1315,8 +1323,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                     duration-300 
                                     touch-target
                                     ${index === selectedLetterIndex ? 'border-blue-500 bg-blue-100 scale-110' : 'border-black'}
-                                    ${highlightedIndices.includes(index) ? 'bg-yellow-300 scale-110' : 'hover:bg-[#e5c8a1]'}
-                                    ${effect ? effectStyles[effect] : 'bg-[#f4d9a3]'}`}
+                                    ${highlightedIndices.includes(index) ? 'bg-yellow-300 scale-110 shadow-lg' : 'bg-[#f4d9a3] hover:bg-[#e5c8a1]'}
+                                    ${effect ? effectStyles[effect] : ''}
+                                `}
                                 onClick={() => handleSelectedLetterClick(letter, index)}
                             >
                                 {letter}
@@ -1692,6 +1701,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                         )}
                     </div>
                 </div>
+            )}
+
+            {/* Fun Fact */}
+            {showFunFact && (
+                <FunFact />
             )}
 
             {/* Sidebar */}
