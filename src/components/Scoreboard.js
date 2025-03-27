@@ -198,16 +198,6 @@ const Scoreboard = ({ onMainMenu }) => {
                         >
                             Longest Word Scoreboard
                         </button>
-
-                        <button 
-                            onClick={() => {
-                                setShowGameBeatScoreboard(true);
-                                setShowLongestWordScoreboard(false);
-                            }} 
-                            className={`px-4 py-2 rounded-lg text-lg font-bold ${showGameBeatScoreboard ? 'bg-green-600 text-white' : 'bg-gray-300'}`}
-                        >
-                            Game Beat Scoreboard
-                        </button>
                     </div>
 
 
@@ -289,32 +279,6 @@ const Scoreboard = ({ onMainMenu }) => {
                     </div>
                 )}
 
-                        {/* Game Beat Scoreboard */}
-                    {showGameBeatScoreboard && (
-                        <div className="bg-black bg-opacity-90 p-6 mb-4 border-4 border-gray-800">
-                            <h2 className="text-4xl text-white text-center mb-8">Fastest Game Clears</h2>
-                            <div className="grid grid-cols-3 gap-4 text-center text-white font-bold text-xl border-b-2 border-white pb-4">
-                                <div>Player</div>
-                                <div>Time (Seconds)</div>
-                                <div>Date</div>
-                            </div>
-
-                            {loading ? (
-                                <div className="text-white text-center py-4">Loading fastest clears...</div>
-                            ) : (
-                                gameBeatScores.map((entry, index) => (
-                                    <div 
-                                        key={entry.userId} 
-                                        className={`grid grid-cols-3 gap-4 p-4 mb-3 ${index % 2 === 0 ? 'bg-gray-700' : 'bg-gray-800'}`}
-                                    >
-                                        <div className="text-center">{entry.name}</div>
-                                        <div className="text-center">{entry.time} sec</div>
-                                        <div className="text-center">{entry.timestamp}</div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    )}
 
                     {/* Pagination */}
                     {!showLongestWordScoreboard && !showGameBeatScoreboard && (

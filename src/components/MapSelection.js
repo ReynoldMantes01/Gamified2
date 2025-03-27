@@ -162,9 +162,6 @@ const MapSelection = ({ onLevelSelect, setTimerRunning, onMainMenu, maps, starti
     console.log("Enemy is unlocked, proceeding with selection");
     const selectedMap = mapData.maps[currentMapIndex];
 
-    // Resume the timer from the stored value instead of resetting it
-    setTimerRunning(true);
-
     onLevelSelect({
         selectedMap,
         enemy,
