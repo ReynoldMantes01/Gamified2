@@ -19,6 +19,8 @@ import bgMusic from "./assets/BG1.mp3";
 import mapsData from "./components/maps.json";
 
 const App = () => {
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [timerRunning, setTimerRunning] = useState(false);
   const [currentPage, setCurrentPage] = useState("mainMenu");
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -42,6 +44,20 @@ const App = () => {
   });
   const audioRef = useRef(null);
   const db = getDatabase();
+
+// Timer when game start  
+    useEffect(() => {
+      let timer;
+      if (timerRunning) {
+          timer = setInterval(() => {
+              setElapsedTime(prev => prev + 1);
+          }, 1000);
+      } else {
+          clearInterval(timer);
+      }
+      return () => clearInterval(timer);
+  }, [timerRunning]);
+
 
   // Update audio volume whenever musicVolume changes
   useEffect(() => {
@@ -141,27 +157,45 @@ const App = () => {
   // Function to handle level selection
   const handleLevelSelect = (levelData) => {
     console.log("Level selected:", levelData);
-    
+
     // Always allow microbe in first map
     if (levelData.selectedMap.id === "map1" && levelData.enemy.name.toLowerCase() === "microbe") {
-      console.log("First enemy in first map is always unlocked");
+        console.log("First enemy in first map is always unlocked");
+
+        setTimerRunning((prev) => {
+          if (!prev) {
+              console.log("Resuming Timer...");
+              return true;
+          }
+          return prev;
+      });
+
       setSelectedLevel(levelData);
       setCurrentPage("gamePage");
       return;
-    }
+  }
 
     // Check if user has required progress
     const enemyName = levelData.enemy.name.toLowerCase().replace(' ', '_');
     if (userProgress?.unlockedEnemies?.includes(enemyName)) {
-      console.log(`Enemy ${enemyName} is unlocked, proceeding to game page`);
-      setSelectedLevel(levelData);
-      setCurrentPage("gamePage");
+        console.log(`Enemy ${enemyName} is unlocked, proceeding to game page`);
+
+        // Ensure Timer Doesn't Reset When Switching Enemies
+        setTimerRunning((prev) => {
+            if (!prev) {
+                console.log("Starting Timer");
+                return true;
+            }
+            return prev;
+        });
+
+        setSelectedLevel(levelData);
+        setCurrentPage("gamePage");
     } else {
-      console.log(`Enemy ${enemyName} is locked, cannot proceed`);
-      // Enemy is locked - this should not happen as the UI prevents selecting locked enemies
-      // No alert needed as the UI should prevent this
+        console.log(`Enemy ${enemyName} is locked, cannot proceed`);
     }
-  };
+};
+
 
   // Save music volume to database
   const handleSettingsSave = async (newMusicVolume) => {
@@ -264,6 +298,7 @@ const App = () => {
   };
 
   const handleLogout = () => {
+    setTimerRunning(false);
     setIsAuthenticated(false);
     setLoginOpen(true);
     setCurrentPage("mainMenu");
@@ -312,20 +347,34 @@ const App = () => {
             onScoreboard={() => setScoreboardOpen(true)} // Add onScoreboard handler
           />
         );
-      case "mapSelection":
-        return (
-          <MapSelection
-            maps={mapsData.maps}
-            onLevelSelect={handleLevelSelect}
-            onMainMenu={() => setCurrentPage("mainMenu")}
-            startingMapIndex={0}
-          />
-        );
+        case "mapSelection":
+          return (
+              <MapSelection
+                  maps={mapsData.maps}
+                  onLevelSelect={handleLevelSelect}
+                  setTimerRunning={setTimerRunning}
+                  onMainMenu={() => {
+                      console.log("Returning to Main Menu. Stopping Timer.");
+                      setTimerRunning(false);
+                      setCurrentPage("mainMenu");
+                  }}          
+                  startingMapIndex={0}
+              />
+          );
+      
       case "gamePage":
         return (
           <GamePage
             level={selectedLevel}
-            onMainMenu={() => setCurrentPage("mainMenu")}
+            elapsedTime={elapsedTime}
+            setElapsedTime={setElapsedTime}
+            setTimerRunning={setTimerRunning}
+            onMainMenu={() => {
+              console.log("Returning to Main Menu. Stopping Timer.");
+              setTimerRunning(false); // Stop timer only when quitting
+              setCurrentPage("mainMenu");
+          }}
+          
             backgroundImage={selectedLevel?.background || "defaultBackground.jpg"}
             profileData={profileData}
             setProfileData={setProfileData}
@@ -336,11 +385,21 @@ const App = () => {
           />
         );
       case "almanac":
-        return <Almanac onMainMenu={() => setCurrentPage("mainMenu")} />;
+        return <Almanac
+        onMainMenu={() => {
+          console.log("Returning to Main Menu. Stopping Timer.");
+          setTimerRunning(false); // Stop timer only when quitting
+          setCurrentPage("mainMenu");
+      }}      
+         />;
       case "miniGame":
         return (
           <MiniGame
-            onMainMenu={() => setCurrentPage("mainMenu")}
+          onMainMenu={() => {
+            console.log("Returning to Main Menu. Stopping Timer.");
+            setTimerRunning(false); // Stop timer only when quitting
+            setCurrentPage("mainMenu");
+        }}       
             onLogout={handleLogout}
             musicVolume={musicVolume}
             setMusicVolume={setMusicVolume}
@@ -380,12 +439,23 @@ const App = () => {
             />
           )}
           {scoreboardOpen && (
-            <Scoreboard onMainMenu={() => setScoreboardOpen(false)} />
+            <Scoreboard 
+              onMainMenu={() => {
+                console.log("Returning to Main Menu. Stopping Timer.");
+                setScoreboardOpen(false); // Hide scoreboard
+                setTimerRunning(false); // Stop timer only when quitting
+                setCurrentPage("mainMenu");
+              }} 
+            />
           )}
           <Slidebar
             isOpen={slidebarOpen}
             toggleSlidebar={() => setSlidebarOpen(!slidebarOpen)}
-            onMainMenu={() => setCurrentPage("mainMenu")}
+            onMainMenu={() => {
+              console.log("Returning to Main Menu. Stopping Timer.");
+              setTimerRunning(false); // Stop timer only when quitting
+              setCurrentPage("mainMenu");
+          }}          
             setSettingsOpen={setSettingsOpen}
             setProfileOpen={setProfileOpen}
             onLogout={handleLogout}

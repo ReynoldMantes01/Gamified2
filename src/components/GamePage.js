@@ -39,9 +39,30 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [highlightedIndices, setHighlightedIndices] = useState([]);
     const [currentAvatar, setCurrentAvatar] = useState(profileData?.selectedAvatar);
     const [selectedLetterIndex, setSelectedLetterIndex] = useState(-1);
-
+    const [elapsedTime, setElapsedTime] = useState(0); // Time in seconds
+    const [timerRunning, setTimerRunning] = useState(false);
     const [currentWorldBackground, setCurrentWorldBackground] = useState('Bio_World.gif');
+    const [gameCleared, setGameCleared] = useState(false);
 
+
+    useEffect(() => {
+        let timer;
+        if (timerRunning) {
+            timer = setInterval(() => {
+                setElapsedTime(prev => prev + 1); // Increase time every second
+            }, 1000);
+        } else {
+            clearInterval(timer); // Stop timer when paused
+        }
+        return () => clearInterval(timer);
+    }, [timerRunning]);
+
+    const handleStartGame = () => {
+        setTimerRunning(true); // Start timer when game starts
+    };
+    const handlePauseGame = () => {
+        setTimerRunning(false); // Pause timer
+    };
     useEffect(() => {
         const fetchPlayerHealth = async () => {
             if (auth.currentUser) {
@@ -149,6 +170,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             setCurrentEnemy(level.enemy);
             setEnemyHearts(level.enemy.health);
 
+            setElapsedTime(0);
+            setTimerRunning(true);
+
             // Set dialog sequence based on level
             if (level.levelNumber === 1) {
                 setShowTutorial(true);
@@ -214,12 +238,14 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     const handleGameOver = async (isVictory) => {
         console.log("Game over with victory:", isVictory);
+    
         if (isVictory) {
             console.log("Victory! Updating user progress for enemy:", currentEnemy?.id);
+    
             if (auth.currentUser) {
                 // Update user progress when enemy is defeated
                 await updateUserProgress(currentEnemy);
-
+    
                 // Increase player health
                 setPlayerHearts(prev => {
                     const newHealth = Math.min(prev + 1, 4); // Increase health by 1, max of 4
@@ -232,12 +258,35 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             } else {
                 console.log("No user logged in, skipping progress update");
             }
-
+    
             // Reset hints when player wins a battle
             setHintsRemaining(3);
             setHighlightedIndices([]);
             setHint('');
-
+    
+            //Check if this was the last enemy (game fully beaten)
+            if (enemyProgression.length === 0 || currentEnemyIndex >= enemyProgression.length - 1) {
+                console.log("Game fully cleared! Stopping Timer.");
+                setTimerRunning(false); // Stop the timer only when all enemies are defeated
+            
+                if (auth.currentUser) {
+                    const db = getDatabase();
+                    const userRef = ref(db, `gameBeatScores/${auth.currentUser.uid}`);
+            
+                    await set(userRef, {
+                        username: profileData?.username || 'Anonymous',
+                        time: elapsedTime, // Save final time
+                        timestamp: Date.now()
+                    });
+                }
+            
+                setGameCleared(true); // Show "Game Cleared" screen
+            } else {
+                // Keep the timer running and proceed to next enemy
+                console.log("Enemy defeated! Moving to the next one...");
+                setCurrentEnemyIndex(prev => prev + 1);
+            }
+    
             setVictoryVisible(true);
         } else {
             setDefeatVisible(true);
@@ -246,6 +295,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             setHint('');
         }
     };
+    
 
     useEffect(() => {
         if (enemyHearts <= 0 && currentEnemy) {
@@ -398,6 +448,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             setPlayerHearts((prev) => {
                 const newHeartCount = Math.max(0, prev - damage);
                 if (newHeartCount === 0) {
+                    setTimerRunning(false); // Stop the timer
                     setDefeatVisible(true);
                 }
                 return newHeartCount;
@@ -1147,6 +1198,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     }, [handleKeyPress]);
 
     return (
+        
         <div
             className="game-container relative h-screen w-full flex flex-col items-center justify-between p-4 md:p-6 lg:p-8"
             style={{
@@ -1177,6 +1229,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 }
                 `}
             </style>
+
+            {/* Timer Display */}
+            <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-4 py-2 rounded-lg text-lg">
+                ⏱ Time: {elapsedTime} sec
+            </div>
 
             {/* Top Bar */}
             <div className="w-full flex justify-between items-center mb-4">
@@ -1463,6 +1520,22 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     setProfileData={setProfileData}
                 />
             )}
+            {/* Game Cleared Dialog */}
+            {gameCleared && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
+                    <div className="bg-gray-900 p-8 text-center text-white border-4 border-gray-700">
+                        <h2 className="text-4xl font-bold mb-4">🏆 Game Completed! 🏆</h2>
+                        <p className="text-lg mb-4">You completed the game in <strong>{elapsedTime} seconds</strong>!</p>
+                        <button 
+                            onClick={onMainMenu}
+                            className="bg-green-500 px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-600"
+                        >
+                            Return to Main Menu
+                        </button>
+                    </div>
+                </div>
+            )}
+
 
             {/* Victory Dialog */}
             {victoryVisible && (

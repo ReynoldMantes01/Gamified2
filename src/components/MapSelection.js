@@ -43,8 +43,7 @@ const imageMap = {
 const getImage = (imagePath) => {
   return imageMap[imagePath] || ''; // Return empty string if not found
 };
-
-const MapSelection = ({ onLevelSelect, onMainMenu }) => {
+const MapSelection = ({ onLevelSelect, setTimerRunning, onMainMenu, maps, startingMapIndex }) => {
   const [currentMapIndex, setCurrentMapIndex] = useState(0);
   const [selectedMap, setSelectedMap] = useState(mapData.maps[0]);
   const [userProgress, setUserProgress] = useState(null);
@@ -162,10 +161,28 @@ const MapSelection = ({ onLevelSelect, onMainMenu }) => {
 
     console.log("Enemy is unlocked, proceeding with selection");
     const selectedMap = mapData.maps[currentMapIndex];
+
+    setTimerRunning((prev) => {
+      if (!prev) {
+          console.log("Resuming Timer...");
+          return true;
+      }
+      return prev;
+  });
+  
+      setTimerRunning((prev) => {
+        if (!prev) {
+            console.log("Resuming Timer...");
+            return true;
+        }
+        return prev;
+    });
+
     onLevelSelect({
       selectedMap,
       enemy,
     });
+
   };
 
   const handleKeyPress = (event) => {
