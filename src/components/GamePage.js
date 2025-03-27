@@ -254,7 +254,6 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             //Check if this was the last enemy (game fully beaten)
             if (enemyProgression.length === 0 || currentEnemyIndex >= enemyProgression.length - 1) {
                 console.log("Game fully cleared! Stopping Timer.");
-                setTimerRunning(false); // Stop the timer only when all enemies are defeated
             
                 if (auth.currentUser) {
                     const db = getDatabase();
@@ -262,7 +261,6 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             
                     await set(userRef, {
                         username: profileData?.username || 'Anonymous',
-                        time: elapsedTime, // Save final time
                         timestamp: Date.now()
                     });
                 }
@@ -1217,11 +1215,6 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         `}
             </style>
 
-            {/* Timer Display */}
-            <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-4 py-2 rounded-lg text-lg">
-                ⏱ Time: {elapsedTime} sec
-            </div>
-
             {/* Top Bar */}
             <div className="w-full flex flex-wrap justify-between items-center mb-2 sm:mb-4">
                 {/* Left Side */}
@@ -1586,7 +1579,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
                     <div className="bg-gray-900 p-8 text-center text-white border-4 border-gray-700">
                         <h2 className="text-4xl font-bold mb-4">🏆 Game Completed! 🏆</h2>
-                        <p className="text-lg mb-4">You completed the game in <strong>{elapsedTime} seconds</strong>!</p>
+                        <p className="text-lg mb-4">You completed the game</p>
                         <button 
                             onClick={onMainMenu}
                             className="bg-green-500 px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-600"
