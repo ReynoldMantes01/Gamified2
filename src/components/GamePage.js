@@ -1117,8 +1117,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     }
 
     // Fill remaining slots with random letters
-    const vowels = 'AEIOU_';
-    const consonants = 'BCDFGHJKLMNPQRSTVWXYZ_';
+    const vowels = 'AEIOU';
+    const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
 
     for (let i = termLetters.length; i < emptyPositions.length; i++) {
         newGrid[emptyPositions[i]] = Math.random() < 0.4
@@ -1237,15 +1237,15 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             <div className="w-full flex justify-between items-center mb-4">
                 {/* Left Side */}
                 <div className="flex items-center space-x-4">
-                    <div className="slidebar-icon text-2xl cursor-pointer" onClick={toggleSlidebar}>
+                    <div className="transition-all duration-300 hover:scale-110 hover:rotate-90 focus:outline-none focus:ring-4 focus:ring slidebar-icon text-2xl cursor-pointer" onClick={toggleSlidebar}>
                         <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
                     </div>
-                    <div className="player-info flex items-center bg-[#f4d9a3] p-2 border-2 border-black rounded-lg">
-                        <img
-                            src={currentAvatar}
-                            alt="Player Avatar"
-                            className="w-8 h-8 rounded-full object-cover mr-2"
-                        />
+                    <div className="player-info flex items-center bg-white/70 p-2 border border-indigo-200 rounded-lg shadow-inner">
+            <img
+                src={currentAvatar}
+                alt="Player Avatar"
+                className="w-10 h-10 rounded-full object-cover mr-3 ring-2 ring-indigo-300"
+            />
                         <div className="hearts flex items-center">
                             {[...Array(playerHearts)].map((_, i) => (
                                 <img key={i} src={heartImage} alt="Heart" className="w-6 h-6 ml-1" />
@@ -1255,15 +1255,14 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 </div>
 
                 {/* Right Side */}
-                <div className="player-info flex items-center bg-[#f4d9a3] p-2 border-2 border-black rounded-lg">
-                    <img
-                        src="https://pbs.twimg.com/profile_images/1617590113252278277/SaQY2ovq_400x400.png"
-                        alt="Enemy Avatar"
-                        className="w-8 h-8 rounded-full object-cover mr-2"
-                    />
+                <div className="player-info flex items-center ">
+
                     <div className="hearts flex items-center">
                         {[...Array(enemyHearts)].map((_, i) => (
-                            <img key={i} src={heartImage} alt="Heart" className="w-6 h-6 ml-1" />
+                            <img key={i} 
+                            src={heartImage} 
+                            alt="Heart" 
+                            className="w-12 h-12 ml-12" />
                         ))}
                     </div>
                 </div>
@@ -1333,14 +1332,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             </div>
 
             {/* Bottom Content */}
-            <div className="game-content w-[95%] max-w-[1400px] grid grid-cols-1 md:grid-cols-3 gap-6 p-6 border-4 border-gray-800 rounded-xl bg-opacity-90 mb-6 shadow-xl"
-                style={{
-                    backgroundImage: `url(${functionBackground})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)'
-                }}>
+            <div className="game-content w-[95%] max-w-[1400px] grid grid-cols-1 md:grid-cols-3 gap-6 p-6  rounded-xl bg-opacity-90 mb-6 shadow-xl">
 
                 {/* Description Box */}
                 <div className="description-box bg-gradient-to-b from-[#f4d9a3] to-[#f0d090] border-2 border-gray-800 p-5 rounded-xl mb-3 h-64 overflow-y-auto shadow-md">
@@ -1359,24 +1351,81 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 </div>
 
                 {/* Letter Grid */}
-                <div className="letter-grid grid grid-cols-4 gap-1.5 bg-[#f4d9a3] border-2 border-black p-3 rounded-lg place-items-center">
-                    {gridLetters.map((letter, index) => (
-                        <div
-                            key={index}
-                            className={`relative grid-letter w-10 h-10 md:w-12 md:h-12 border-2 border-black flex items-center justify-center text-lg md:text-xl font-bold cursor-pointer transition-all duration-300 rounded-lg
-                                ${highlightedIndices.includes(index) ? 'bg-yellow-300 scale-110' : 'hover:bg-[#e5c8a1]'}
-                                ${letterEffects[index] ? effectStyles[letterEffects[index]] : 'bg-[#f4d9a3]'}`}
-                            onClick={() => handleLetterClick(letter, index)}
-                        >
-                            {letter}
-                            {letterEffects[index] && (
-                                <div className="absolute opacity-0 hover:opacity-100 bg-black text-white text-xs rounded py-1 px-2 w-40 -top-10 left-1/2 transform -translate-x-1/2 pointer-events-none transition-opacity duration-200 z-10">
-                                    {effectDescriptions[letterEffects[index]]}
-                                </div>
-                            )}
-                        </div>
-                    ))}
+                    <div className="letter-grid grid grid-cols-5 -mb-10 -mt-10 gap-2 p-4 rounded-xl place-items-center">
+            {gridLetters.map((letter, index) => (
+                     <div
+            key={index}
+            className={`
+                relative 
+                grid-letter 
+                w-12 h-12 
+                md:w-14 md:h-14 
+                border-2 
+                flex items-center 
+                justify-center 
+                text-xl 
+                font-bold 
+                cursor-pointer 
+                transition-all 
+                duration-300 
+                rounded-lg 
+                group
+                ${highlightedIndices.includes(index) 
+                    ? 'bg-yellow-300 scale-110 shadow-lg' 
+                    : 'bg-white hover:bg-indigo-100 hover:shadow-md'}
+                ${letterEffects[index] 
+                    ? effectStyles[letterEffects[index]] 
+                    : 'border-indigo-300'}
+            `}
+            onClick={() => handleLetterClick(letter, index)}
+            role="button"
+            aria-label={`Select letter ${letter}`}
+            tabIndex={0}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    handleLetterClick(letter, index);
+                }
+            }}
+        >
+            <span className="
+                group-hover:scale-110 
+                group-active:scale-95 
+                transition-transform 
+                duration-200
+            ">
+                {letter}
+            </span>
+
+            {letterEffects[index] && (
+                <div className="
+                    absolute 
+                    z-10 
+                    bg-black 
+                    text-white 
+                    text-xs 
+                    rounded-md 
+                    py-1.5 
+                    px-3 
+                    w-48 
+                    -top-12 
+                    left-1/2 
+                    transform 
+                    -translate-x-1/2 
+                    opacity-0 
+                    group-hover:opacity-100 
+                    pointer-events-none 
+                    transition-all 
+                    duration-300 
+                    ease-in-out 
+                    shadow-lg
+                ">
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-black"></div>
+                    {effectDescriptions[letterEffects[index]]}
                 </div>
+            )}
+        </div>
+    ))}
+</div>
 
                 {/* Right Side Controls */}
                 <div className="flex flex-col space-y-1.5">
@@ -1404,20 +1453,31 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     {/* Action Buttons */}
                     <div className="action-buttons flex flex-col space-y-2">
                         <button
-                            className={`bg-gradient-to-r from-red-500 to-red-600 text-white border-2 border-gray-800 py-2.5 text-center font-bold text-base rounded-lg transition-all ${!isValidWord ? "opacity-50 cursor-not-allowed" : "hover:from-red-600 hover:to-red-700 hover:shadow-lg transform hover:-translate-y-0.5"}`}
+                            className={`
+                                bg-gradient-to-r 
+                                from-red-500 to-red-600 text-white 
+                                border-2 border-gray-800 py-2.5 text-center
+                                 font-bold text-base rounded-lg transition-all
+                                  ${!isValidWord ? "opacity-50 cursor-not-allowed" 
+                                    : "hover:from-red-600 hover:to-red-700 hover:shadow-lg transform hover:-translate-y-0.5"}`}
                             onClick={handleAttack}
                             disabled={!isValidWord}
                         >
-                            ATTACK
+                            
+                             ATTACK
                         </button>
 
                         <div className="hint-box bg-amber-50 border-2 border-gray-800 py-2 px-3 text-center rounded-lg shadow-inner">
                             <p className="text-sm truncate font-medium">{hint || `Hints remaining: ${hintsRemaining}`}</p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-2 gap-3">
                             <button
-                                className={`bg-gradient-to-r from-blue-500 to-blue-600 text-white border-2 border-gray-800 py-2 text-sm font-bold rounded-lg transition-all ${hintsRemaining > 0 ? 'hover:from-blue-600 hover:to-blue-700 hover:shadow-md transform hover:-translate-y-0.5' : 'opacity-50 cursor-not-allowed'}`}
+                                className={`bg-gradient-to-r from-blue-500 +
+                                    to-blue-600 text-white border-2 border-gray-800 py-2 text-sm font-bold 
+                                    rounded-lg transition-all ${hintsRemaining > 0 ?
+                                         'hover:from-blue-600 hover:to-blue-700 hover:shadow-md transform hover:-translate-y-0.5'
+                                          : 'opacity-50 cursor-not-allowed'}`}
                                 onClick={handleHint}
                                 disabled={hintsRemaining <= 0}
                             >
