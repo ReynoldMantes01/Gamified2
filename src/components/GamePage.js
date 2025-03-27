@@ -680,9 +680,13 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             // Always set health to 4 when resetting to first level
             await set(userRef, 4);
             setPlayerHearts(4);
+            setCurrentEnemy(level.enemy);
+            setEnemyHearts(level.enemy.health);
         } else {
             // For users not logged in
             setPlayerHearts(4);
+            setCurrentEnemy(level.enemy);
+            setEnemyHearts(level.enemy.health);
         }
     };
 

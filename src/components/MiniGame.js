@@ -428,214 +428,201 @@ useEffect(() => {
 }, [handleKeyPress]);
 
     return (
-        <div className="relative h-screen w-screen overflow-hidden bg-cover bg-center flex flex-col items-center"
-            style={{ 
-                backgroundImage: `url(${bgImage})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat'
-            }}>
-            
-            {/* Tutorial Dialog */}
-            {showTutorial && (
-                <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-                    <div className="bg-white p-8 rounded-lg max-w-2xl text-center">
-                        <h2 className="text-2xl font-bold mb-4">Welcome to Mini Game!</h2>
-                        <p className="mb-6">
-                            After playing the adventure mode, let's test your vocabulary in science terms!
-                            In this mode, there are no hints - you must rely on your knowledge.
-                            Each grid contains at least one valid science term. Can you find it?
-                        </p>
-                        <button 
-                            className="bg-blue-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-blue-600"
-                            onClick={() => setShowTutorial(false)}
-                        >
-                            Start Game
-                        </button>
-                    </div>
-                </div>
-            )}
-            
-            {/* Header */}
-            <div className="w-full flex justify-between items-center p-4 bg-black bg-opacity-50">
-                {/* heart nasa kaliwaa */}
-                <div className="flex items-center">
-                    <img src={heartImage} alt="Heart" className="w-8 h-8 mr-2" />
-                    <span className="text-white text-2xl">{playerHearts}</span>
-                </div>
-                {/* CENTER SCORE */} 
-                <div className="text-white text-2xl absolute left-1/2 transform -translate-x-1/2">
-                    Score: {score}
-                </div>
-                {/* NAV BAR KANAN*/}                     
-                <div className="flex items-center space-x-4">
-                    <div className="slidebar-icon text-2xl cursor-pointer" onClick={toggleSlidebar}>
-                        <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
-                    </div>
-                    <Slidebar 
-                        isOpen={slidebarOpen} 
-                        toggleSlidebar={toggleSlidebar} 
-                        onMainMenu={onMainMenu} 
-                        setSettingsOpen={setSettingsOpen}
-                        setProfileOpen={setProfileOpen}
-                        onLogout={onLogout}
-                    />
-                </div>
-            </div>
-            {/* Modals */}
-            {scoreboardOpen && ( // Render Scoreboard if open
-                <Scoreboard onMainMenu={() => setScoreboardOpen(false)} />
-            )}
-
-        {settingsOpen && (
-            <GameSettings
-                onClose={() => setSettingsOpen(false)}
-                musicVolume={musicVolume}
-                setMusicVolume={setMusicVolume}
-            />
-        )}
-        {profileOpen && (
-            <Profile
-                onClose={() => setProfileOpen(false)}
-                profileData={profileData}
-                setProfileData={setProfileData}
-            />
-        )}
-        {/* Timer */}
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 px-6 py-2 rounded-full">
-            <span className={`text-3xl font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-white'}`}>
-                {timeLeft}s
-            </span>
-        </div>
-
-        {/* Battle Area */}
-        <div className="w-full flex-1 flex justify-between items-center px-10 mt-4">
-            {/* Player Character */}
-            <div className="relative">
-                <img 
-                    src={character} 
-                    alt="Player" 
-                    className="w-64 h-64 md:w-72 md:h-72 lg:w-80 lg:h-80"
-                    style={{ transform: 'scaleX(1)' }} 
-                />
-                {playerAttacking && (
-                    <img 
-                        src={attackImage} 
-                        alt="Player Attack" 
-                        className="absolute top-1/2 -right-24 transform -translate-y-1/2 w-32 h-32"
-                    />
-                )}
-            </div>
-
-            {/* Enemy Health Bar */}
-            <div className="absolute top-40 left-1/2 transform bg-black bg-opacity-30 -translate-x-1/2 flex flex-col items-center">
-                <div className="text-white text-xl mb-2">{currentEnemy.name}</div>
-                <div className="w-64 h-4 bg-gray-700 rounded-full">
-                    <div 
-                        className="h-full bg-red-500 rounded-full transition-all duration-300"
-                        style={{ width: `${(currentEnemyHealth / currentEnemy.health) * 100}%` }}
-                    ></div>
-                </div>
-            </div>
-
-            {/* Enemy */}
-            <div className="relative">
-                <img 
-                    src={currentEnemyImage} 
-                    alt={currentEnemy.name}
-                    className="w-64 h-64 md:w-72 md:h-72 lg:w-80 lg:h-80"
-                    style={{ transform: 'scaleX(-1)' }} 
-                />
-                {enemyAttacking && (
-                    <img 
-                        src={attackEnemyImage} 
-                        alt="Enemy Attack" 
-                        className="absolute top-1/2 -left-24 transform -translate-y-1/2 w-32 h-32"
-                        style={{ transform: 'scaleX(-1)' }}
-                    />
-                )}
-            </div>
-        </div>
-
-        {/* Definition Display */}
-        <div className="w-full p-2 text-center mt-auto">
-            <div className="bg-white bg-opacity-75 rounded p-2 max-w-2xl mx-auto text-lg">
-                {definition || "Form a science term from the letters below!"}
-            </div>
-        </div>
-
-        {/* Game Grid */}
-        <div className="grid grid-cols-5 gap-2 p-4 mb-16">
-            {gridLetters.map((letter, index) => (
-                <button
-                    key={index}
-                    className={`w-16 h-16 text-2xl font-bold rounded-lg shadow-lg transform transition-all duration-200 ${
-                        emptyIndices.includes(index)
-                            ? 'bg-gray-200 text-gray-400 cursor-default'
-                            : 'bg-white hover:scale-105 hover:bg-blue-100'
-                    }`}
-                    onClick={() => handleLetterClick(letter, index)}
-                    disabled={emptyIndices.includes(index)}
+        <div className="relative min-h-screen w-full overflow-hidden bg-cover bg-center flex flex-col items-center"
+    style={{ 
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+    }}>
+    
+    {/* Tutorial Dialog */}
+    {showTutorial && (
+        <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div className="bg-white p-6 sm:p-8 rounded-lg max-w-md w-full text-center">
+                <h2 className="text-xl sm:text-2xl font-bold mb-4">Welcome to Mini Game!</h2>
+                <p className="mb-6 text-sm sm:text-base">
+                    After playing the adventure mode, let's test your vocabulary in science terms!
+                    In this mode, there are no hints - you must rely on your knowledge.
+                    Each grid contains at least one valid science term. Can you find it?
+                </p>
+                <button 
+                    className="bg-blue-500 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg text-base sm:text-xl hover:bg-blue-600"
+                    onClick={() => setShowTutorial(false)}
                 >
-                    {emptyIndices.includes(index) ? '' : letter}
+                    Start Game
                 </button>
+            </div>
+        </div>
+    )}
+    
+    {/* Header */}
+    <div className="w-full flex justify-between items-center p-2 sm:p-4 bg-black bg-opacity-50">
+        {/* Heart */}
+        <div className="flex items-center">
+            <img src={heartImage} alt="Heart" className="w-6 h-6 sm:w-8 sm:h-8 mr-2" />
+            <span className="text-white text-base sm:text-2xl">{playerHearts}</span>
+        </div>
+        
+        {/* Center Score */} 
+        <div className="text-white text-base sm:text-2xl absolute left-1/2 transform -translate-x-1/2">
+            Score: {score}
+        </div>
+        
+        {/* Navigation */}                     
+        <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="slidebar-icon text-base sm:text-2xl cursor-pointer" onClick={toggleSlidebar}>
+                <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
+            </div>
+            <Slidebar 
+                isOpen={slidebarOpen} 
+                toggleSlidebar={toggleSlidebar} 
+                onMainMenu={onMainMenu} 
+                setSettingsOpen={setSettingsOpen}
+                setProfileOpen={setProfileOpen}
+                onLogout={onLogout}
+            />
+        </div>
+    </div>
+
+    {/* Modals (Scoreboard, Settings, Profile) remain the same */}
+    
+    {/* Timer */}
+    <div className="absolute top-16 sm:top-20 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 px-4 sm:px-6 py-1 sm:py-2 rounded-full">
+        <span className={`text-xl sm:text-3xl font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-white'}`}>
+            {timeLeft}s
+        </span>
+    </div>
+
+    {/* Battle Area */}
+    <div className="w-full flex-1 flex justify-between items-center px-4 sm:px-10 mt-2 sm:mt-4 relative">
+        {/* Player Character */}
+        <div className="relative">
+            <img 
+                src={character} 
+                alt="Player" 
+                className="w-40 h-40 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80"
+                style={{ transform: 'scaleX(1)' }} 
+            />
+            {playerAttacking && (
+                <img 
+                    src={attackImage} 
+                    alt="Player Attack" 
+                    className="absolute top-1/2 -right-12 sm:-right-24 transform -translate-y-1/2 w-16 h-16 sm:w-32 sm:h-32"
+                />
+            )}
+        </div>
+
+        {/* Enemy Health Bar */}
+        <div className="absolute top-24 sm:top-40 left-1/2 transform bg-black bg-opacity-30 -translate-x-1/2 flex flex-col items-center">
+            <div className="text-white text-base sm:text-xl mb-1 sm:mb-2">{currentEnemy.name}</div>
+            <div className="w-40 sm:w-64 h-2 sm:h-4 bg-gray-700 rounded-full">
+                <div 
+                    className="h-full bg-red-500 rounded-full transition-all duration-300"
+                    style={{ width: `${(currentEnemyHealth / currentEnemy.health) * 100}%` }}
+                ></div>
+            </div>
+        </div>
+
+        {/* Enemy */}
+        <div className="relative">
+            <img 
+                src={currentEnemyImage} 
+                alt={currentEnemy.name}
+                className="w-40 h-40 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80"
+                style={{ transform: 'scaleX(-1)' }} 
+            />
+            {enemyAttacking && (
+                <img 
+                    src={attackEnemyImage} 
+                    alt="Enemy Attack" 
+                    className="absolute top-1/2 -left-12 sm:-left-24 transform -translate-y-1/2 w-16 h-16 sm:w-32 sm:h-32"
+                    style={{ transform: 'scaleX(-1)' }}
+                />
+            )}
+        </div>
+    </div>
+
+    {/* Definition Display */}
+    <div className="w-full p-2 text-center mt-auto">
+        <div className="bg-white bg-opacity-75 rounded p-2 max-w-2xl mx-auto text-sm sm:text-lg">
+            {definition || "Form a science term from the letters below!"}
+        </div>
+    </div>
+
+    {/* Game Grid */}
+    <div className="grid grid-cols-5 gap-1 sm:gap-2 p-2 sm:p-4 mb-8 sm:mb-16">
+        {gridLetters.map((letter, index) => (
+            <button
+                key={index}
+                className={`w-12 h-12 sm:w-16 sm:h-16 text-base sm:text-2xl font-bold rounded-lg shadow-lg transform transition-all duration-200 ${
+                    emptyIndices.includes(index)
+                        ? 'bg-gray-200 text-gray-400 cursor-default'
+                        : 'bg-white hover:scale-105 hover:bg-blue-100'
+                }`}
+                onClick={() => handleLetterClick(letter, index)}
+                disabled={emptyIndices.includes(index)}
+            >
+                {emptyIndices.includes(index) ? '' : letter}
+            </button>
+        ))}
+    </div>
+
+    {/* Word Input */}
+    <div className="absolute bottom-4 w-full flex justify-center items-center space-x-2 sm:space-x-4 px-4">
+        <div className="flex items-center space-x-1 px-2 py-1 sm:px-3 sm:py-2 min-w-[120px] sm:min-w-[150px]">
+            {selectedLetters.map((letter, index) => (
+                <div
+                    key={index}
+                    onClick={() => handleRemoveLetter(index)}
+                    className={`selected-letter cursor-pointer w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center 
+                        text-base sm:text-xl font-bold rounded-lg bg-white border-2 
+                        ${index === selectedLetterIndex ? 'border-blue-500 bg-blue-100' : 'border-gray-300'}`}
+                >
+                    {letter}
+                </div>
             ))}
         </div>
+        
+        {/* Scramble Button */}
+        <button
+            className="bg-purple-500 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-lg text-base sm:text-lg font-bold hover:bg-purple-600 transform transition-transform hover:scale-105"
+            onClick={handleScramble}
+        >
+            Scramble
+        </button>
+        
+        <button
+            className="bg-blue-500 text-white px-2 py-1 sm:px-2 sm:py-1 flex justify-end rounded-lg text-base sm:text-lg hover:bg-blue-600 transform transition-transform hover:scale-105"
+            onClick={handleSubmitWord}
+        >
+            Submit
+        </button>
+    </div>
 
-        {/* Word Input */}
-        <div className="absolute bottom-4 w-full flex justify-center items-center space-x-4">
-            <div className="flex items-center space-x-1 px-3 py-2 min-w-[150px]">
-                {selectedLetters.map((letter, index) => (
-                    <div
-                        key={index}
-                        onClick={() => handleRemoveLetter(index)}
-                        className={`selected-letter cursor-pointer w-10 h-10 flex items-center justify-center 
-                            text-xl font-bold rounded-lg bg-white border-2 
-                            ${index === selectedLetterIndex ? 'border-blue-500 bg-blue-100' : 'border-gray-300'}`}
-                    >
-                        {letter}
-                    </div>
-                ))}
+    {/* Countdown Screen */}
+    {countdown > 0 && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="text-white text-6xl sm:text-9xl font-bold animate-bounce">
+                {countdown}
             </div>
-                {/* Scramble Button */}
-<button
-    className="bg-purple-500 text-white px-4 py-2 rounded-lg text-lg font-bold hover:bg-purple-600 transform transition-transform hover:scale-105"
-    onClick={handleScramble}
->
-    Scramble
-</button>
+        </div>
+    )}
+
+    {/* Game Over Screen */}
+    {gameOver && (
+        <div className="absolute inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center p-4">
+            <h2 className="text-white text-2xl sm:text-4xl mb-4 text-center">Game Over!</h2>
+            <p className="text-white text-xl sm:text-2xl mb-8 text-center">Final Score: {score}</p>
             <button
-                className="bg-blue-500 text-white px-2 py-1 flex justify-end rounded-lg text-lg hover:bg-blue-600 transform transition-transform hover:scale-105"
-                onClick={handleSubmitWord}
+                className="bg-blue-500 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg text-base sm:text-xl hover:bg-blue-600"
+                onClick={onMainMenu}
             >
-                Submit
+                Return to Main Menu
             </button>
         </div>
-
-        {/* Countdown Screen */}
-        {countdown > 0 && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="text-white text-9xl font-bold animate-bounce">
-                    {countdown}
-                </div>
-            </div>
-        )}
-
-        {/* Game Over Screen */}
-
-        {gameOver && (
-            <div className="absolute inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center">
-                <h2 className="text-white text-4xl mb-4">Game Over!</h2>
-                <p className="text-white text-2xl mb-8">Final Score: {score}</p>
-                <button
-                    className="bg-blue-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-blue-600"
-                    onClick={onMainMenu}
-                >
-                    Return to Main Menu
-                </button>
-            </div>
-        )}
-    </div>
+    )}
+</div>
 );
 };
 
