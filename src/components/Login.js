@@ -5,7 +5,7 @@ import { getDatabase, ref, set, get } from 'firebase/database';
 import ForgotPassword from './ForgotPassword';
 
 const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(() => localStorage.getItem('savedEmail') || '');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     const [showLoadingScreen, setShowLoadingScreen] = useState(true);
@@ -47,6 +47,7 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
+            localStorage.setItem('savedEmail', email);
             await initializeUserProfile(user);
             onLoginSuccess(user);
         } catch (error) {
