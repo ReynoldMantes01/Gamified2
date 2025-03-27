@@ -65,6 +65,10 @@
       "name": "Physics Realm",
       "theme": "Physics",
       "background": "physics_world.gif",
+      "backgroundSettings": {
+        "scale": "fit",
+        "position": "center"
+      },
       "enemies": [
         {
           "id": "phy_t1",

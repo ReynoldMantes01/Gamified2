@@ -238,14 +238,14 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     const handleGameOver = async (isVictory) => {
         console.log("Game over with victory:", isVictory);
-    
+
         if (isVictory) {
             console.log("Victory! Updating user progress for enemy:", currentEnemy?.id);
-    
+
             if (auth.currentUser) {
                 // Update user progress when enemy is defeated
                 await updateUserProgress(currentEnemy);
-    
+
                 // Increase player health
                 setPlayerHearts(prev => {
                     const newHealth = Math.min(prev + 1, 4); // Increase health by 1, max of 4
@@ -258,35 +258,35 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             } else {
                 console.log("No user logged in, skipping progress update");
             }
-    
+
             // Reset hints when player wins a battle
             setHintsRemaining(3);
             setHighlightedIndices([]);
             setHint('');
-    
+
             //Check if this was the last enemy (game fully beaten)
             if (enemyProgression.length === 0 || currentEnemyIndex >= enemyProgression.length - 1) {
                 console.log("Game fully cleared! Stopping Timer.");
                 setTimerRunning(false); // Stop the timer only when all enemies are defeated
-            
+
                 if (auth.currentUser) {
                     const db = getDatabase();
                     const userRef = ref(db, `gameBeatScores/${auth.currentUser.uid}`);
-            
+
                     await set(userRef, {
                         username: profileData?.username || 'Anonymous',
                         time: elapsedTime, // Save final time
                         timestamp: Date.now()
                     });
                 }
-            
+
                 setGameCleared(true); // Show "Game Cleared" screen
             } else {
                 // Keep the timer running and proceed to next enemy
                 console.log("Enemy defeated! Moving to the next one...");
                 setCurrentEnemyIndex(prev => prev + 1);
             }
-    
+
             setVictoryVisible(true);
         } else {
             setDefeatVisible(true);
@@ -295,7 +295,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             setHint('');
         }
     };
-    
+
 
     useEffect(() => {
         if (enemyHearts <= 0 && currentEnemy) {
@@ -306,9 +306,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     useEffect(() => {
         if (currentEnemy) {
-          setEnemyHearts(currentEnemy.health);
+            setEnemyHearts(currentEnemy.health);
         }
-      }, [currentEnemy]);
+    }, [currentEnemy]);
 
     const addRandomEffect = () => {
         console.log('Checking for effect addition, word length:', selectedLetters.length);
@@ -463,7 +463,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         setTimeout(() => {
             setIsCharacterAttacking(false);
         }, 500);
-        
+
         const word = selectedLetters.join('').toUpperCase();
 
         // Check if the word is a valid science term
@@ -619,18 +619,18 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             setCurrentDialogIndex(0);
         }
     };
-     
+
     useEffect(() => {
         // Clear any existing highlights first
         document.querySelectorAll('.tutorial-highlight').forEach(el => {
             el.classList.remove('tutorial-highlight');
         });
-        
+
         // Apply new highlight if needed
         if (showTutorial && tutorialSteps[tutorialStep].highlight) {
             const selector = tutorialSteps[tutorialStep].highlight;
             const element = document.querySelector(`.${selector}`) || document.getElementById(selector);
-            
+
             if (element) {
                 element.classList.add('tutorial-highlight');
             }
@@ -689,52 +689,52 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const resetPlayerHealth = async () => {
         setDefeatVisible(false);
         if (auth.currentUser) {
-          const db = getDatabase();
-          const userRef = ref(db, `users/${auth.currentUser.uid}/health`);
-          
-          // Always set health to 4 when resetting to first level
-          await set(userRef, 4);
-          setPlayerHearts(4);
+            const db = getDatabase();
+            const userRef = ref(db, `users/${auth.currentUser.uid}/health`);
+
+            // Always set health to 4 when resetting to first level
+            await set(userRef, 4);
+            setPlayerHearts(4);
         } else {
-          // For users not logged in
-          setPlayerHearts(4);
+            // For users not logged in
+            setPlayerHearts(4);
         }
-      };
-      
-      // Modify the useEffect for level changes to reset health when returning to level 1
-      useEffect(() => {
+    };
+
+    // Modify the useEffect for level changes to reset health when returning to level 1
+    useEffect(() => {
         if (level?.enemy) {
-          setCurrentEnemy(level.enemy);
-          setEnemyHearts(level.enemy.health);
-      
-          // Reset health to 4 if player is at level 1
-          if (level.levelNumber === 1) {
-            resetPlayerHealth(4);
-            setShowTutorial(false);
-            setTutorialStep(0);
-            setDialogVisible(false);
-          } else {
-            const enemyDialogs = [
-              `Ah, a new challenger approaches! I am ${level.enemy.name}, master of ${level.enemy.stats.strength}!`,
-              level.enemy.dialog,
-              "Prepare yourself for a battle of scientific wit!"
-            ];
-            setDialogSequence(enemyDialogs);
-            setCurrentDialogIndex(0);
-            setDialogVisible(true);
-          }
-      
-          // Reset hints for new level
-          setHintsRemaining(3);
-          setHighlightedIndices([]);
-          setHint('');
-          // Reset other game states
-          setSelectedLetters([]);
-          setEmptyIndices([]);
-          setGridLetters(generateRandomLetters());
-          setIsValidWord(false);
+            setCurrentEnemy(level.enemy);
+            setEnemyHearts(level.enemy.health);
+
+            // Reset health to 4 if player is at level 1
+            if (level.levelNumber === 1) {
+                resetPlayerHealth(4);
+                setShowTutorial(false);
+                setTutorialStep(0);
+                setDialogVisible(false);
+            } else {
+                const enemyDialogs = [
+                    `Ah, a new challenger approaches! I am ${level.enemy.name}, master of ${level.enemy.stats.strength}!`,
+                    level.enemy.dialog,
+                    "Prepare yourself for a battle of scientific wit!"
+                ];
+                setDialogSequence(enemyDialogs);
+                setCurrentDialogIndex(0);
+                setDialogVisible(true);
+            }
+
+            // Reset hints for new level
+            setHintsRemaining(3);
+            setHighlightedIndices([]);
+            setHint('');
+            // Reset other game states
+            setSelectedLetters([]);
+            setEmptyIndices([]);
+            setGridLetters(generateRandomLetters());
+            setIsValidWord(false);
         }
-      }, [level]);
+    }, [level]);
 
     const handleSettingsSave = (newMusicVolume) => {
         setMusicVolume(newMusicVolume);
@@ -1045,11 +1045,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     // Function to get the appropriate background based on the current enemy's map
     const getWorldBackground = (enemy) => {
         if (!enemy) return 'Bio_World.gif';
-        
-        const currentMap = mapData.maps.find(map => 
+
+        const currentMap = mapData.maps.find(map =>
             map.enemies.some(e => e.id === enemy.id)
         );
-        
+
         return currentMap?.background || 'Bio_World.gif';
     };
 
@@ -1074,62 +1074,62 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const cooldownLimit = 500;   // Number of terms before reuse (adjustable)
 
     function generateRandomLetters(existingLetters = [], existingEffects = []) {
-    const scienceTerms = Object.keys(scienceTerm);
-    
-    // Prioritize longer words by sorting in descending order of length
-    const sortedTerms = scienceTerms.sort((a, b) => b.length - a.length);
+        const scienceTerms = Object.keys(scienceTerm);
 
-    // Filter out already used terms
-    let availableTerms = sortedTerms.filter(term => !usedTerms.has(term));
+        // Prioritize longer words by sorting in descending order of length
+        const sortedTerms = scienceTerms.sort((a, b) => b.length - a.length);
 
-    // If all terms are in cooldown, reset partially by freeing up some terms
-    if (availableTerms.length === 0) {
-        // Free up half of the used terms history
-        const termsArray = Array.from(usedTerms);
-        usedTerms.clear();
-        termsArray.slice(0, Math.floor(cooldownLimit / 2)).forEach(term => usedTerms.add(term));
-        availableTerms = sortedTerms; // Now all terms are available again
+        // Filter out already used terms
+        let availableTerms = sortedTerms.filter(term => !usedTerms.has(term));
+
+        // If all terms are in cooldown, reset partially by freeing up some terms
+        if (availableTerms.length === 0) {
+            // Free up half of the used terms history
+            const termsArray = Array.from(usedTerms);
+            usedTerms.clear();
+            termsArray.slice(0, Math.floor(cooldownLimit / 2)).forEach(term => usedTerms.add(term));
+            availableTerms = sortedTerms; // Now all terms are available again
+        }
+
+        // Pick a word with at least 5 letters (if available)
+        let randomTerm = availableTerms.find(term => term.length >= 5) ||
+            availableTerms[Math.floor(Math.random() * availableTerms.length)];
+
+        usedTerms.add(randomTerm); // Mark term as used
+
+        // Convert the term to unique letters
+        const termLetters = Array.from(new Set(randomTerm.split('')));
+        const newGrid = [...existingLetters];
+
+        // Find empty positions
+        let emptyPositions = [];
+        for (let i = 0; i < 20; i++) {
+            if (!newGrid[i]) emptyPositions.push(i);
+        }
+
+        // Shuffle positions
+        for (let i = emptyPositions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [emptyPositions[i], emptyPositions[j]] = [emptyPositions[j], emptyPositions[i]];
+        }
+
+        // Place term letters
+        for (let i = 0; i < termLetters.length && i < emptyPositions.length; i++) {
+            newGrid[emptyPositions[i]] = termLetters[i];
+        }
+
+        // Fill remaining slots with random letters
+        const vowels = 'AEIOU';
+        const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
+
+        for (let i = termLetters.length; i < emptyPositions.length; i++) {
+            newGrid[emptyPositions[i]] = Math.random() < 0.4
+                ? vowels.charAt(Math.floor(Math.random() * vowels.length))
+                : consonants.charAt(Math.floor(Math.random() * consonants.length));
+        }
+
+        return newGrid;
     }
-
-    // Pick a word with at least 5 letters (if available)
-    let randomTerm = availableTerms.find(term => term.length >= 5) || 
-                     availableTerms[Math.floor(Math.random() * availableTerms.length)];
-
-    usedTerms.add(randomTerm); // Mark term as used
-
-    // Convert the term to unique letters
-    const termLetters = Array.from(new Set(randomTerm.split('')));
-    const newGrid = [...existingLetters];
-
-    // Find empty positions
-    let emptyPositions = [];
-    for (let i = 0; i < 20; i++) {
-        if (!newGrid[i]) emptyPositions.push(i);
-    }
-
-    // Shuffle positions
-    for (let i = emptyPositions.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [emptyPositions[i], emptyPositions[j]] = [emptyPositions[j], emptyPositions[i]];
-    }
-
-    // Place term letters
-    for (let i = 0; i < termLetters.length && i < emptyPositions.length; i++) {
-        newGrid[emptyPositions[i]] = termLetters[i];
-    }
-
-    // Fill remaining slots with random letters
-    const vowels = 'AEIOU';
-    const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
-
-    for (let i = termLetters.length; i < emptyPositions.length; i++) {
-        newGrid[emptyPositions[i]] = Math.random() < 0.4
-            ? vowels.charAt(Math.floor(Math.random() * vowels.length))
-            : consonants.charAt(Math.floor(Math.random() * consonants.length));
-    }
-
-    return newGrid;
-}
 
     // Handle keyboard input
     const handleKeyPress = useCallback((event) => {
@@ -1198,9 +1198,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     }, [handleKeyPress]);
 
     return (
-        
+
         <div
-            className="game-container relative h-screen w-full flex flex-col items-center justify-between p-4 md:p-6 lg:p-8"
+            className="game-container relative min-h-screen w-full flex flex-col items-center justify-between p-2 sm:p-4 md:p-6 lg:p-8"
             style={{
                 backgroundImage: `url(${require('../assets/' + currentWorldBackground)})`,
                 backgroundSize: 'cover',
@@ -1211,71 +1211,101 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         >
             <style>
                 {`
-                @keyframes shoot {
-                    0% {
-                        transform: translateX(0) translateY(-50%);
-                    }
-                    100% {
-                        transform: translateX(calc(50vw - 100%)) translateY(-50%);
-                    }
-                }
-                @keyframes enemyShoot {
-                    0% {
-                        transform: translateX(0) translateY(-50%);
-                    }
-                    100% {
-                        transform: translateX(calc(50vw - 100%)) translateY(-50%);
-                    }
-                }
-                `}
+        @keyframes shoot {
+            0% {
+                transform: translateX(0) translateY(-50%);
+            }
+            100% {
+                transform: translateX(calc(50vw - 100%)) translateY(-50%);
+            }
+        }
+        @keyframes enemyShoot {
+            0% {
+                transform: translateX(0) translateY(-50%);
+            }
+            100% {
+                transform: translateX(calc(50vw - 100%)) translateY(-50%);
+            }
+        }
+        `}
             </style>
 
             {/* Timer Display */}
-            <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-4 py-2 rounded-lg text-lg">
+            <div className="absolute top-2 right-2 
+                            
+                            sm:top-4 sm:right-4 
+                            bg-black bg-opacity-50 
+                            text-white 
+                            px-2 py-1 s
+                            m:px-4 sm:py-2 
+                            rounded-lg t
+                            ext-sm sm:text-base
+                            items-center">
                 ⏱ Time: {elapsedTime} sec
             </div>
 
             {/* Top Bar */}
-            <div className="w-full flex justify-between items-center mb-4">
+            <div className="w-full flex flex-wrap justify-between items-center mb-2 sm:mb-4">
                 {/* Left Side */}
-                <div className="flex items-center space-x-4">
-                    <div className="transition-all duration-300 hover:scale-110 hover:rotate-90 focus:outline-none focus:ring-4 focus:ring slidebar-icon text-2xl cursor-pointer" onClick={toggleSlidebar}>
+                <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
+                    <div className="transition-all 
+                                    duration-300 hover:scale-110 
+                                    hover:rotate-90 focus:outline-none
+                                    focus:ring-4 focus:ring slidebar-icon 
+                                    text-xl sm:text-2xl cursor-pointer" 
+                                    onClick={toggleSlidebar}>
                         <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
                     </div>
-                    <div className="player-info flex items-center bg-white/70 p-2 border border-indigo-200 rounded-lg shadow-inner">
-            <img
-                src={currentAvatar}
-                alt="Player Avatar"
-                className="w-10 h-10 rounded-full object-cover mr-3 ring-2 ring-indigo-300"
-            />
+                    <div className="player-info flex items-center bg-white/70 p-1 sm:p-2 border border-indigo-200 rounded-lg shadow-inner">
+                        <img
+                            src={currentAvatar}
+                            alt="Player Avatar"
+                            className="w-8 h-8 
+                                       sm:w-10 sm:h-10 
+                                       rounded-full object-cover 
+                                       mr-2 ring-2 ring-indigo-300"
+                        />
                         <div className="hearts flex items-center">
                             {[...Array(playerHearts)].map((_, i) => (
-                                <img key={i} src={heartImage} alt="Heart" className="w-6 h-6 ml-1" />
+                                <img key={i} src={heartImage} alt="Heart" className="w-4 h-4 sm:w-6 sm:h-6 ml-1" />
                             ))}
                         </div>
                     </div>
                 </div>
 
                 {/* Right Side */}
-                <div className="player-info flex items-center ">
+                <div className="player-info flex items-center mt-2 sm:mt-0">
 
                     <div className="hearts flex items-center">
                         {[...Array(enemyHearts)].map((_, i) => (
-                            <img key={i} 
-                            src={heartImage} 
-                            alt="Heart" 
-                            className="w-12 h-12 ml-12" />
+                            <img key={i}
+                                src={heartImage}
+                                alt="Heart"
+                                className="w-8 h-8 sm:w-12 sm:h-12 ml-2 sm:ml-6" />
                         ))}
                     </div>
                 </div>
             </div>
 
             {/* Main Game Content */}
-            <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-7xl gap-4 mb-4">
+            <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-7xl gap-2 sm:gap-4 mb-2 sm:mb-4">
                 {/* Player Character */}
-                <div className="character-container relative w-full md:w-1/3 flex justify-center items-center">
+                <div className="  character-container 
+                                    relative 
+                                    w-full 
+                                    md:w-1/3 
+                                    flex 
+                                    justify-center 
+                                    items-center">
                     <div
-                        className={`character w-40 h-40 md:w-72 md:h-72 lg:w-96 lg:h-96 bg-contain bg-center bg-no-repeat transition-transform duration-300 ${isCharacterAttacking ? "transform scale-110" : ""
+                        className={`character 
+                                    character-responsive
+                                    bg-contain 
+                                    bg-center 
+                                    bg-no-repeat 
+                                    transition-transform 
+                                    duration-300 
+                                    ${isCharacterAttacking ? "transform scale-110" : ""
                             }`}
                         style={{ backgroundImage: `url(${isCharacterAttacking ? characterAttack : character})` }}
                     >
@@ -1283,13 +1313,37 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 </div>
 
                 {/* Word Box */}
-                <div className="word-box flex flex-wrap justify-center gap-2 w-full md:w-1/3">
+                <div className="word-box 
+                                flex 
+                                flex-wrap 
+                                justify-center 
+                                gap-1 
+                                sm:gap-2 
+                                w-full 
+                                md:w-1/3">
                     {selectedLetters.map((letter, index) => {
                         const effect = letterEffects[emptyIndices[index]];
                         return (
                             <div
                                 key={index}
-                                className={`relative w-12 h-12 border-2 flex items-center justify-center text-2xl font-bold rounded-lg cursor-pointer transition-all duration-300
+                                className={` 
+                                    relative 
+                                    w-8 h-8 
+                                    sm:w-10 sm:h-10 
+                                    md:w-12 md:h-12 
+                                    border-2 
+                                    flex 
+                                    items-center 
+                                    justify-center 
+                                    text-base 
+                                    sm:text-xl 
+                                    md:text-2xl 
+                                    font-bold 
+                                    rounded-lg 
+                                    cursor-pointer 
+                                    transition-all 
+                                    duration-300 
+                                    touch-target
                                     ${index === selectedLetterIndex ? 'border-blue-500 bg-blue-100 scale-110' : 'border-black'}
                                     ${highlightedIndices.includes(index) ? 'bg-yellow-300 scale-110' : 'hover:bg-[#e5c8a1]'}
                                     ${effect ? effectStyles[effect] : 'bg-[#f4d9a3]'}`}
@@ -1334,10 +1388,38 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             </div>
 
             {/* Bottom Content */}
-            <div className="game-content w-[95%] max-w-[1400px] grid grid-cols-1 md:grid-cols-3 gap-6 p-6  rounded-xl bg-opacity-90 mb-6 shadow-xl">
+            <div className="game-content 
+                            w-[95%] 
+                            max-w-[1400px] 
+                            grid 
+                            grid-cols-1 
+                            md:grid-cols-3 
+                            gap-3 
+                            sm:gap-6 
+                            p-3 
+                            sm:p-6 
+                            rounded-xl 
+                            bg-opacity-90 
+                            mb-3 
+                            sm:mb-6 
+                            ">
 
                 {/* Description Box */}
-                <div className="description-box bg-gradient-to-b from-[#f4d9a3] to-[#f0d090] border-2 border-gray-800 p-5 rounded-xl mb-3 h-64 overflow-y-auto shadow-md">
+                <div className="description-box 
+                                bg-gradient-to-b 
+                                from-[#f4d9a3] 
+                                to-[#f0d090] 
+                                border-2 
+                                border-gray-800 
+                                p-3 
+                                sm:p-5 
+                                rounded-xl 
+                                mb-2 
+                                sm:mb-3 
+                                h-48 
+                                sm:h-64 
+                                overflow-y-auto 
+                                shadow-md">
                     <div className="text-gray-800 leading-relaxed">{definition.text || "Please form a word to see its definition."}</div>
 
                     {definition.source && (
@@ -1353,11 +1435,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 </div>
 
                 {/* Letter Grid */}
-                    <div className="letter-grid grid grid-cols-5 -mb-10 -mt-10 gap-2 p-4 rounded-xl place-items-center">
-            {gridLetters.map((letter, index) => (
-                     <div
-            key={index}
-            className={`
+                <div className="letter-grid grid grid-cols-5 -mb-10 -mt-10 gap-2 p-4 rounded-xl place-items-center">
+                    {gridLetters.map((letter, index) => (
+                        <div
+                            key={index}
+                            className={`
                 relative 
                 grid-letter 
                 w-12 h-12 
@@ -1372,34 +1454,34 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 duration-300 
                 rounded-lg 
                 group
-                ${highlightedIndices.includes(index) 
-                    ? 'bg-yellow-300 scale-110 shadow-lg' 
-                    : 'bg-white hover:bg-indigo-100 hover:shadow-md'}
-                ${letterEffects[index] 
-                    ? effectStyles[letterEffects[index]] 
-                    : 'border-indigo-300'}
+                ${highlightedIndices.includes(index)
+                                    ? 'bg-yellow-300 scale-110 shadow-lg'
+                                    : 'bg-white hover:bg-indigo-100 hover:shadow-md'}
+                ${letterEffects[index]
+                                    ? effectStyles[letterEffects[index]]
+                                    : 'border-indigo-300'}
             `}
-            onClick={() => handleLetterClick(letter, index)}
-            role="button"
-            aria-label={`Select letter ${letter}`}
-            tabIndex={0}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    handleLetterClick(letter, index);
-                }
-            }}
-        >
-            <span className="
+                            onClick={() => handleLetterClick(letter, index)}
+                            role="button"
+                            aria-label={`Select letter ${letter}`}
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    handleLetterClick(letter, index);
+                                }
+                            }}
+                        >
+                            <span className="
                 group-hover:scale-110 
                 group-active:scale-95 
                 transition-transform 
                 duration-200
             ">
-                {letter}
-            </span>
+                                {letter}
+                            </span>
 
-            {letterEffects[index] && (
-                <div className="
+                            {letterEffects[index] && (
+                                <div className="
                     absolute 
                     z-10 
                     bg-black 
@@ -1421,13 +1503,13 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     ease-in-out 
                     shadow-lg
                 ">
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-black"></div>
-                    {effectDescriptions[letterEffects[index]]}
+                                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-black"></div>
+                                    {effectDescriptions[letterEffects[index]]}
+                                </div>
+                            )}
+                        </div>
+                    ))}
                 </div>
-            )}
-        </div>
-    ))}
-</div>
 
                 {/* Right Side Controls */}
                 <div className="flex flex-col space-y-1.5">
@@ -1460,13 +1542,13 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                 from-red-500 to-red-600 text-white 
                                 border-2 border-gray-800 py-2.5 text-center
                                  font-bold text-base rounded-lg transition-all
-                                  ${!isValidWord ? "opacity-50 cursor-not-allowed" 
+                                  ${!isValidWord ? "opacity-50 cursor-not-allowed"
                                     : "hover:from-red-600 hover:to-red-700 hover:shadow-lg transform hover:-translate-y-0.5"}`}
                             onClick={handleAttack}
                             disabled={!isValidWord}
                         >
-                            
-                             ATTACK
+
+                            ATTACK
                         </button>
 
                         <div className="hint-box bg-amber-50 border-2 border-gray-800 py-2 px-3 text-center rounded-lg shadow-inner">
@@ -1478,8 +1560,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                 className={`bg-gradient-to-r from-blue-500 +
                                     to-blue-600 text-white border-2 border-gray-800 py-2 text-sm font-bold 
                                     rounded-lg transition-all ${hintsRemaining > 0 ?
-                                         'hover:from-blue-600 hover:to-blue-700 hover:shadow-md transform hover:-translate-y-0.5'
-                                          : 'opacity-50 cursor-not-allowed'}`}
+                                        'hover:from-blue-600 hover:to-blue-700 hover:shadow-md transform hover:-translate-y-0.5'
+                                        : 'opacity-50 cursor-not-allowed'}`}
                                 onClick={handleHint}
                                 disabled={hintsRemaining <= 0}
                             >
@@ -1526,7 +1608,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     <div className="bg-gray-900 p-8 text-center text-white border-4 border-gray-700">
                         <h2 className="text-4xl font-bold mb-4">🏆 Game Completed! 🏆</h2>
                         <p className="text-lg mb-4">You completed the game in <strong>{elapsedTime} seconds</strong>!</p>
-                        <button 
+                        <button
                             onClick={onMainMenu}
                             className="bg-green-500 px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-600"
                         >

@@ -54,36 +54,47 @@ const Slidebar = ({ isOpen, toggleSlidebar, onMainMenu, setSettingsOpen, setProf
     return ( 
         <>
         <div
-            className={`slidebar fixed top-1/2 left-1/2 w-96 h-auto max-h-screen bg-gray-900 text-white rounded-xl shadow-2xl 
-            transform ${isOpen ? 'translate-x-[-50%] translate-y-[-50%] scale-100' : 'translate-x-[-50%] translate-y-[-50%] scale-0'}
-            transition-transform duration-300 ease-in-out z-10 overflow-hidden`}
+    className={`slidebar fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 
+        ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'} 
+        transition-all duration-300 ease-in-out`}
+>
+    <div
+        className={`w-full max-w-md mx-4 sm:w-96 h-auto max-h-[90vh] bg-gray-900 text-white rounded-xl shadow-2xl 
+        transform ${isOpen ? 'translate-y-0 scale-100' : 'translate-y-10 scale-95'}
+        transition-transform duration-300 ease-in-out overflow-hidden relative`}
+    >
+        {/* Close Icon */}
+        <div 
+            className="absolute top-4 right-4 text-2xl sm:text-3xl cursor-pointer z-10" 
+            onClick={toggleSlidebar}
         >
-            {/* Close Icon */}
-            <div className="absolute top-4 right-4 text-3xl cursor-pointer" onClick={toggleSlidebar}>
-                <Cross toggled={isOpen} toggle={toggleSlidebar} />
-            </div>
-
-            {/* Title */}
-            <h1 className="text-center text-3xl font-bold mt-10 mb-6">Gamified</h1>
-
-            {/* Menu Items */}
-            <ul className="list-none px-6 mb-10">
-                {menuItems.map((item, index) => (
-                    <li 
-                        key={index}
-                        className={`p-4 border-b border-gray-700 transition duration-300 rounded-md
-                            ${index === selectedIndex ? 'bg-gray-700 ring-2 ring-white' : 'hover:bg-gray-700'}`}
-                    >
-                        <button 
-                            className="text-white text-lg block w-full text-left"
-                            onClick={item.onClick}
-                        >
-                            {item.label}
-                        </button>
-                    </li>
-                ))}
-            </ul>
+            <Cross toggled={isOpen} toggle={toggleSlidebar} />
         </div>
+
+        {/* Title */}
+        <h1 className="text-center text-2xl sm:text-3xl font-bold mt-6 sm:mt-10 mb-4 sm:mb-6 px-4">
+            Science Quest
+        </h1>
+
+        {/* Menu Items */}
+        <ul className="list-none px-4 sm:px-6 mb-6 sm:mb-10 max-h-[60vh] overflow-y-auto">
+            {menuItems.map((item, index) => (
+                <li 
+                    key={index}
+                    className={`p-3 sm:p-4 border-b border-gray-700 transition duration-300 rounded-md
+                        ${index === selectedIndex ? 'bg-gray-700 ring-2 ring-white' : 'hover:bg-gray-700'}`}
+                >
+                    <button 
+                        className="text-white text-base sm:text-lg block w-full text-left"
+                        onClick={item.onClick}
+                    >
+                        {item.label}
+                    </button>
+                </li>
+            ))}
+        </ul>
+    </div>
+</div>
         {scoreboardOpen && (
             <Scoreboard onMainMenu={() => setScoreboardOpen(false)} />
         )}

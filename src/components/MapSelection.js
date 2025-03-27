@@ -254,9 +254,9 @@ const MapSelection = ({ onLevelSelect, setTimerRunning, onMainMenu, maps, starti
 
   return (
     <div className="text-center bg-[url(/src/assets/Animated.gif)] p-3 min-h-screen flex flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold mb-6 text-white drop-shadow-[4px_4px_0px_black]">Select Your Level</h1>
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white drop-shadow-[4px_4px_0px_black]">Select Your Level</h1>
 
-      <div className="flex justify-center items-center space-x-12 mb-12">
+      <div className="flex flex-col sm:flex-row justify-center items-center space-y-6 sm:space-y-0 sm:space-x-4 md:space-x-8 lg:space-x-12 mb-8 sm:mb-12 w-full px-4">
         {mapData.maps.slice(0, 3).map((map, index) => {
           const locked = isMapLocked(index);
           const isSelected = index === currentMapIndex;
@@ -264,7 +264,7 @@ const MapSelection = ({ onLevelSelect, setTimerRunning, onMainMenu, maps, starti
             <button
               key={map.id}
               onClick={() => !locked && handleMapSelect(index)}
-              className={`w-64 h-72 flex flex-col justify-center items-center rounded-2xl shadow-xl text-2xl font-bold transition-all duration-300 transform
+              className={`w-full sm:w-48 md:w-56 lg:w-64 h-48 sm:h-60 md:h-64 lg:h-72 flex flex-col justify-center items-center rounded-2xl shadow-xl text-xl sm:text-2xl font-bold transition-all duration-300 transform
                 ${index === currentMapIndex
                   ? "bg-transparent text-white scale-105 shadow-2xl ring-2 ring-white"
                   : locked
@@ -294,18 +294,18 @@ const MapSelection = ({ onLevelSelect, setTimerRunning, onMainMenu, maps, starti
         })}
       </div>
 
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center w-full px-4">
         <div
-          className="w-96 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg shadow-lg p-6 text-white border border-white border-opacity-20"
+          className="w-full max-w-md sm:w-96 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg shadow-lg p-4 sm:p-6 text-white border border-white border-opacity-20"
           style={{
             backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url(${getImage(selectedMap.background)})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}
         >
-          <h2 className="text-3xl font-semibold mb-2">{selectedMap.name}</h2>
-          <p className="mb-4">Theme: {selectedMap.theme}</p>
-          <div className="mt-6 grid grid-cols-1 gap-4">
+          <h2 className="text-2xl sm:text-3xl font-semibold mb-2">{selectedMap.name}</h2>
+          <p className="mb-4 text-sm sm:text-base">Theme: {selectedMap.theme}</p>
+          <div className="mt-4 sm:mt-6 grid grid-cols-1 gap-2 sm:gap-4">
             {selectedMap.enemies.map((enemy, index) => {
               const isLocked = isEnemyLocked(enemy.name);
               const isSelected = index === selectedEnemyIndex;
@@ -318,20 +318,20 @@ const MapSelection = ({ onLevelSelect, setTimerRunning, onMainMenu, maps, starti
                       }
                     }}
                     title={isLocked ? "This level is locked! Complete previous levels to unlock." : `Fight ${enemy.name}`}
-                    className={`px-4 py-2 w-full ${
+                    className={`px-3 py-2 sm:px-4 sm:py-2 w-full ${
                       isLocked
                         ? 'bg-gray-700 text-gray-300 cursor-not-allowed opacity-50 hover:bg-gray-600'
                         : isSelected
                           ? 'bg-blue-600 text-white ring-2 ring-white scale-105'
                           : 'bg-blue-500 text-white hover:bg-blue-600'
-                    } rounded shadow flex items-center justify-between transition-all duration-200`}
+                    } rounded shadow flex items-center justify-between transition-all duration-200 text-sm sm:text-base`}
                   >
                     <div className="flex items-center">
                       {enemy.image && (
                         <img
                           src={getImage(enemy.image)}
                           alt={enemy.name}
-                          className="w-8 h-8 mr-3 rounded-full object-cover"
+                          className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 rounded-full object-cover"
                         />
                       )}
                       <span className="font-medium">{enemy.name}</span>
@@ -356,7 +356,7 @@ const MapSelection = ({ onLevelSelect, setTimerRunning, onMainMenu, maps, starti
 
       <button
         onClick={onMainMenu}
-        className="mt-8 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-lg transition-colors duration-200 font-medium"
+        className="mt-6 sm:mt-8 px-4 sm:px-6 py-2 sm:py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-lg transition-colors duration-200 font-medium text-sm sm:text-base"
       >
         Back to Main Menu
       </button>

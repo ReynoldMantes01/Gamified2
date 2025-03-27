@@ -51,10 +51,7 @@ const scienceTerms = {
         DEFINITION: "Gaseous layer surrounding Earth",
         SOURCE: "https://www.britannica.com/science/atmosphere"
     },
-    ATOM: {
-        DEFINITION: "The basic unit of matter, made up of protons, neutrons, and electrons",
-        SOURCE: "https://www.britannica.com/science/atom"
-    },
+
     BASE: {
         DEFINITION: "Substance that produces OH- ions in solution",
         SOURCE: "https://www.britannica.com/science/base-chemistry"
@@ -1309,6 +1306,10 @@ const scienceTerms = {
             DEFINITION: "A small, dense star that is the leftover core of a low-mass star.",
             SOURCE: "https://www.britannica.com/science/white-dwarf"
         },
+        ATOM: {
+            DEFINITION: "The smallest unit into which matter can be divided without the release of electrically charged particles. ", 
+            SOURCE: "https://www.britannica.com/science/atom" 
+        },
         ABSORBANCE: {
             DEFINITION: "A measure of the amount of light absorbed by a solution at a particular wavelength.",
             SOURCE: "https://www.britannica.com/science/absorption-spectroscopy"
@@ -1577,7 +1578,10 @@ const scienceTerms = {
             DEFINITION: "A solution that resists changes in its pH when small amounts of an acid or base are added.",
             SOURCE: "https://www.britannica.com/science/buffer-solution"
         },
-                        
+        FIRE: { 
+            DEFINITION: "Rapid burning of combustible material with the evolution of heat and usually accompanied by flame.", 
+            SOURCE: "https://www.britannica.com/science/fire-combustion" 
+        },         
         
         
 

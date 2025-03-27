@@ -44,3 +44,39 @@ body {
   70% { box-shadow: 0 0 0 10px rgb(255, 217, 0); }
   100% { box-shadow: 0 0 0 0 rgb(255, 217, 0); }
 }
+
+@layer base {
+  /* Custom responsive animations and transitions */
+  @screen sm {
+    .character-responsive {
+      @apply w-40 h-40;
+    }
+  }
+
+  @screen md {
+    .character-responsive {
+      @apply w-72 h-72;
+    }
+  }
+
+  @screen lg {
+    .character-responsive {
+      @apply w-96 h-96;
+    }
+  }
+}
+
+@layer utilities {
+  /* Custom responsive utility classes */
+  .responsive-text {
+    @apply text-xs sm:text-sm md:text-base lg:text-lg;
+  }
+
+  .responsive-padding {
+    @apply p-2 sm:p-4 md:p-6 lg:p-8;
+  }
+
+  .touch-target {
+    @apply min-w-[44px] min-h-[44px];
+  }
+}

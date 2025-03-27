@@ -48,19 +48,28 @@ const MainMenu = ({ onPlay, onSettings, onProfile, onAlmanac, onLogout, onMiniGa
     }, [selectedIndex, settingsOpen, profileOpen, loginOpen, signupOpen, scoreboardOpen]);
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-cover bg-center pixelated" style={{ backgroundImage: "url('/bg.gif')" }}>
-            <div className="text-center">
-                <h1 className="text-6xl font-bold text-gray-300 mb-10 drop-shadow-[4px_4px_4px_black]">Science Quest</h1>
-                <h1 className="text-4xl font-bold text-gray-300 mb-5 drop-shadow-[2px_4px_4px_black]">Main Menu</h1>
-                <div className="flex flex-col items-center space-y-2">
+        <div className="flex items-center justify-center min-h-screen bg-cover bg-center pixelated p-4" 
+        style={{ backgroundImage: "url('/bg.gif')" }}>
+            <div className="text-center w-full max-w-md">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-300 mb-6 sm:mb-8 md:mb-10 drop-shadow-[4px_4px_4px_black]">Science Quest</h1>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-300 mb-4 sm:mb-5 md:mb-6 drop-shadow-[2px_4px_4px_black]">Main Menu</h1>
+                <div className="flex flex-col items-center space-y-2 sm:space-y-3 md:space-y-4">
                     {menuItems.map((item, index) => (
                         <button
                             key={index}
                             onClick={item.onClick}
-                            className={`${item.className} text-white p-2 rounded w-48 transition duration-200
+                            className={`${item.className} text-white 
+                                p-2 
+                                rounded 
+                                w-full 
+                                sm:w-56 
+                                md:w-64 
+                                transition 
+                                duration-200
                                 ${index === selectedIndex ? 
-                                    'scale-110 ring-2 ring-white' : 
-                                    'hover:scale-110'}`}
+                                    'scale-105 sm:scale-110 ring-2 ring-white' : 
+                                    'hover:scale-105 sm:hover:scale-110'}
+                            `}
                         >
                             {item.label}
                         </button>
