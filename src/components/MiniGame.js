@@ -266,7 +266,9 @@ const generateWordGrid = () => {
     };
 
 
-    const handleSubmitWord = useCallback(() => {
+const handleSubmitWord = useCallback(() => {
+    let scoreIncrement = 0; // Initialize score increment
+
         if (isPaused || gameOver) return;
         const word = selectedLetters.join('').toUpperCase();
     
@@ -286,7 +288,10 @@ const generateWordGrid = () => {
                 setDefinition(`New longest word: "${word}"!`);
             }
     
-            // Proceed with the attack logic here (as usual)
+            // Calculate score based on the length of the valid word
+            scoreIncrement = word.length * 10; // 10 points for each letter
+            setScore(prevScore => prevScore + scoreIncrement); // Update score
+
             // ...
         } else {
             setDefinition('Wrong answer! The enemy attacks!');
