@@ -440,11 +440,12 @@ const App = () => {
           )}
           {scoreboardOpen && (
             <Scoreboard 
-            onMainMenu={() => {
-              console.log("Returning to Main Menu. Stopping Timer.");
-              setTimerRunning(false); // Stop timer only when quitting
-              setCurrentPage("mainMenu");
-          }}          
+              onMainMenu={() => {
+                console.log("Returning to Main Menu. Stopping Timer.");
+                setScoreboardOpen(false); // Hide scoreboard
+                setTimerRunning(false); // Stop timer only when quitting
+                setCurrentPage("mainMenu");
+              }} 
             />
           )}
           <Slidebar
