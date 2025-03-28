@@ -1189,15 +1189,15 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     return (
 
         <div
-    className="game-container relative min-h-screen w-full flex flex-col items-center justify-between p-1 sm:p-2 md:p-3"
-    style={{
-        backgroundImage: `url(${require('../assets/' + currentWorldBackground)})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundColor: '#000'
-    }}
->
+            className="game-container relative min-h-screen w-full flex flex-col items-center justify-between p-2 sm:p-4 md:p-6 lg:p-8"
+            style={{
+                backgroundImage: `url(${require('../assets/' + currentWorldBackground)})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                backgroundColor: '#000'
+            }}
+        >
             <style>
                 {`
         @keyframes shoot {
@@ -1220,150 +1220,165 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             </style>
 
             {/* Top Bar */}
-            <div className="w-full flex flex-wrap justify-between items-center mb-1 sm:mb-2">
-        {/* Left Side */}
-        <div className="flex items-center space-x-1 sm:space-x-2 w-full sm:w-auto">
-            <div className="transition-all 
-                            duration-300 hover:scale-105 
-                            hover:rotate-45 focus:outline-none
-                            focus:ring-2 slidebar-icon 
-                            text-lg sm:text-xl cursor-pointer" 
-                            onClick={toggleSlidebar}>
-                <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
-            </div>
-            <div className="player-info flex items-center bg-white/70 p-1 border border-indigo-200 rounded-lg shadow-inner">
-                <img
-                    src={currentAvatar}
-                    alt="Player Avatar"
-                    className="w-6 h-6 
-                               sm:w-8 sm:h-8 
-                               rounded-full object-cover 
-                               mr-1 ring-1 ring-indigo-300"
-                />
-                <div className="hearts flex items-center">
-                    {[...Array(playerHearts)].map((_, i) => (
-                        <img key={i} src={heartImage} alt="Heart" className="w-3 h-3 sm:w-4 sm:h-4 ml-0.5" />
-                    ))}
+            <div className="w-full flex flex-wrap justify-between items-center mb-2 sm:mb-4">
+                {/* Left Side */}
+                <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
+                    <div className="transition-all 
+                                    duration-300 hover:scale-110 
+                                    hover:rotate-90 focus:outline-none
+                                    focus:ring-4 focus:ring slidebar-icon 
+                                    text-xl sm:text-2xl cursor-pointer" 
+                                    onClick={toggleSlidebar}>
+                        <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
+                    </div>
+                    <div className="player-info flex items-center bg-white/70 p-1 sm:p-2 border border-indigo-200 rounded-lg shadow-inner">
+                        <img
+                            src={currentAvatar}
+                            alt="Player Avatar"
+                            className="w-8 h-8 
+                                       sm:w-10 sm:h-10 
+                                       rounded-full object-cover 
+                                       mr-2 ring-2 ring-indigo-300"
+                        />
+                        <div className="hearts flex items-center">
+                            {[...Array(playerHearts)].map((_, i) => (
+                                <img key={i} src={heartImage} alt="Heart" className="w-4 h-4 sm:w-6 sm:h-6 ml-1" />
+                            ))}
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
+
                 {/* Right Side */}
-                <div className="player-info flex items-center mt-1 sm:mt-0">
-            <div className="hearts flex items-center">
-                {[...Array(enemyHearts)].map((_, i) => (
-                    <img key={i}
-                        src={heartImage}
-                        alt="Heart"
-                        className="w-6 h-6 sm:w-8 sm:h-8 ml-1 sm:ml-2" />
-                ))}
-            </div>
-        </div>
-    </div>
+                <div className="player-info flex items-center mt-2 sm:mt-0">
 
-    {/* Main Game Content - Responsive Layout */}
-    <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-7xl gap-1 sm:gap-2 mb-1 sm:mb-2">
-        {/* Character Container - Large on Higher Resolutions */}
-        <div className="character-container relative w-full md:w-1/3 flex justify-center items-center">
-            <div
-                className={`character 
-                            character-responsive
-                            w-48 h-48 
-                            sm:w-64 sm:h-64 
-                            md:w-72 md:h-72 
-                            lg:w-96 lg:h-96 
-                            bg-contain 
-                            bg-center 
-                            bg-no-repeat 
-                            transition-transform 
-                            duration-300 
-                            ${isCharacterAttacking ? "transform scale-105" : ""}`}
-                style={{ backgroundImage: `url(${isCharacterAttacking ? characterAttack : character})` }}
-            >
-            </div>
-        </div>
-
-        {/* Word Box - Compact */}
-        <div className="word-box 
-                        flex 
-                        flex-wrap 
-                        justify-center 
-                        gap-1 
-                        w-full 
-                        md:w-1/3">
-            {selectedLetters.map((letter, index) => (
-                <div
-                    key={index}
-                    className={`
-                        w-6 h-6 
-                        sm:w-8 sm:h-8 
-                        md:w-10 md:h-10 
-                        border-2 
-                        flex 
-                        items-center 
-                        justify-center 
-                        text-sm 
-                        sm:text-base 
-                        md:text-lg 
-                        font-bold 
-                        rounded-lg 
-                        cursor-pointer 
-                        transition-all 
-                        duration-300 
-                        touch-target
-                        ${index === selectedLetterIndex ? 'border-blue-500 bg-blue-100 scale-105' : 'border-black'}
-                        ${highlightedIndices.includes(index) ? 'bg-yellow-300 scale-105 shadow-md' : 'bg-[#f4d9a3] hover:bg-[#e5c8a1]'}
-                    `}
-                    onClick={() => handleSelectedLetterClick(letter, index)}
-                >
-                    {letter}
+                    <div className="hearts flex items-center">
+                        {[...Array(enemyHearts)].map((_, i) => (
+                            <img key={i}
+                                src={heartImage}
+                                alt="Heart"
+                                className="w-8 h-8 sm:w-12 sm:h-12 ml-2 sm:ml-6" />
+                        ))}
+                    </div>
                 </div>
-            ))}
-        </div>
-
-        {/* Enemy Container - Responsive */}
-        <div className="enemy-container relative w-full md:w-1/3 flex justify-center items-center">
-            <div
-                className={`enemy 
-                            w-32 h-32 
-                            sm:w-48 sm:h-48 
-                            md:w-56 md:h-56 
-                            lg:w-72 lg:h-72 
-                            bg-contain bg-center bg-no-repeat`}
-                style={{
-                    backgroundImage: currentEnemy?.image ?
-                        `url(${require(`../assets/${currentEnemy.image}`)})` :
-                        'none',
-                    transform: 'scaleX(-1)'
-                }}
-            >
-                {enemyLaserActive && (
-                    <img
-                        src={attackEnemyImage}
-                        alt="enemy-laser"
-                        className="absolute top-1/2 right-full transform -translate-y-1/2 rotate-180"
-                        style={{
-                            animation: "enemyShoot 0.5s linear forwards",
-                            height: "4rem",
-                            width: "auto"
-                        }}
-                    />
-                )}
             </div>
-        </div>
-    </div>
 
-    {/* Bottom Content - Compact Grid */}
-    <div className="game-content 
-                    w-[95%] 
-                    max-w-[1400px] 
-                    grid 
-                    grid-cols-1 
-                    md:grid-cols-3 
-                    gap-2 
-                    p-2 
-                    rounded-xl 
-                    bg-opacity-90 
-                    mb-2">
+            {/* Main Game Content */}
+            <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-7xl gap-2 sm:gap-4 mb-2 sm:mb-4">
+                {/* Player Character */}
+                <div className="  character-container 
+                                    relative 
+                                    w-full 
+                                    md:w-1/3 
+                                    flex 
+                                    justify-center 
+                                    items-center">
+                    <div
+                        className={`character 
+                                    character-responsive
+                                    bg-contain 
+                                    bg-center 
+                                    bg-no-repeat 
+                                    transition-transform 
+                                    duration-300 
+                                    ${isCharacterAttacking ? "transform scale-110" : ""
+                            }`}
+                        style={{ backgroundImage: `url(${isCharacterAttacking ? characterAttack : character})` }}
+                    >
+                    </div>
+                </div>
+
+                {/* Word Box */}
+                <div className="word-box 
+                                flex 
+                                flex-wrap 
+                                justify-center 
+                                gap-1 
+                                sm:gap-2 
+                                w-full 
+                                md:w-1/3">
+                    {selectedLetters.map((letter, index) => {
+                        const effect = letterEffects[emptyIndices[index]];
+                        return (
+                            <div
+                                key={index}
+                                className={` 
+                                    relative 
+                                    w-8 h-8 
+                                    sm:w-10 sm:h-10 
+                                    md:w-12 md:h-12 
+                                    border-2 
+                                    flex 
+                                    items-center 
+                                    justify-center 
+                                    text-base 
+                                    sm:text-xl 
+                                    md:text-2xl 
+                                    font-bold 
+                                    rounded-lg 
+                                    cursor-pointer 
+                                    transition-all 
+                                    duration-300 
+                                    touch-target
+                                    ${index === selectedLetterIndex ? 'border-blue-500 bg-blue-100 scale-110' : 'border-black'}
+                                    ${highlightedIndices.includes(index) ? 'bg-yellow-300 scale-110 shadow-lg' : 'bg-[#f4d9a3] hover:bg-[#e5c8a1]'}
+                                    ${effect ? effectStyles[effect] : ''}
+                                `}
+                                onClick={() => handleSelectedLetterClick(letter, index)}
+                            >
+                                {letter}
+                                {effect && (
+                                    <div className="absolute opacity-0 hover:opacity-100 bg-black text-white text-xs rounded py-1 px-2 w-40 -top-10 left-1/2 transform -translate-x-1/2 pointer-events-none transition-opacity duration-200 z-10">
+                                        {effectDescriptions[effect]}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Enemy Character */}
+                <div className="enemy-container relative w-full md:w-1/3 flex justify-center items-center">
+                    <div
+                        className={`enemy w-40 h-40 md:w-72 md:h-72 lg:w-96 lg:h-96 bg-contain bg-center bg-no-repeat`}
+                        style={{
+                            backgroundImage: currentEnemy?.image ?
+                                `url(${require(`../assets/${currentEnemy.image}`)})` :
+                                'none',
+                            transform: 'scaleX(-1)'
+                        }}
+                    >
+                        {enemyLaserActive && (
+                            <img
+                                src={attackEnemyImage}
+                                alt="enemy-laser"
+                                className="absolute top-1/2 right-full transform -translate-y-1/2 rotate-180"
+                                style={{
+                                    animation: "enemyShoot 0.5s linear forwards",
+                                    height: "8rem",
+                                    width: "auto"
+                                }}
+                            />
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Bottom Content */}
+            <div className="game-content 
+                            w-[95%] 
+                            max-w-[1400px] 
+                            grid 
+                            grid-cols-1 
+                            md:grid-cols-3 
+                            gap-3 
+                            sm:gap-1
+                            p-3 
+                            sm:p-1
+                            rounded-xl 
+                            bg-opacity-90 
+                            mb-3 
+                            sm:mb-1
+                            ">
 
                 {/* Description Box */}
                 <div className="description-box 
@@ -1375,7 +1390,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                 p-3 
                                 sm:p-5 
                                 rounded-xl 
-                                mb-2 
+                                mb-8
                                 sm:mb-3 
                                 h-48 
                                 sm:h-64 
@@ -1396,7 +1411,19 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 </div>
 
                 {/* Letter Grid */}
-                <div className="letter-grid grid grid-cols-5 -mb-10 -mt-10 gap-2 p-4 rounded-xl place-items-center">
+                <div className="letter-grid grid grid-cols-5 -mb-8 -mt-8 gap-2 p-4 rounded-xl place-items-center
+                  @media (max-width: 1366px) {
+        grid-cols-4; /* Reduce to 4 columns on smaller screens */
+        gap-1; /* Tighten grid gap */
+        p-2; /* Reduce padding */
+        -mb-4; /* Reduce bottom margin */
+        -mt-4; /* Reduce top margin */
+    }
+
+    @media (max-width: 768px) {
+        grid-cols-3; /* Further reduce to 3 columns on very small screens */
+    }
+">
                     {gridLetters.map((letter, index) => (
                         <div
                             key={index}
@@ -1404,7 +1431,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 relative 
                 grid-letter 
                 w-12 h-12 
-                md:w-14 md:h-14 
+                md:w-full md:h-full
                 border-2 
                 flex items-center 
                 justify-center 
@@ -1415,6 +1442,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 duration-300 
                 rounded-lg 
                 group
+                border-1
+                text-base;
+                w-8 h-8
+                text-sm
+
                 ${highlightedIndices.includes(index)
                                     ? 'bg-yellow-300 scale-110 shadow-lg'
                                     : 'bg-white hover:bg-indigo-100 hover:shadow-md'}
@@ -1443,16 +1475,22 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
                             {letterEffects[index] && (
                                 <div className="
-                    absolute 
+                                  absolute 
                     z-10 
                     bg-black 
                     text-white 
-                    text-xs 
+                    text-[10px] 
+                    sm:text-xs 
                     rounded-md 
-                    py-1.5 
-                    px-3 
-                    w-48 
-                    -top-12 
+                    py-1 
+                    px-2 
+                    sm:py-1.5 
+                    sm:px-3 
+                    w-32 
+                    sm:w-40 
+                    md:w-48 
+                    -top-8 
+                    sm:-top-10 
                     left-1/2 
                     transform 
                     -translate-x-1/2 
@@ -1475,7 +1513,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 {/* Right Side Controls */}
                 <div className="flex flex-col space-y-1.5">
                     {/* Enemy Stats */}
-                    <div className="enemy-stats bg-[#f4d9a3] border-2 border-black p-2 rounded-lg">
+                    {/* <div className="enemy-stats bg-[#f4d9a3] border-2 border-black p-2 rounded-lg">
                         <div className="level-info">
                             <h3 className="text-base font-bold truncate">
                                 {currentEnemy?.name || mapLibrary[level?.selectedMap?.id]?.name || "Unknown Enemy"}
@@ -1493,10 +1531,10 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                 ))}
                             </ul>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Action Buttons */}
-                    <div className="action-buttons flex flex-col space-y-2">
+                    <div className="action-buttons mt-14 flex flex-col space-y-2">
                         <button
                             className={`
                                 bg-gradient-to-r 
