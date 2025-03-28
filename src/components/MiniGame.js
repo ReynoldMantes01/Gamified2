@@ -45,14 +45,12 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     const enemies = [
         { name: "Microbe", image: 'microbe.gif', health: 3 },
         { name: "Toxic Crawler", image: 'toxic_crawler.gif', health: 4 },
-        { name: "Chemical Slime", image: 'chemical_slime.gif', health: 5 }
     ];
 
     // Map enemy image filenames to imported images
     const enemyImages = {
         'microbe.gif': microbeImage,
         'toxic_crawler.gif': toxinImage,
-        'chemical_slime.gif': slimesImage
     };
 
     const currentEnemy = enemies[currentEnemyIndex % enemies.length];
@@ -110,8 +108,8 @@ const generateWordGrid = () => {
         newGrid[startIndex + i] = chosenWord[i];
     }
 
-    const vowels = 'AEIOU';
-    const consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
+    const vowels = 'AEIOU_';
+    const consonants = 'BCDFGHJKLMNPQRSTVWXYZ_';
 
     for (let i = 0; i < 20; i++) {
         if (newGrid[i] === '') {
@@ -263,19 +261,43 @@ const handleSubmitWord = useCallback(() => {
 
     if (word.length === 0) return;
 
-    //Prevent word spam - check if it's in cooldown
-    if (usedWordsQueue.includes(word)) {
+    // Prevent word spam - check if it's in cooldown
+    if (usedWordsQueue.includes(word) && word.length >= 2) {
         setDefinition(`"${word}" is on cooldown! Use ${cooldownLimit} different words first.`);
+
         return; 
     }
 
-    if (scienceTerm.hasOwnProperty(word)) {
+    if (scienceTerm.hasOwnProperty(word)) { 
+        // Valid word submitted
+        setCurrentEnemyHealth(prevHealth => {
+            const newHealth = prevHealth - 1;
+            if (newHealth <= 0) {
+                // Handle enemy defeat logic here if needed
+            }
+            return newHealth;
+        });
         // Update the longest word only if the new word is longer
         if (word.length > longestWord.length) {
             setLongestWord(word);
             saveLongestWord(word);  // Save the longest word to Firebase
+            setDefinition(`New longest word: "${word}"!`);
+        } else {
+            setDefinition(`"${word}" is a valid word.`);
         }
-        setDefinition(`New longest word: "${word}"!`);
+    } else {
+        // Invalid word submitted
+        setEnemyAttacking(true);
+        setDefinition(`Invalid word -1 Heart! The enemy attacks!`);
+
+        setPlayerHearts(prev => {
+            const newHearts = prev - 1;
+            if (newHearts <= 0) {
+                setGameOver(true);
+                saveScore();
+            }
+            return Math.max(0, newHearts);
+        });
     }
 
     // Calculate score based on the length of the valid word
@@ -456,7 +478,7 @@ useEffect(() => {
         </div>
     )}
     
-    {/* Header */}
+    {/* Header */} 
     <div className="w-full flex justify-between items-center p-2 sm:p-4 bg-black bg-opacity-50">
         {/* Heart */}
         <div className="flex items-center">
