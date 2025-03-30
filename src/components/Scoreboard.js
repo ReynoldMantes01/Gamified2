@@ -3,6 +3,7 @@ import { getDatabase, ref, onValue, query, orderByChild } from 'firebase/databas
 import bgImage from '../assets/bg.gif';
 import FunFact from './FunFact';
 import useFunFact from '../hooks/useFunFact';
+import { auth } from '../firebase/config';
 
 const SCORES_PER_PAGE = 5;
 
@@ -14,11 +15,17 @@ const Scoreboard = ({ onMainMenu }) => {
     const [showLongestWordScoreboard, setShowLongestWordScoreboard] = useState(false);
     const [gameBeatScores, setGameBeatScores] = useState([]);
     const [showGameBeatScoreboard, setShowGameBeatScoreboard] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState(null);
     const { showFunFact, showFunFactWithDelay } = useFunFact();
 
     useEffect(() => {
         showFunFactWithDelay();
         const db = getDatabase();
+        
+        // Get current user ID
+        if (auth.currentUser) {
+            setCurrentUserId(auth.currentUser.uid);
+        }
     
         // Fetch Longest Words
         const longestWordRef = query(ref(db, 'users'), orderByChild('longestWord/timestamp'));
@@ -35,6 +42,8 @@ const Scoreboard = ({ onMainMenu }) => {
                     });
                 }
             });
+            // Sort words by length (longest to shortest)
+            words.sort((a, b) => b.word.length - a.word.length);
             setLongestWords(words);
         });
     
@@ -222,9 +231,9 @@ const Scoreboard = ({ onMainMenu }) => {
                                     key={`${player.userId}-${player.score}`}
                                     className={`grid grid-cols-4 gap-4 p-4 mb-3 transform transition-all duration-500 ${
                                         player.isNew ? 'scale-105' : ''
-                                    }`}
+                                    } ${player.userId === currentUserId ? 'scale-105 ring-2 ring-yellow-400' : ''}`}
                                     style={{
-                                        fontSize: '14px',
+                                        fontSize: player.userId === currentUserId ? '16px' : '14px',
                                         background: player.rank === 1 ? '#854d0e ' : 
                                                   player.rank === 2 ? '#4b5563' : 
                                                   player.rank === 3 ? '#78350f' : 
@@ -268,10 +277,29 @@ const Scoreboard = ({ onMainMenu }) => {
                             longestWords.map((entry, index) => (
                                 <div 
                                     key={entry.userId} 
-                                    className={`grid grid-cols-3 gap-4 p-4 mb-3 ${index % 2 === 0 ? 'bg-gray-700' : 'bg-gray-800'}`}
+                                    className={`grid grid-cols-3 gap-4 p-4 mb-3 transform transition-all duration-500 ${
+                                        entry.userId === currentUserId ? 'scale-105 ring-2 ring-yellow-400' : ''
+                                    }`}
+                                    style={{
+                                        fontSize: entry.userId === currentUserId ? '16px' : '14px',
+                                        background: index === 0 ? '#854d0e' : 
+                                                  index === 1 ? '#4b5563' : 
+                                                  index === 2 ? '#78350f' : 
+                                                  index % 2 === 0 ? '#1f2937' : '#374151',
+                                        border: '2px solid',
+                                        borderColor: index === 0 ? '#eab308' : 
+                                                    index === 1 ? '#9ca3af' : 
+                                                    index === 2 ? '#b45309' : 
+                                                    '#4b5563',
+                                        boxShadow: index <= 2 ? '0 0 6px #FFF' : 'none',
+                                        color: index === 0 ? '#fef08a' :
+                                               index === 1 ? '#e5e7eb' : 
+                                               index === 2 ? '#fcd34d' : 
+                                               '#9ca3af'
+                                    }}
                                 >
                                     <div className="text-center">{entry.name}</div>
-                                    <div className="text-center">{entry.word}</div>
+                                    <div className="text-center font-bold">{entry.word}</div>
                                     <div className="text-center">{entry.timestamp}</div>
                                 </div>
                             ))

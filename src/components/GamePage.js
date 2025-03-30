@@ -1487,26 +1487,47 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
             {/* Modals */}
             {settingsOpen && (
-                <GameSettings
-                    onClose={() => setSettingsOpen(false)}
-                    onSave={(volume) => {
-                        setMusicVolume(volume);
-                        setSettingsOpen(false);
-                    }}
-                    onReset={() => {
-                        setMusicVolume(50);
-                    }}
-                    musicVolume={musicVolume}
-                    profileData={profileData}
-                />
+                <div className="fixed inset-0 z-[60] flex items-center justify-center">
+                    <div className="bg-[#f4d9a3] border-4 border-black p-6 rounded-lg text-center max-w-md w-full relative">
+                        <button 
+                            onClick={() => setSettingsOpen(false)} 
+                            className="absolute top-2 right-2 text-2xl hover:text-gray-700"
+                        >
+                            ×
+                        </button>
+                        <h2 className="text-2xl font-bold mb-4">Game Settings</h2>
+                        <GameSettings
+                            onClose={() => setSettingsOpen(false)}
+                            onSave={(volume) => {
+                                setMusicVolume(volume);
+                                setSettingsOpen(false);
+                            }}
+                            onReset={() => {
+                                setMusicVolume(50);
+                            }}
+                            musicVolume={musicVolume}
+                            profileData={profileData}
+                        />
+                    </div>
+                </div>
             )}
             {profileOpen && (
-                <Profile
-                    onClose={() => setProfileOpen(false)}
-                    onSave={() => setProfileOpen(false)}
-                    profileData={profileData}
-                    setProfileData={setProfileData}
-                />
+                <div className="fixed inset-0 z-[60] flex items-center justify-center">
+                    <div className="bg-[#f4d9a3] border-4 border-black p-6 rounded-lg text-center max-w-md w-full relative">
+                        <button 
+                            onClick={() => setProfileOpen(false)} 
+                            className="absolute top-2 right-2 text-2xl hover:text-gray-700"
+                        >
+                            ×
+                        </button>
+                        <h2 className="text-2xl font-bold mb-4">Profile</h2>
+                        <Profile
+                            onClose={() => setProfileOpen(false)}
+                            profileData={profileData}
+                            setProfileData={setProfileData}
+                        />
+                    </div>
+                </div>
             )}
             {/* Game Cleared Dialog */}
             {gameCleared && (

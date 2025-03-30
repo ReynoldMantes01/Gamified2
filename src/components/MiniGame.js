@@ -201,6 +201,20 @@ useEffect(() => {
     }
 }, [currentEnemyIndex]);
 
+// Initialize longest word from Firebase
+useEffect(() => {
+    if (auth.currentUser) {
+        const db = getDatabase();
+        const userRef = ref(db, `users/${auth.currentUser.uid}/longestWord`);
+        onValue(userRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.word) {
+                setLongestWord(data.word);
+            }
+        });
+    }
+}, []);
+
 // Timer effect
 useEffect(() => {
     if (!showTutorial && !gameOver) {
@@ -321,10 +335,18 @@ const saveLongestWord = (word) => {
     if (auth.currentUser) {
         const db = getDatabase();
         const userRef = ref(db, `users/${auth.currentUser.uid}/longestWord`);
-        set(userRef, {
-            word: word,
-            timestamp: Date.now()
-        });
+        // First check if there's an existing longest word
+        onValue(userRef, (snapshot) => {
+            const data = snapshot.val();
+            const existingWord = data ? data.word : '';
+            // Only save if the new word is longer than the existing one
+            if (!existingWord || word.length > existingWord.length) {
+                set(userRef, {
+                    word: word,
+                    timestamp: Date.now()
+                });
+            }
+        }, { onlyOnce: true }); // Only read once, not continuously
     }
 };
 
@@ -339,7 +361,7 @@ const handleScramble = () => {
     setSelectedLetters([]); // Clear selected letters
     setEmptyIndices([]); // Reset empty letter spots
 
-    // ✅ Apply penalty: Reduce player's health
+    // Apply penalty: Reduce player's health
     setPlayerHearts(prev => {
         const newHealth = prev - 1;
         if (newHealth <= 0) {
@@ -349,7 +371,7 @@ const handleScramble = () => {
         return Math.max(0, newHealth);
     });
 
-    // ✅ Generate a new scrambled grid but KEEP cooldown words
+    // Generate a new scrambled grid but KEEP cooldown words
     let scrambledGrid;
     let validScramble = false;
 
@@ -411,6 +433,17 @@ const handleKeyPress = useCallback((event) => {
         if (letterIndex !== -1) {
             handleLetterClick(key, letterIndex);
         }
+    }
+    // Handle spacebar for underscore selection
+    else if (event.key === ' ' || event.key === 'Spacebar') {
+        const underscoreIndex = gridLetters.findIndex((letter, index) => 
+            letter === '_' && !emptyIndices.includes(index)
+        );
+        
+        if (underscoreIndex !== -1) {
+            handleLetterClick('_', underscoreIndex);
+        }
+        event.preventDefault(); // Prevent page scrolling
     }
     // Handle backspace for letter removal
     else if (event.key === 'Backspace' && selectedLetters.length > 0) {
@@ -507,7 +540,28 @@ useEffect(() => {
         </div>
     </div>
 
-    {/* Modals (Scoreboard, Settings, Profile) remain the same */}
+    {/* Modals (Scoreboard, Settings, Profile) */}
+    {settingsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <GameSettings 
+                onClose={() => setSettingsOpen(false)}
+                onSave={(volume) => {
+                    setMusicVolume(volume);
+                    setSettingsOpen(false);
+                }}
+                musicVolume={musicVolume}
+            />
+        </div>
+    )}
+    {profileOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <Profile 
+                onClose={() => setProfileOpen(false)}
+                profileData={profileData}
+                setProfileData={setProfileData}
+            />
+        </div>
+    )}
     
     {/* Timer */}
     <div className="absolute top-16 sm:top-20 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 px-4 sm:px-6 py-1 sm:py-2 rounded-full">

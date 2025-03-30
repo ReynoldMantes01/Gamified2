@@ -8,8 +8,14 @@ const Slidebar = ({ isOpen, toggleSlidebar, onMainMenu, setSettingsOpen, setProf
 
     const menuItems = [
         { label: 'Main Menu', onClick: onMainMenu },
-        { label: 'Settings', onClick: () => setSettingsOpen(true) },
-        { label: 'Profile', onClick: () => setProfileOpen(true) },
+        { label: 'Settings', onClick: () => {
+            setSettingsOpen(true);
+            // Don't close slidebar for settings
+        }},
+        { label: 'Profile', onClick: () => {
+            setProfileOpen(true);
+            // Don't close slidebar for profile
+        }},
         { label: 'Scoreboard', onClick: () => setScoreboardOpen(true) },
         { label: 'Logout', onClick: onLogout }
     ];
