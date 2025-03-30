@@ -9,7 +9,7 @@ import attackImage from '../assets/attack.png';
 import attackEnemyImage from '../assets/attack.gif';
 import character from '../assets/newchar.gif';
 import characterAttack from '../assets/attack/newchar_attack.gif';
-import functionBackground from '../assets/functionBackground.png';
+import functionBackground from '../assets/try.gif';
 import mapLibrary from '../components/maps.json';
 import mapData from './maps.json';
 import { auth } from '../firebase/config';
@@ -1189,7 +1189,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     return (
 
         <div
-            className="game-container relative min-h-screen w-full flex flex-col items-center justify-between p-2 sm:p-4 md:p-6 lg:p-8"
+            className="game-container relative min-h-screen w-full flex flex-col items-center justify-between p-1 sm:p-1 md:p-1 lg:p-1"
             style={{
                 backgroundImage: `url(${require('../assets/' + currentWorldBackground)})`,
                 backgroundSize: 'cover',
@@ -1289,52 +1289,52 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
                 {/* Word Box */}
                 <div className="word-box 
-                                flex 
-                                flex-wrap 
-                                justify-center 
-                                gap-1 
-                                sm:gap-2 
-                                w-full 
-                                md:w-1/3">
-                    {selectedLetters.map((letter, index) => {
-                        const effect = letterEffects[emptyIndices[index]];
-                        return (
-                            <div
-                                key={index}
-                                className={` 
-                                    relative 
-                                    w-8 h-8 
-                                    sm:w-10 sm:h-10 
-                                    md:w-12 md:h-12 
-                                    border-2 
-                                    flex 
-                                    items-center 
-                                    justify-center 
-                                    text-base 
-                                    sm:text-xl 
-                                    md:text-2xl 
-                                    font-bold 
-                                    rounded-lg 
-                                    cursor-pointer 
-                                    transition-all 
-                                    duration-300 
-                                    touch-target
-                                    ${index === selectedLetterIndex ? 'border-blue-500 bg-blue-100 scale-110' : 'border-black'}
-                                    ${highlightedIndices.includes(index) ? 'bg-yellow-300 scale-110 shadow-lg' : 'bg-[#f4d9a3] hover:bg-[#e5c8a1]'}
-                                    ${effect ? effectStyles[effect] : ''}
-                                `}
-                                onClick={() => handleSelectedLetterClick(letter, index)}
-                            >
-                                {letter}
-                                {effect && (
-                                    <div className="absolute opacity-0 hover:opacity-100 bg-black text-white text-xs rounded py-1 px-2 w-40 -top-10 left-1/2 transform -translate-x-1/2 pointer-events-none transition-opacity duration-200 z-10">
-                                        {effectDescriptions[effect]}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
+                flex 
+                flex-wrap 
+                justify-center 
+                gap-1 
+                md:gap-1.5 
+                w-full 
+                md:w-1/3">
+    {selectedLetters.map((letter, index) => {
+        const effect = letterEffects[emptyIndices[index]];
+        return (
+            <div
+                key={index}
+                className={` 
+                    relative 
+                    w-7 h-7 
+                    sm:w-8 sm:h-8 
+                    md:w-10 md:h-10 
+                    border-2 
+                    flex 
+                    items-center 
+                    justify-center 
+                    text-sm 
+                    sm:text-base 
+                    md:text-lg 
+                    font-bold 
+                    rounded-lg 
+                    cursor-pointer 
+                    transition-all 
+                    duration-200
+                    touch-target
+                    ${index === selectedLetterIndex ? 'border-teal-500 bg-blue-100 scale-105' : 'border-gray-700'}
+                    ${highlightedIndices.includes(index) ? 'bg-green-300 scale-105 shadow-md' : 'bg-blue-50 hover:bg-blue-100'}
+                    ${effect ? effectStyles[effect] : ''}
+                `}
+                onClick={() => handleSelectedLetterClick(letter, index)}
+            >
+                {letter}
+                {effect && (
+                    <div className="absolute opacity-0 hover:opacity-100 bg-gray-800 text-white text-xs rounded py-1 px-2 w-32 -top-8 left-1/2 transform -translate-x-1/2 pointer-events-none transition-opacity duration-200 z-10">
+                        {effectDescriptions[effect]}
+                    </div>
+                )}
+            </div>
+        );
+    })}
+</div>
 
                 {/* Enemy Character */}
                 <div className="enemy-container relative w-full md:w-1/3 flex justify-center items-center">
@@ -1365,144 +1365,72 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
             {/* Bottom Content */}
             <div className="game-content 
-                            w-[95%] 
-                            max-w-[1400px] 
-                            grid 
-                            grid-cols-1 
-                            md:grid-cols-3 
-                            gap-3 
-                            sm:gap-1
-                            p-3 
-                            sm:p-1
-                            rounded-xl 
-                            bg-opacity-90 
-                            mb-3 
-                            sm:mb-1
-                            ">
+                             w-full 
+                max-w-6xl 
+                grid 
+                grid-cols-1 
+                md:grid-cols-3 
+                gap-3 
+                sm:gap-2
+                p-3 
+                sm:p-2
+                rounded-xl 
+                bg-opacity-90 
+                mb-3 
+                sm:mb-2
+                            " /*   style={{
+                                backgroundImage: `url(${functionBackground})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                backgroundRepeat: 'no-repeat',
+                                backgroundColor: 'rgba(255, 255, 255, 0.9)'
+                            }} */>
 
                 {/* Description Box */}
                 <div className="description-box 
-                                bg-gradient-to-b 
-                                from-[#f4d9a3] 
-                                to-[#f0d090] 
-                                border-2 
-                                border-gray-800 
-                                p-3 
-                                sm:p-5 
-                                rounded-xl 
-                                mb-8
-                                sm:mb-3 
-                                h-48 
-                                sm:h-64 
-                                overflow-y-auto 
-                                shadow-md">
-                    <div className="text-gray-800 leading-relaxed">{definition.text || "Please form a word to see its definition."}</div>
+                               bg-gradient-to-b 
+                from-blue-100 
+                to-blue-200 
+                border-2 
+                border-gray-700 
+                p-2 
+                md:p-4 
+                mt-5
+                rounded-xl 
+                mb-4
+                md:mb-3 
+                h-40 
+                md:h-48 
+                overflow-y-auto 
+                shadow-md">
+                    <div className="text-gray-800 leading-relaxed text-sm md:text-base">{definition.text || "Discover a scientific term to reveal its definition."}</div>
 
                     {definition.source && (
                         <a
                             href={definition.source}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center text-blue-700 hover:text-blue-900 font-medium text-sm mt-3 group"
+                            className="inline-flex items-center text-blue-700 hover:text-blue-900 font-medium text-xs md:text-sm mt-2 group"
                         >
                             Learn more <span className="ml-1 group-hover:ml-2 transition-all duration-300">→</span>
                         </a>
                     )}
                 </div>
 
+               
                 {/* Letter Grid */}
-                <div className="letter-grid grid grid-cols-5 -mb-8 -mt-8 gap-2 p-4 rounded-xl place-items-center
-                  @media (max-width: 1366px) {
-        grid-cols-4; /* Reduce to 4 columns on smaller screens */
-        gap-1; /* Tighten grid gap */
-        p-2; /* Reduce padding */
-        -mb-4; /* Reduce bottom margin */
-        -mt-4; /* Reduce top margin */
-    }
-
-    @media (max-width: 768px) {
-        grid-cols-3; /* Further reduce to 3 columns on very small screens */
-    }
-">
+                <div className="letter-grid grid grid-cols-4 gap-1 md:gap-1.5 bg-blue-50 border-2 border-gray-700 p-2 rounded-lg place-items-center">
                     {gridLetters.map((letter, index) => (
                         <div
                             key={index}
-                            className={`
-                relative 
-                grid-letter 
-                w-12 h-12 
-                md:w-full md:h-full
-                border-2 
-                flex items-center 
-                justify-center 
-                text-xl 
-                font-bold 
-                cursor-pointer 
-                transition-all 
-                duration-300 
-                rounded-lg 
-                group
-                border-1
-                text-base;
-                w-8 h-8
-                text-sm
-
-                ${highlightedIndices.includes(index)
-                                    ? 'bg-yellow-300 scale-110 shadow-lg'
-                                    : 'bg-white hover:bg-indigo-100 hover:shadow-md'}
-                ${letterEffects[index]
-                                    ? effectStyles[letterEffects[index]]
-                                    : 'border-indigo-300'}
-            `}
+                            className={`relative grid-letter w-8 h-8 md:w-10 md:h-10 border-2 border-gray-700 flex items-center justify-center text-base md:text-lg font-bold cursor-pointer transition-all duration-300 rounded-lg
+                                ${highlightedIndices.includes(index) ? 'bg-green-300 scale-105' : 'hover:bg-blue-100'}
+                                ${letterEffects[index] ? effectStyles[letterEffects[index]] : 'bg-blue-50'}`}
                             onClick={() => handleLetterClick(letter, index)}
-                            role="button"
-                            aria-label={`Select letter ${letter}`}
-                            tabIndex={0}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                    handleLetterClick(letter, index);
-                                }
-                            }}
                         >
-                            <span className="
-                group-hover:scale-110 
-                group-active:scale-95 
-                transition-transform 
-                duration-200
-            ">
-                                {letter}
-                            </span>
-
+                            {letter}
                             {letterEffects[index] && (
-                                <div className="
-                                  absolute 
-                    z-10 
-                    bg-black 
-                    text-white 
-                    text-[10px] 
-                    sm:text-xs 
-                    rounded-md 
-                    py-1 
-                    px-2 
-                    sm:py-1.5 
-                    sm:px-3 
-                    w-32 
-                    sm:w-40 
-                    md:w-48 
-                    -top-8 
-                    sm:-top-10 
-                    left-1/2 
-                    transform 
-                    -translate-x-1/2 
-                    opacity-0 
-                    group-hover:opacity-100 
-                    pointer-events-none 
-                    transition-all 
-                    duration-300 
-                    ease-in-out 
-                    shadow-lg
-                ">
-                                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-black"></div>
+                                <div className="absolute opacity-0 hover:opacity-100 bg-gray-800 text-white text-xs rounded py-1 px-2 w-32 -top-8 left-1/2 transform -translate-x-1/2 pointer-events-none transition-opacity duration-200 z-10">
                                     {effectDescriptions[letterEffects[index]]}
                                 </div>
                             )}
@@ -1512,70 +1440,49 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
                 {/* Right Side Controls */}
                 <div className="flex flex-col space-y-1.5">
-                    {/* Enemy Stats */}
-                    {/* <div className="enemy-stats bg-[#f4d9a3] border-2 border-black p-2 rounded-lg">
-                        <div className="level-info">
-                            <h3 className="text-base font-bold truncate">
-                                {currentEnemy?.name || mapLibrary[level?.selectedMap?.id]?.name || "Unknown Enemy"}
-                            </h3>
-                            <p className="text-xs truncate"><strong>Weakness:</strong> {currentEnemy?.stats?.weakness}</p>
-                            <p className="text-xs truncate"><strong>Strength:</strong> {currentEnemy?.stats?.strength}</p>
-                        </div>
-                        <div className="mt-1">
-                            <strong className="text-xs">Attacks:</strong>
-                            <ul className="text-xs">
-                                {currentEnemy?.attacks?.slice(0, 2).map((attack, index) => (
-                                    <li key={index} className="truncate">
-                                        <strong>{attack.name}:</strong> {attack.damage} damage
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div> */}
 
-                    {/* Action Buttons */}
-                    <div className="action-buttons mt-14 flex flex-col space-y-2">
-                        <button
-                            className={`
-                                bg-gradient-to-r 
-                                from-red-500 to-red-600 text-white 
-                                border-2 border-gray-800 py-2.5 text-center
-                                 font-bold text-base rounded-lg transition-all
-                                  ${!isValidWord ? "opacity-50 cursor-not-allowed"
-                                    : "hover:from-red-600 hover:to-red-700 hover:shadow-lg transform hover:-translate-y-0.5"}`}
-                            onClick={handleAttack}
-                            disabled={!isValidWord}
-                        >
+    {/* Action Buttons */}
+    <div className="action-buttons mt-2 md:mt-8 flex flex-col space-y-1 md:space-y-2">
+        <button
+            className={`
+                bg-gradient-to-r 
+                from-teal-500 to-teal-600 text-white 
+                border-2 border-gray-700 py-1.5 md:py-2 text-center
+                font-bold text-sm md:text-base rounded-lg transition-all
+                ${!isValidWord ? "opacity-50 cursor-not-allowed"
+                : "hover:from-teal-600 hover:to-teal-700 hover:shadow-lg transform hover:-translate-y-0.5"}`}
+            onClick={handleAttack}
+            disabled={!isValidWord}
+        >
+            ANALYZE
+        </button>
 
-                            ATTACK
-                        </button>
+        <div className="hint-box bg-blue-50 border-2 border-gray-700 py-1.5 md:py-2 px-2 md:px-3 text-center rounded-lg shadow-inner">
+            <p className="text-xs md:text-sm truncate font-medium">{hint || `Lab assistance: ${hintsRemaining}`}</p>
+        </div>
 
-                        <div className="hint-box bg-amber-50 border-2 border-gray-800 py-2 px-3 text-center rounded-lg shadow-inner">
-                            <p className="text-sm truncate font-medium">{hint || `Hints remaining: ${hintsRemaining}`}</p>
-                        </div>
+        <div className="grid grid-cols-2 gap-2">
+            <button
+                className={`bg-gradient-to-r from-indigo-500 
+                to-indigo-600 text-white border-2 border-gray-700 py-1.5 md:py-2 text-xs md:text-sm font-bold 
+                rounded-lg transition-all ${hintsRemaining > 0 ?
+                'hover:from-indigo-600 hover:to-indigo-700 hover:shadow-md transform hover:-translate-y-0.5'
+                : 'opacity-50 cursor-not-allowed'}`}
+                onClick={handleHint}
+                disabled={hintsRemaining <= 0}
+            >
+                HINT
+            </button>
 
-                        <div className="grid grid-cols-2 gap-3">
-                            <button
-                                className={`bg-gradient-to-r from-blue-500 +
-                                    to-blue-600 text-white border-2 border-gray-800 py-2 text-sm font-bold 
-                                    rounded-lg transition-all ${hintsRemaining > 0 ?
-                                        'hover:from-blue-600 hover:to-blue-700 hover:shadow-md transform hover:-translate-y-0.5'
-                                        : 'opacity-50 cursor-not-allowed'}`}
-                                onClick={handleHint}
-                                disabled={hintsRemaining <= 0}
-                            >
-                                HINT
-                            </button>
-
-                            <button
-                                className="scramble-button bg-[#f4d9a3]  text-black border-2 border-gray-800 py-2 text-sm font-bold rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all hover:shadow-md transform hover:-translate-y-0.5"
-                                onClick={handleScramble}
-                            >
-                                SCRAMBLE
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <button
+                className="scramble-button bg-blue-50 text-gray-800 border-2 border-gray-700 py-1.5 md:py-2 text-xs md:text-sm font-bold rounded-lg hover:bg-blue-100 transition-all hover:shadow-md transform hover:-translate-y-0.5"
+                onClick={handleScramble}
+            >
+                RECOMBINE
+            </button>
+        </div>
+    </div>
+</div>
             </div>
 
             {/* Modals */}
