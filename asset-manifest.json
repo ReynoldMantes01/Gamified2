@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Gamified2/static/css/main.22078d26.css",
-    "main.js": "/Gamified2/static/js/main.e42d5532.js",
+    "main.js": "/Gamified2/static/js/main.858af9fe.js",
     "static/js/453.2b0de4b9.chunk.js": "/Gamified2/static/js/453.2b0de4b9.chunk.js",
     "static/media/BG1.mp3": "/Gamified2/static/media/BG1.162123a86b8ccaafebae.mp3",
     "static/media/try.gif": "/Gamified2/static/media/try.e43287c4ebac2ea94075.gif",
@@ -44,11 +44,11 @@
     "static/media/dialogueBox.png": "/Gamified2/static/media/dialogueBox.4c6d86e9ecfe4cb95666.png",
     "index.html": "/Gamified2/index.html",
     "main.22078d26.css.map": "/Gamified2/static/css/main.22078d26.css.map",
-    "main.e42d5532.js.map": "/Gamified2/static/js/main.e42d5532.js.map",
+    "main.858af9fe.js.map": "/Gamified2/static/js/main.858af9fe.js.map",
     "453.2b0de4b9.chunk.js.map": "/Gamified2/static/js/453.2b0de4b9.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.22078d26.css",
-    "static/js/main.e42d5532.js"
+    "static/js/main.858af9fe.js"
   ]
 }
