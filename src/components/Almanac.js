@@ -102,7 +102,7 @@ const Almanac = ({ onMainMenu }) => {
   }, [selectedIndex, currentPage, currentTerms]);
 
   return (
-    <div className="almanac-container">
+    <div className="almanac-container" style={{ userSelect: 'none' }}>
     {showFunFact && <FunFact />}
     <div className="min-h-screen bg-cover bg-center flex items-center justify-center py-6 md:py-8 lg:py-12 px-4">
       <div className="max-w-4xl w-full bg-[#fdf6e3] p-4 sm:p-6 md:p-8 border-4 sm:border-6 md:border-8 border-double border-gray-700 rounded-lg shadow-xl overflow-auto text-center">

@@ -48,8 +48,7 @@ const MainMenu = ({ onPlay, onSettings, onProfile, onAlmanac, onLogout, onMiniGa
     }, [selectedIndex, settingsOpen, profileOpen, loginOpen, signupOpen, scoreboardOpen]);
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-cover bg-center pixelated p-4"
-        style={{ backgroundImage: "url('/bg.gif')" }}>
+        <div className="flex items-center justify-center min-h-screen bg-cover bg-center pixelated p-4" style={{ backgroundImage: "url('/bg.gif')", userSelect: 'none' }}>
        <div className="text-center w-full max-w-md">
            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-300 mb-4 sm:mb-6 md:mb-8 drop-shadow-[4px_4px_4px_black]">
                Science Quest

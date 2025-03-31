@@ -208,7 +208,7 @@ const Profile = ({ onClose, profileData, setProfileData }) => {
     }
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20" onClick={onClose}>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20" style={{ userSelect: 'none' }} onClick={onClose}>
             {showFunFact && <FunFact />}
             <div className="bg-gray-800 text-white p-8 rounded w-[450px]" onClick={(e) => e.stopPropagation()}>
                 <h1 className="text-4xl mb-8 text-center">Profile</h1>

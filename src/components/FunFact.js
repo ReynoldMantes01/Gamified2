@@ -117,7 +117,7 @@ const FunFact = ({ onLoadingComplete }) => {
 
         // Check internet connectivity
         const connectionSpeed = navigator.connection ? navigator.connection.downlink : 10;
-        const loadingTime = connectionSpeed < 1 ? 5000 : 2000; // Longer loading time for slower connections
+        const loadingTime = connectionSpeed < 1 ? 5000 : 3000; // Longer loading time for slower connections
 
         const timer = setTimeout(() => {
             setIsVisible(false);
@@ -132,7 +132,7 @@ const FunFact = ({ onLoadingComplete }) => {
     if (!isVisible) return null;
 
     return (
-        <div className="fun-fact-container">
+        <div className="fun-fact-container" style={{ userSelect: 'none' }}>
             <div className="fun-fact-content">
                 <div className="loading-spinner"></div>
                 <h3>Did you know?</h3>

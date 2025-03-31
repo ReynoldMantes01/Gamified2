@@ -278,7 +278,7 @@ const MapSelection = ({
   }, [currentMapIndex, selectedEnemyIndex, selectedMap, isTransitioning]);
 
   return (
-    <div className="text-center bg-[url(/src/assets/Animated.gif)] bg-auto md:bg-contain p-3 min-h-screen flex flex-col items-center justify-center">
+    <div className="text-center bg-[url(/src/assets/Animated.gif)] bg-auto md:bg-contain p-3 min-h-screen flex flex-col items-center justify-center" style={{ userSelect: 'none' }}>
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white drop-shadow-[4px_4px_0px_black]">
         Select Your Level
       </h1>

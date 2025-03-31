@@ -107,7 +107,7 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
   ];
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{ userSelect: 'none' }}>
       {showFunFact && <FunFact />}
       <div className="bg-gray-800 text-white p-8 rounded w-[450px]">
         <h2 className="text-4xl mb-8 text-center">Settings</h2>

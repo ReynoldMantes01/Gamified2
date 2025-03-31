@@ -1195,7 +1195,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
-                backgroundColor: '#000'
+                backgroundColor: '#000',
+                userSelect: 'none'
             }}
         >
             <style>

@@ -245,10 +245,16 @@ useEffect(() => {
 
         return () => {
             clearInterval(timer);
-            setTimeLeft(30); // Reset timer when exiting
         };
     }
 }, [showTutorial, gameOver, isPaused]);
+
+// Add a new effect to handle initial game setup
+useEffect(() => {
+    if (!showTutorial) {
+        setTimeLeft(30); // Only reset timer when starting a new game
+    }
+}, [showTutorial]);
 
 // Handle letter selection
 const handleLetterClick = (letter, index) => {
@@ -299,6 +305,10 @@ const handleSubmitWord = useCallback(() => {
         } else {
             setDefinition(`"${word}" is a valid word.`);
         }
+        
+        // Calculate score based on the length of the valid word
+        scoreIncrement = word.length * 10; // 10 points for each letter
+        setScore(prevScore => prevScore + scoreIncrement); // Update score
     } else {
         // Invalid word submitted
         setEnemyAttacking(true);
@@ -313,10 +323,6 @@ const handleSubmitWord = useCallback(() => {
             return Math.max(0, newHearts);
         });
     }
-
-    // Calculate score based on the length of the valid word
-    scoreIncrement = word.length * 10; // 10 points for each letter
-    setScore(prevScore => prevScore + scoreIncrement); // Update score
 
     // Add the word to the cooldown queue
     setUsedWordsQueue(prev => [...prev, word].slice(-cooldownLimit));
@@ -488,7 +494,8 @@ useEffect(() => {
         backgroundImage: `url(${bgImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
+        userSelect: 'none'
     }}>
     
     {/* Tutorial Dialog */}

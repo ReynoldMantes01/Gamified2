@@ -162,7 +162,7 @@ const Scoreboard = ({ onMainMenu }) => {
 
     return (
         
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50" style={{ userSelect: 'none' }}>
             {showFunFact && <FunFact />}
             <div className="bg-gray-900 p-8 max-w-2xl w-full mx-4 relative border-4 border-gray-700"
                  style={{
