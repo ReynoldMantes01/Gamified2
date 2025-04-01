@@ -3,10 +3,18 @@ import { auth } from '../firebase/config';
 import FunFact from './FunFact';
 import useFunFact from '../hooks/useFunFact';
 
-const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
+const GameSettings = ({ onClose, onSave, onReset, musicVolume, soundEffectsVolume, backgroundVolume }) => {
   const [tempMusicVolume, setTempMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem('musicVolume');
     return savedVolume ? parseInt(savedVolume) : (musicVolume || 50);
+  });
+  const [tempSoundEffectsVolume, setTempSoundEffectsVolume] = useState(() => {
+    const savedVolume = localStorage.getItem('soundEffectsVolume');
+    return savedVolume ? parseInt(savedVolume) : (soundEffectsVolume || 50);
+  });
+  const [tempBackgroundVolume, setTempBackgroundVolume] = useState(() => {
+    const savedVolume = localStorage.getItem('backgroundVolume');
+    return savedVolume ? parseInt(savedVolume) : (backgroundVolume || 50);
   });
   const [saveMessage, setSaveMessage] = useState('');
   const [selectedButton, setSelectedButton] = useState(-1);
@@ -21,21 +29,58 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
     if (musicVolume !== undefined) {
       setTempMusicVolume(musicVolume);
     }
-  }, [musicVolume]);
+    if (soundEffectsVolume !== undefined) {
+      setTempSoundEffectsVolume(soundEffectsVolume);
+    }
+    if (backgroundVolume !== undefined) {
+      setTempBackgroundVolume(backgroundVolume);
+    }
+  }, [musicVolume, soundEffectsVolume, backgroundVolume]);
 
-  const handleVolumeChange = (newVolume) => {
+  // Function to update audio elements with new volume
+  const updateAudioElements = (volumeType, value) => {
+    const audioElements = document.querySelectorAll('audio');
+    if (!audioElements || audioElements.length === 0) return;
+
+    audioElements.forEach(audio => {
+      // Update the appropriate audio elements based on their source
+      const src = audio.src.toLowerCase();
+      if (volumeType === 'music' && src.includes('bg1.mp3')) {
+        audio.volume = value / 100;
+      } else if (volumeType === 'background' && 
+                (src.includes('bossfight.wav') || 
+                 src.includes('fightsound.wav') || 
+                 src.includes('settings.wav') || 
+                 src.includes('scoreboard.wav'))) {
+        audio.volume = value / 100;
+      }
+      // Sound effects are handled directly in their respective play functions
+    });
+  };
+
+  const handleMusicVolumeChange = (newVolume) => {
     const clampedVolume = Math.max(0, Math.min(100, newVolume));
     setTempMusicVolume(clampedVolume);
-    const audioElement = document.querySelector('audio');
-    if (audioElement) {
-      audioElement.volume = clampedVolume / 100;
-    }
+    updateAudioElements('music', clampedVolume);
+    setSaveMessage('');
+  };
+
+  const handleSoundEffectsVolumeChange = (newVolume) => {
+    const clampedVolume = Math.max(0, Math.min(100, newVolume));
+    setTempSoundEffectsVolume(clampedVolume);
+    setSaveMessage('');
+  };
+
+  const handleBackgroundVolumeChange = (newVolume) => {
+    const clampedVolume = Math.max(0, Math.min(100, newVolume));
+    setTempBackgroundVolume(clampedVolume);
+    updateAudioElements('background', clampedVolume);
     setSaveMessage('');
   };
 
   const handleSave = async () => {
     await showFunFactWithDelay();
-    onSave(tempMusicVolume);
+    onSave(tempMusicVolume, tempSoundEffectsVolume, tempBackgroundVolume);
     setSaveMessage('Settings saved!');
     setTimeout(() => setSaveMessage(''), 2000);
   };
@@ -61,14 +106,14 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
     switch (event.key) {
       case 'ArrowLeft':
         if (selectedButton === -1) {
-          handleVolumeChange(tempMusicVolume - 5);
+          handleMusicVolumeChange(tempMusicVolume - 5);
         } else {
           setSelectedButton(prev => (prev <= 0 ? 2 : prev - 1));
         }
         break;
       case 'ArrowRight':
         if (selectedButton === -1) {
-          handleVolumeChange(tempMusicVolume + 5);
+          handleMusicVolumeChange(tempMusicVolume + 5);
         } else {
           setSelectedButton(prev => (prev >= 2 ? 0 : prev + 1));
         }
@@ -98,7 +143,7 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyPress);
     };
-  }, [selectedButton, tempMusicVolume]);
+  }, [selectedButton, tempMusicVolume, tempSoundEffectsVolume, tempBackgroundVolume]);
 
   const buttons = [
     { label: 'Save', onClick: handleSave, className: 'bg-blue-500 hover:bg-blue-700' },
@@ -114,18 +159,58 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
         
         {/* Music Volume Section */}
         <div className="mb-6">
-          <label htmlFor="volume" className="block mb-4 text-center">Music Volume</label>
+          <label htmlFor="musicVolume" className="block mb-4 text-center">Music Volume</label>
+          <div className="text-xs text-center text-gray-400 mb-2">(Controls BG1.mp3)</div>
           <div className={`p-2 rounded ${selectedButton === -1 ? 'ring-2 ring-white' : ''}`}>
             <input
               type="range"
-              id="volume"
+              id="musicVolume"
               min="0"
               max="100"
               value={tempMusicVolume}
-              onChange={(e) => handleVolumeChange(Number(e.target.value))}
+              onChange={(e) => handleMusicVolumeChange(Number(e.target.value))}
+              onMouseUp={(e) => handleMusicVolumeChange(Number(e.target.value))}
               className="w-full"
             />
             <div className="text-center mt-2">{tempMusicVolume}%</div>
+          </div>
+        </div>
+
+        {/* Background Volume Section */}
+        <div className="mb-6">
+          <label htmlFor="backgroundVolume" className="block mb-4 text-center">Background Volume</label>
+          <div className="text-xs text-center text-gray-400 mb-2">(Controls bossfight.wav, fightsound.wav, settings.wav, scoreboard.wav)</div>
+          <div className={`p-2 rounded ${selectedButton === -1 ? 'ring-2 ring-white' : ''}`}>
+            <input
+              type="range"
+              id="backgroundVolume"
+              min="0"
+              max="100"
+              value={tempBackgroundVolume}
+              onChange={(e) => handleBackgroundVolumeChange(Number(e.target.value))}
+              onMouseUp={(e) => handleBackgroundVolumeChange(Number(e.target.value))}
+              className="w-full"
+            />
+            <div className="text-center mt-2">{tempBackgroundVolume}%</div>
+          </div>
+        </div>
+
+        {/* Sound Effects Volume Section */}
+        <div className="mb-6">
+          <label htmlFor="soundEffectsVolume" className="block mb-4 text-center">Sound Effects Volume</label>
+          <div className="text-xs text-center text-gray-400 mb-2">(Controls hint.wav, hit.wav, lose.wav, win.wav, scramble.wav)</div>
+          <div className={`p-2 rounded ${selectedButton === -1 ? 'ring-2 ring-white' : ''}`}>
+            <input
+              type="range"
+              id="soundEffectsVolume"
+              min="0"
+              max="100"
+              value={tempSoundEffectsVolume}
+              onChange={(e) => handleSoundEffectsVolumeChange(Number(e.target.value))}
+              onMouseUp={(e) => handleSoundEffectsVolumeChange(Number(e.target.value))}
+              className="w-full"
+            />
+            <div className="text-center mt-2">{tempSoundEffectsVolume}%</div>
           </div>
         </div>
 
@@ -200,7 +285,7 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume }) => {
               <div>
                 <h4 className="text-xl mb-2 text-blue-400">Settings</h4>
                 <ul className="list-disc pl-6 space-y-2">
-                  <li>↑/↓ - Toggle between volume slider and buttons</li>
+                  <li>↑/↓ - Toggle between volume sliders and buttons</li>
                   <li>←/→ - Adjust volume or navigate between buttons</li>
                   <li>Enter - Click selected button</li>
                   <li>Escape - Close settings</li>

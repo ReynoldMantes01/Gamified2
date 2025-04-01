@@ -24,7 +24,7 @@ import GameSettings from './GameSettings';
 import Profile from './Profile';
 import Scoreboard from './Scoreboard'; // Import Scoreboard component
 
-const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileData, setProfileData }) => {
+const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, soundEffectsVolume, backgroundVolume, profileData, setProfileData }) => {
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState([]);
     const [playerHearts, setPlayerHearts] = useState(10);
@@ -75,31 +75,31 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     // Sound effect functions
     const playHitSound = () => {
         const sound = new Audio(hitSound);
-        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
         sound.play();
     };
     
     const playWinSound = () => {
         const sound = new Audio(winSound);
-        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
         sound.play();
     };
     
     const playLoseSound = () => {
         const sound = new Audio(loseSound);
-        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
         sound.play();
     };
 
     const playHintSound = () => {
         const sound = new Audio(hintSound);
-        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
         sound.play();
     };
 
     const playScrambleSound = () => {
         const sound = new Audio(scrambleSound);
-        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
         sound.play();
     };
 
@@ -730,11 +730,17 @@ const handleSelectedLetterClick = (letter, index) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <GameSettings 
                 onClose={() => setSettingsOpen(false)}
-                onSave={(volume) => {
-                    setMusicVolume(volume);
-                    setSettingsOpen(false);
+                onSave={(newMusicVolume, newSoundEffectsVolume, newBackgroundVolume) => {
+                    setMusicVolume(newMusicVolume);
+                    // Sound effects and background volume will be handled by App.js
+                }}
+                onReset={() => {
+                    setMusicVolume(50);
+                    // Sound effects and background volume will be handled by App.js
                 }}
                 musicVolume={musicVolume}
+                soundEffectsVolume={soundEffectsVolume}
+                backgroundVolume={backgroundVolume}
             />
         </div>
     )}

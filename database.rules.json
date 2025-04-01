@@ -36,8 +36,14 @@
           }
         },
         "settings": {
-          ".validate": "newData.hasChildren(['musicVolume'])",
+          ".validate": "newData.hasChildren(['musicVolume', 'soundEffectsVolume', 'backgroundVolume'])",
           "musicVolume": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+          },
+          "soundEffectsVolume": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+          },
+          "backgroundVolume": {
             ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
           },
           "$other": {
