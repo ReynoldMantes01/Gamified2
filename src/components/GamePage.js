@@ -797,16 +797,14 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             const db = getDatabase();
             const userRef = ref(db, `users/${auth.currentUser.uid}/health`);
 
-            // Always set health to 4 when resetting to first level
+            // Set health to 4 and keep current enemy
             await set(userRef, 4);
             setPlayerHearts(4);
-            setCurrentEnemy(level.enemy);
-            setEnemyHearts(level.enemy.health);
+            setEnemyHearts(currentEnemy.health);
         } else {
             // For users not logged in
             setPlayerHearts(4);
-            setCurrentEnemy(level.enemy);
-            setEnemyHearts(level.enemy.health);
+            setEnemyHearts(currentEnemy.health);
         }
     };
 
@@ -1735,7 +1733,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                 className="w-full bg-green-500 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-600 transition-colors"
                                 onClick={() => {
                                     resetPlayerHealth(); // Reset player health
-                                    setEnemyHearts(currentEnemy.maxHealth); // Reset enemy health using its maxHealth
+                                    setEnemyHearts(currentEnemy.health); // Reset enemy health using its maxHealth
                     ; // Resume timer (DO NOT reset elapsed time)
                                     setDefeatVisible(false); // Hide defeat screen
                                 }}
