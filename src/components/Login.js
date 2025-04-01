@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase/config';
-import { signInWithEmailAndPassword, FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { getDatabase, ref, set, get } from 'firebase/database';
 import ForgotPassword from './ForgotPassword';
 import FunFact from './FunFact';
@@ -76,18 +76,6 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
         });
     };
 
-    const handleFacebookLogin = async () => {
-        try {
-            const provider = new FacebookAuthProvider();
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
-            handleLoginSuccess(user);
-        } catch (error) {
-            console.error('Facebook login error:', error);
-            setError('Failed to process Facebook login');
-        }
-    };
-
     if (showLoadingScreen) {
         return (
             <div className="fixed inset-0 flex flex-col items-center justify-center bg-black">
@@ -132,24 +120,6 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
                         Forgot Password?
                     </button>
                 </form>
-
-                <div className="my-6 flex items-center justify-center">
-                    <div className="border-t border-gray-300 flex-grow"></div>
-                    <span className="px-4 text-gray-500">or</span>
-                    <div className="border-t border-gray-300 flex-grow"></div>
-                </div>
-                <div className="flex justify-center gap-4">
-                    <button
-                        onClick={handleFacebookLogin}
-                        className="flex items-center justify-center bg-[#1877F2] text-white rounded-lg p-3 hover:bg-[#1864D9] transition-colors shadow-md"
-                    >
-                        <img
-                            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/facebook.svg"
-                            alt="Facebook"
-                            className="w-6 h-6"
-                        />
-                    </button>
-                </div>
 
                 <p className="text-center mt-4">
                     Don't have an account?{' '}

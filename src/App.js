@@ -45,6 +45,16 @@ const App = () => {
     const savedVolume = localStorage.getItem('musicVolume');
     return savedVolume ? parseInt(savedVolume) : 50;
   });
+  const [soundEffectsVolume, setSoundEffectsVolume] = useState(() => {
+    // Try to get saved sound effects volume from localStorage
+    const savedVolume = localStorage.getItem('soundEffectsVolume');
+    return savedVolume ? parseInt(savedVolume) : 50;
+  });
+  const [backgroundVolume, setBackgroundVolume] = useState(() => {
+    // Try to get saved background volume from localStorage
+    const savedVolume = localStorage.getItem('backgroundVolume');
+    return savedVolume ? parseInt(savedVolume) : 50;
+  });
   const [bossFight, setBossFight] = useState(false); // Add bossFight state
   const [fightSoundPlaying, setFightSoundPlaying] = useState(false); // Add fightSoundPlaying state
   const audioRef = useRef(null);
@@ -65,25 +75,35 @@ const App = () => {
       // Save to localStorage for immediate persistence
       localStorage.setItem('musicVolume', musicVolume.toString());
     }
-    if (bossFightAudioRef.current) {
-      bossFightAudioRef.current.volume = musicVolume / 100;
-    }
-    if (fightSoundAudioRef.current) {
-      fightSoundAudioRef.current.volume = musicVolume / 100;
-    }
-    if (settingsAudioRef.current) {
-      settingsAudioRef.current.volume = musicVolume / 100;
-    }
-    if (almanacAudioRef.current) {
-      almanacAudioRef.current.volume = musicVolume / 100;
-    }
-    if (scoreboardAudioRef.current) {
-      scoreboardAudioRef.current.volume = musicVolume / 100;
-    }
     if (bgMusicAudioRef.current) {
       bgMusicAudioRef.current.volume = musicVolume / 100;
     }
   }, [musicVolume]);
+
+  // Update background audio volume whenever backgroundVolume changes
+  useEffect(() => {
+    if (bossFightAudioRef.current) {
+      bossFightAudioRef.current.volume = backgroundVolume / 100;
+    }
+    if (fightSoundAudioRef.current) {
+      fightSoundAudioRef.current.volume = backgroundVolume / 100;
+    }
+    if (settingsAudioRef.current) {
+      settingsAudioRef.current.volume = backgroundVolume / 100;
+    }
+    if (almanacAudioRef.current) {
+      almanacAudioRef.current.volume = backgroundVolume / 100;
+    }
+    if (scoreboardAudioRef.current) {
+      scoreboardAudioRef.current.volume = backgroundVolume / 100;
+    }
+    localStorage.setItem('backgroundVolume', backgroundVolume.toString());
+  }, [backgroundVolume]);
+
+  // Save sound effects volume to localStorage
+  useEffect(() => {
+    localStorage.setItem('soundEffectsVolume', soundEffectsVolume.toString());
+  }, [soundEffectsVolume]);
 
   // Add a specific effect to handle page changes and control audio
   useEffect(() => {
@@ -159,14 +179,29 @@ const App = () => {
       
       // First load the initial value
       get(settingsRef).then((snapshot) => {
-        if (snapshot.exists() && snapshot.val().musicVolume !== undefined) {
-          const savedVolume = snapshot.val().musicVolume;
-          setMusicVolume(savedVolume);
-          localStorage.setItem('musicVolume', savedVolume.toString());
+        if (snapshot.exists()) {
+          const settings = snapshot.val();
+          if (settings.musicVolume !== undefined) {
+            const savedVolume = settings.musicVolume;
+            setMusicVolume(savedVolume);
+            localStorage.setItem('musicVolume', savedVolume.toString());
+          }
+          if (settings.soundEffectsVolume !== undefined) {
+            const savedVolume = settings.soundEffectsVolume;
+            setSoundEffectsVolume(savedVolume);
+            localStorage.setItem('soundEffectsVolume', savedVolume.toString());
+          }
+          if (settings.backgroundVolume !== undefined) {
+            const savedVolume = settings.backgroundVolume;
+            setBackgroundVolume(savedVolume);
+            localStorage.setItem('backgroundVolume', savedVolume.toString());
+          }
         } else {
           // If no saved volume in database, save the current volume
           set(settingsRef, {
-            musicVolume: musicVolume
+            musicVolume: musicVolume,
+            soundEffectsVolume: soundEffectsVolume,
+            backgroundVolume: backgroundVolume
           });
         }
       }).catch((error) => {
@@ -175,10 +210,23 @@ const App = () => {
 
       // Then set up real-time listener for future changes
       const unsubscribe = onValue(settingsRef, (snapshot) => {
-        if (snapshot.exists() && snapshot.val().musicVolume !== undefined) {
-          const savedVolume = snapshot.val().musicVolume;
-          setMusicVolume(savedVolume);
-          localStorage.setItem('musicVolume', savedVolume.toString());
+        if (snapshot.exists()) {
+          const settings = snapshot.val();
+          if (settings.musicVolume !== undefined) {
+            const savedVolume = settings.musicVolume;
+            setMusicVolume(savedVolume);
+            localStorage.setItem('musicVolume', savedVolume.toString());
+          }
+          if (settings.soundEffectsVolume !== undefined) {
+            const savedVolume = settings.soundEffectsVolume;
+            setSoundEffectsVolume(savedVolume);
+            localStorage.setItem('soundEffectsVolume', savedVolume.toString());
+          }
+          if (settings.backgroundVolume !== undefined) {
+            const savedVolume = settings.backgroundVolume;
+            setBackgroundVolume(savedVolume);
+            localStorage.setItem('backgroundVolume', savedVolume.toString());
+          }
         }
       }, (error) => {
         console.error('Error loading settings:', error);
@@ -264,44 +312,65 @@ const App = () => {
 
 
   // Save music volume to database
-  const handleSettingsSave = async (newMusicVolume) => {
+  const handleSettingsSave = async (newMusicVolume, newSoundEffectsVolume, newBackgroundVolume) => {
     if (profileData?.uid) {
       try {
         const settingsRef = ref(db, `users/${profileData.uid}/settings`);
         await set(settingsRef, {
-          musicVolume: newMusicVolume
+          musicVolume: newMusicVolume,
+          soundEffectsVolume: newSoundEffectsVolume,
+          backgroundVolume: newBackgroundVolume
         });
         setMusicVolume(newMusicVolume);
+        setSoundEffectsVolume(newSoundEffectsVolume);
+        setBackgroundVolume(newBackgroundVolume);
         localStorage.setItem('musicVolume', newMusicVolume.toString());
-        console.log('Music volume saved successfully');
+        localStorage.setItem('soundEffectsVolume', newSoundEffectsVolume.toString());
+        localStorage.setItem('backgroundVolume', newBackgroundVolume.toString());
+        console.log('Music, background, and sound effects volume saved successfully');
       } catch (error) {
-        console.error('Error saving music volume:', error);
+        console.error('Error saving volume settings:', error);
       }
     } else {
       // If not logged in, just save to localStorage
       setMusicVolume(newMusicVolume);
+      setSoundEffectsVolume(newSoundEffectsVolume);
+      setBackgroundVolume(newBackgroundVolume);
       localStorage.setItem('musicVolume', newMusicVolume.toString());
+      localStorage.setItem('soundEffectsVolume', newSoundEffectsVolume.toString());
+      localStorage.setItem('backgroundVolume', newBackgroundVolume.toString());
     }
   };
 
+  // Reset settings to default
   const handleSettingsReset = async () => {
     const defaultVolume = 50;
     if (profileData?.uid) {
       try {
         const settingsRef = ref(db, `users/${profileData.uid}/settings`);
         await set(settingsRef, {
-          musicVolume: defaultVolume
+          musicVolume: defaultVolume,
+          soundEffectsVolume: defaultVolume,
+          backgroundVolume: defaultVolume
         });
         setMusicVolume(defaultVolume);
+        setSoundEffectsVolume(defaultVolume);
+        setBackgroundVolume(defaultVolume);
         localStorage.setItem('musicVolume', defaultVolume.toString());
-        console.log('Music volume reset successfully');
+        localStorage.setItem('soundEffectsVolume', defaultVolume.toString());
+        localStorage.setItem('backgroundVolume', defaultVolume.toString());
+        console.log('All volume settings reset successfully');
       } catch (error) {
-        console.error('Error resetting music volume:', error);
+        console.error('Error resetting volume settings:', error);
       }
     } else {
       // If not logged in, just save to localStorage
       setMusicVolume(defaultVolume);
+      setSoundEffectsVolume(defaultVolume);
+      setBackgroundVolume(defaultVolume);
       localStorage.setItem('musicVolume', defaultVolume.toString());
+      localStorage.setItem('soundEffectsVolume', defaultVolume.toString());
+      localStorage.setItem('backgroundVolume', defaultVolume.toString());
     }
   };
 
@@ -432,13 +501,14 @@ const App = () => {
               console.log("Returning to Main Menu.");
               setCurrentPage("mainMenu");
           }}
-          
             backgroundImage={selectedLevel?.background || "defaultBackground.jpg"}
             profileData={profileData}
             setProfileData={setProfileData}
             onLogout={handleLogout} 
             musicVolume={musicVolume}
             setMusicVolume={setMusicVolume}
+            soundEffectsVolume={soundEffectsVolume}
+            backgroundVolume={backgroundVolume}
             reload={reloadUserProgress}
             bossFight={bossFight}
             setBossFight={setBossFight}
@@ -463,6 +533,8 @@ const App = () => {
             onLogout={handleLogout}
             musicVolume={musicVolume}
             setMusicVolume={setMusicVolume}
+            soundEffectsVolume={soundEffectsVolume}
+            backgroundVolume={backgroundVolume}
             profileData={profileData}
             setProfileData={setProfileData}
           />
@@ -501,9 +573,11 @@ const App = () => {
           {settingsOpen && (
             <GameSettings 
               onClose={() => setSettingsOpen(false)}
-              onSave={handleSettingsSave}
+              onSave={(newMusicVolume, newSoundEffectsVolume, newBackgroundVolume) => handleSettingsSave(newMusicVolume, newSoundEffectsVolume, newBackgroundVolume)}
               onReset={handleSettingsReset}
               musicVolume={musicVolume}
+              soundEffectsVolume={soundEffectsVolume}
+              backgroundVolume={backgroundVolume}
             />
           )}
           {profileOpen && (

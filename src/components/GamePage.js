@@ -24,7 +24,7 @@ import fightSound from '../assets/SFX/fightsound.wav'; // Import fight sound eff
 import FunFact from './FunFact';
 import useFunFact from '../hooks/useFunFact';
 
-const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level, reload, bossFight, setBossFight, fightSoundPlaying, setFightSoundPlaying }) => {
+const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, soundEffectsVolume, backgroundVolume, level, reload, bossFight, setBossFight, fightSoundPlaying, setFightSoundPlaying }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState([]);
@@ -161,42 +161,42 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     // Function to play sound effect
     const playHitSound = () => {
         const sound = new Audio(hitSound);
-        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
         sound.play();
     };
 
     // Function to play win sound effect
     const playWinSound = () => {
         const sound = new Audio(winSound);
-        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
         sound.play();
     };
 
     // Function to play lose sound effect
     const playLoseSound = () => {
         const sound = new Audio(loseSound);
-        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
         sound.play();
     };
 
     // Function to play hint sound effect
     const playHintSound = () => {
         const sound = new Audio(hintSound);
-        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
         sound.play();
     };
 
     // Function to play scramble sound effect
     const playScrambleSound = () => {
         const sound = new Audio(scrambleSound);
-        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
         sound.play();
     };
 
     // Function to play fight sound effect
     const playFightSound = () => {
         const sound = new Audio(fightSound);
-        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.volume = backgroundVolume / 100; // Use background volume for fight sound
         sound.play();
     };
 
@@ -294,6 +294,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         console.log("Game over with victory:", isVictory);
 
         if (isVictory) {
+            // Play victory sound
+            playWinSound();
+            
             console.log("Victory! Updating user progress for enemy:", currentEnemy?.id);
 
             if (auth.currentUser) {
@@ -341,6 +344,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
             setVictoryVisible(true);
         } else {
+            // Play defeat sound
             playLoseSound();
             setDefeatVisible(true);
             setHintsRemaining(2);
@@ -552,7 +556,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             setPlayerHearts((prev) => {
                 const newHeartCount = Math.max(0, prev - damage);
                 if (newHeartCount === 0) {
-    ; // Stop the timer
+                    playLoseSound(); // Play lose sound when player dies
                     setDefeatVisible(true);
                 }
                 return newHeartCount;
@@ -797,16 +801,14 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             const db = getDatabase();
             const userRef = ref(db, `users/${auth.currentUser.uid}/health`);
 
-            // Always set health to 4 when resetting to first level
+            // Set health to 4 and keep current enemy
             await set(userRef, 4);
             setPlayerHearts(4);
-            setCurrentEnemy(level.enemy);
-            setEnemyHearts(level.enemy.health);
+            setEnemyHearts(currentEnemy.health);
         } else {
             // For users not logged in
             setPlayerHearts(4);
-            setCurrentEnemy(level.enemy);
-            setEnemyHearts(level.enemy.health);
+            setEnemyHearts(currentEnemy.health);
         }
     };
 
@@ -845,13 +847,15 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         }
     }, [level]);
 
-    const handleSettingsSave = (newMusicVolume) => {
+    const handleSettingsSave = (newMusicVolume, newSoundEffectsVolume, newBackgroundVolume) => {
         setMusicVolume(newMusicVolume);
+        // Sound effects and background volume will be handled by App.js
         setSettingsOpen(false);
     };
 
     const handleSettingsReset = () => {
         setMusicVolume(50);
+        // Sound effects and background volume will be handled by App.js
     };
 
     // Add effect descriptions
@@ -1649,15 +1653,17 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                         <h2 className="text-2xl font-bold mb-4">Game Settings</h2>
                         <GameSettings
                             onClose={() => setSettingsOpen(false)}
-                            onSave={(volume) => {
-                                setMusicVolume(volume);
-                                setSettingsOpen(false);
+                            onSave={(newMusicVolume, newSoundEffectsVolume, newBackgroundVolume) => {
+                                setMusicVolume(newMusicVolume);
+                                // Sound effects and background volume will be handled by App.js
                             }}
                             onReset={() => {
                                 setMusicVolume(50);
+                                // Sound effects and background volume will be handled by App.js
                             }}
                             musicVolume={musicVolume}
-                            profileData={profileData}
+                            soundEffectsVolume={soundEffectsVolume}
+                            backgroundVolume={backgroundVolume}
                         />
                     </div>
                 </div>
@@ -1735,8 +1741,10 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                 className="w-full bg-green-500 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-600 transition-colors"
                                 onClick={() => {
                                     resetPlayerHealth(); // Reset player health
-                                    setEnemyHearts(currentEnemy.maxHealth); // Reset enemy health using its maxHealth
-                    ; // Resume timer (DO NOT reset elapsed time)
+                                    setEnemyHearts(currentEnemy.health); // Reset enemy health
+                                    setHintsRemaining(3); // Reset hints to full
+                                    setHighlightedIndices([]); // Clear any highlighted hints
+                                    setHint(''); // Clear hint message
                                     setDefeatVisible(false); // Hide defeat screen
                                 }}
                             >
