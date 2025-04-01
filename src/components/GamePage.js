@@ -849,13 +849,12 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
     const handleSettingsSave = (newMusicVolume, newSoundEffectsVolume, newBackgroundVolume) => {
         setMusicVolume(newMusicVolume);
-        // Sound effects and background volume will be handled by App.js
+        // Close settings modal
         setSettingsOpen(false);
     };
 
     const handleSettingsReset = () => {
         setMusicVolume(50);
-        // Sound effects and background volume will be handled by App.js
     };
 
     // Add effect descriptions
@@ -1655,11 +1654,13 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                             onClose={() => setSettingsOpen(false)}
                             onSave={(newMusicVolume, newSoundEffectsVolume, newBackgroundVolume) => {
                                 setMusicVolume(newMusicVolume);
-                                // Sound effects and background volume will be handled by App.js
+                                // We don't need to set these here as they're managed by App.js
+                                // and passed down as props
+                                console.log("Settings saved with volumes:", newMusicVolume, newSoundEffectsVolume, newBackgroundVolume);
                             }}
                             onReset={() => {
                                 setMusicVolume(50);
-                                // Sound effects and background volume will be handled by App.js
+                                // We don't need to reset these here as they're managed by App.js
                             }}
                             musicVolume={musicVolume}
                             soundEffectsVolume={soundEffectsVolume}

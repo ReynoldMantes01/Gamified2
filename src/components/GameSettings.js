@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { auth } from '../firebase/config';
 import FunFact from './FunFact';
 import useFunFact from '../hooks/useFunFact';
+import hitSoundFile from '../assets/SFX/hit.wav';
+import settingsSoundFile from '../assets/SFX/settings.wav';
 
 const GameSettings = ({ onClose, onSave, onReset, musicVolume, soundEffectsVolume, backgroundVolume }) => {
   const [tempMusicVolume, setTempMusicVolume] = useState(() => {
@@ -63,12 +65,24 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume, soundEffectsVolum
     setTempMusicVolume(clampedVolume);
     updateAudioElements('music', clampedVolume);
     setSaveMessage('');
+    
+    // Apply immediate changes to localStorage for preview purposes
+    localStorage.setItem('musicVolume', clampedVolume.toString());
+    
+    // Apply changes immediately (without waiting for Save button)
+    onSave(clampedVolume, tempSoundEffectsVolume, tempBackgroundVolume);
   };
 
   const handleSoundEffectsVolumeChange = (newVolume) => {
     const clampedVolume = Math.max(0, Math.min(100, newVolume));
     setTempSoundEffectsVolume(clampedVolume);
     setSaveMessage('');
+    
+    // Apply immediate changes to localStorage for preview purposes
+    localStorage.setItem('soundEffectsVolume', clampedVolume.toString());
+    
+    // Apply changes immediately (without waiting for Save button)
+    onSave(tempMusicVolume, clampedVolume, tempBackgroundVolume);
   };
 
   const handleBackgroundVolumeChange = (newVolume) => {
@@ -76,10 +90,17 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume, soundEffectsVolum
     setTempBackgroundVolume(clampedVolume);
     updateAudioElements('background', clampedVolume);
     setSaveMessage('');
+    
+    // Apply immediate changes to localStorage for preview purposes
+    localStorage.setItem('backgroundVolume', clampedVolume.toString());
+    
+    // Apply changes immediately (without waiting for Save button)
+    onSave(tempMusicVolume, tempSoundEffectsVolume, clampedVolume);
   };
 
   const handleSave = async () => {
     await showFunFactWithDelay();
+    console.log("Saving volumes in GameSettings:", tempMusicVolume, tempSoundEffectsVolume, tempBackgroundVolume);
     onSave(tempMusicVolume, tempSoundEffectsVolume, tempBackgroundVolume);
     setSaveMessage('Settings saved!');
     setTimeout(() => setSaveMessage(''), 2000);
@@ -151,6 +172,28 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume, soundEffectsVolum
     { label: 'Back', onClick: onClose, className: 'bg-gray-600 hover:bg-gray-700' }
   ];
 
+  // Test sound effects function
+  const playTestSoundEffect = () => {
+    try {
+      const audio = new Audio(hitSoundFile);
+      audio.volume = tempSoundEffectsVolume / 100;
+      audio.play();
+    } catch (error) {
+      console.error("Error playing test sound:", error);
+    }
+  };
+
+  // Test background sound function
+  const playTestBackgroundSound = () => {
+    try {
+      const audio = new Audio(settingsSoundFile);
+      audio.volume = tempBackgroundVolume / 100;
+      audio.play();
+    } catch (error) {
+      console.error("Error playing test sound:", error);
+    }
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{ userSelect: 'none' }}>
       {showFunFact && <FunFact />}
@@ -192,6 +235,12 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume, soundEffectsVolum
               className="w-full"
             />
             <div className="text-center mt-2">{tempBackgroundVolume}%</div>
+            <button 
+              onClick={playTestBackgroundSound}
+              className="mt-2 text-xs text-blue-400 hover:text-blue-300"
+            >
+              Test Background Sound
+            </button>
           </div>
         </div>
 
@@ -211,6 +260,12 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume, soundEffectsVolum
               className="w-full"
             />
             <div className="text-center mt-2">{tempSoundEffectsVolume}%</div>
+            <button 
+              onClick={playTestSoundEffect}
+              className="mt-2 text-xs text-blue-400 hover:text-blue-300"
+            >
+              Test Sound Effect
+            </button>
           </div>
         </div>
 
