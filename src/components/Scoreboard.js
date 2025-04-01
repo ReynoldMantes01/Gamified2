@@ -164,14 +164,14 @@ const Scoreboard = ({ onMainMenu }) => {
         
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50" style={{ userSelect: 'none' }}>
             {showFunFact && <FunFact />}
-            <div className="bg-gray-900 p-8 max-w-2xl w-full mx-4 relative border-4 border-gray-700"
+            <div className="bg-gray-900 p-8 max-w-7xl w-full mx-5 relative border-4 border-gray-700"
                  style={{
                      backgroundImage: `url(${bgImage})`,
                      backgroundSize: 'cover',
                      backgroundPosition: 'center',
                      imageRendering: 'pixelated',
                      boxShadow: '0 0 0 4px #000, 0 0 0 8px #333'
-                 }}>
+                 }} >
                 
                 {/* Back Button */}
                 <button 
@@ -187,13 +187,13 @@ const Scoreboard = ({ onMainMenu }) => {
                 </h2>
     
                     {/* Toggle Buttons */}
-                    <div className="flex justify-center space-x-4 mb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                         <button 
                             onClick={() => {
                                 setShowLongestWordScoreboard(false);
                                 setShowGameBeatScoreboard(false);
                             }} 
-                            className={`px-4 py-2 rounded-lg text-lg font-bold ${!showLongestWordScoreboard && !showGameBeatScoreboard ? 'bg-blue-600 text-white' : 'bg-gray-300'}`}
+                            className={`px-4 py-2 left-2 rounded-lg text-lg font-bold ${!showLongestWordScoreboard && !showGameBeatScoreboard ? 'bg-blue-600 text-white' : 'bg-gray-300'}`}
                         >
                             Main Scoreboard
                         </button>
@@ -230,8 +230,8 @@ const Scoreboard = ({ onMainMenu }) => {
                                 <div 
                                     key={`${player.userId}-${player.score}`}
                                     className={`grid grid-cols-4 gap-4 p-4 mb-3 transform transition-all duration-500 ${
-                                        player.isNew ? 'scale-105' : ''
-                                    } ${player.userId === currentUserId ? 'scale-105 ring-2 ring-yellow-400' : ''}`}
+                                        player.isNew ? 'scale-100' : ''
+                                    } ${player.userId === currentUserId ? 'scale-100 ring-2 ring-yellow-400' : ''}`}
                                     style={{
                                         fontSize: player.userId === currentUserId ? '16px' : '14px',
                                         background: player.rank === 1 ? '#854d0e ' : 
@@ -265,7 +265,7 @@ const Scoreboard = ({ onMainMenu }) => {
                 {showLongestWordScoreboard && (
                     <div className="bg-black bg-opacity-90 p-6 mb-4 border-4 border-gray-800">
                         <h2 className="text-4xl text-white text-center mb-8">Longest Word Spelled</h2>
-                        <div className="grid grid-cols-3 gap-4 text-center text-white font-bold text-xl border-b-2 border-white pb-4">
+                        <div className="grid grid-cols-3 gap-4 mb-8 text-center text-white font-bold text-xl border-b-2 border-white pb-4">
                             <div>Player</div>
                             <div>Longest Word</div>
                             <div>Date</div>
@@ -278,7 +278,7 @@ const Scoreboard = ({ onMainMenu }) => {
                                 <div 
                                     key={entry.userId} 
                                     className={`grid grid-cols-3 gap-4 p-4 mb-3 transform transition-all duration-500 ${
-                                        entry.userId === currentUserId ? 'scale-105 ring-2 ring-yellow-400' : ''
+                                        entry.userId === currentUserId ? 'scale-100 ring-2 ring-yellow-400' : ''
                                     }`}
                                     style={{
                                         fontSize: entry.userId === currentUserId ? '16px' : '14px',

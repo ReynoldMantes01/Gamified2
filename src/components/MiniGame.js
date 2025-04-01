@@ -711,9 +711,14 @@ const handleSelectedLetterClick = (letter, index) => {
         
         {/* Navigation */}                     
         <div className="flex items-center space-x-2 sm:space-x-4">
-            <div className="slidebar-icon text-base sm:text-2xl cursor-pointer" onClick={toggleSlidebar}>
-                <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
-            </div>
+        <div className="transition-all 
+                                    duration-300 hover:scale-110 
+                                    hover:rotate-90 text-white focus:outline-none
+                                    focus:ring-4 focus:ring slidebar-icon 
+                                    text-xl sm:text-2xl cursor-pointer" 
+                                    onClick={toggleSlidebar}>
+                        <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
+                    </div>
             <Slidebar 
                 isOpen={slidebarOpen} 
                 toggleSlidebar={toggleSlidebar} 
