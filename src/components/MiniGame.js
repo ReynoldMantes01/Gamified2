@@ -341,7 +341,7 @@ const handleSubmitWord = useCallback(() => {
     if (word.length === 0) return;
 
     // Prevent word spam - check if it's in cooldown
-    if (usedWordsQueue.includes(word) && word.length >= 2) {
+    if (usedWordsQueue.includes(word) && word.length >= 2 && word.length <= 4) {
         setDefinition(`"${word}" is on cooldown! Use ${cooldownLimit} different words first.`);
         return; 
     }
@@ -412,8 +412,8 @@ const handleSubmitWord = useCallback(() => {
         });
     }
 
-    // Add the word to the cooldown queue only if it's not a long word (5 or fewer characters)
-    if (word.length <= 5) {
+    // Add the word to the cooldown queue only if it's between 2-4 characters
+    if (word.length >= 2 && word.length <= 4) {
         setUsedWordsQueue(prev => [...prev, word].slice(-cooldownLimit));
     }
     
