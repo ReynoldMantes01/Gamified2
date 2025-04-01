@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.b721304b.css",
-    "main.js": "/static/js/main.b660ff72.js",
+    "main.css": "/static/css/main.0a8d60b7.css",
+    "main.js": "/static/js/main.a7fba76e.js",
     "static/js/453.2b0de4b9.chunk.js": "/static/js/453.2b0de4b9.chunk.js",
     "static/media/BG1.mp3": "/static/media/BG1.162123a86b8ccaafebae.mp3",
     "static/media/almanac.wav": "/static/media/almanac.c84a5035293efd3820ed.wav",
@@ -11,7 +11,6 @@
     "static/media/bossfight.wav": "/static/media/bossfight.13a248989f431ec27977.wav",
     "static/media/Animated.gif": "/static/media/Animated.c83b4b9500767e19be29.gif",
     "static/media/GEISHA AVATAR.jpg": "/static/media/GEISHA AVATAR.6ad9cf75b19731698319.jpg",
-    "static/media/Bio_World.gif": "/static/media/Bio_World.7953225f9ccb95788e7a.gif",
     "static/media/scoreboard.wav": "/static/media/scoreboard.81618b393909219f2686.wav",
     "static/media/ALIEN AVATAR.jpg": "/static/media/ALIEN AVATAR.0dca0309d5d45034ee24.jpg",
     "static/media/Chemistry.gif": "/static/media/Chemistry.e48784934d1d7de377c9.gif",
@@ -42,7 +41,7 @@
     "static/media/enemyOne.png": "/static/media/enemyOne.8d3e58a795313a7c2f3c.png",
     "static/media/Grass.png": "/static/media/Grass.b6471f1ff0a061c0f284.png",
     "static/media/newchar.gif": "/static/media/newchar.f9b98efd3aa97e83d276.gif",
-    "static/media/(old)Bio_World.gif": "/static/media/(old)Bio_World.98db9953165e417965d5.gif",
+    "static/media/Bio_World.gif": "/static/media/Bio_World.98db9953165e417965d5.gif",
     "static/media/black_hole.gif": "/static/media/black_hole.2dd306d297a65d3aa264.gif",
     "static/media/functionBackground.png": "/static/media/functionBackground.457534b17c54dfbf63f0.png",
     "static/media/Bite.gif": "/static/media/Bite.99b2d69bb17237c8e525.gif",
@@ -55,12 +54,12 @@
     "static/media/1.jpg": "/static/media/1.e939fd7cf1f097840128.jpg",
     "static/media/dialogueBox.png": "/static/media/dialogueBox.4c6d86e9ecfe4cb95666.png",
     "index.html": "/index.html",
-    "main.b721304b.css.map": "/static/css/main.b721304b.css.map",
-    "main.b660ff72.js.map": "/static/js/main.b660ff72.js.map",
+    "main.0a8d60b7.css.map": "/static/css/main.0a8d60b7.css.map",
+    "main.a7fba76e.js.map": "/static/js/main.a7fba76e.js.map",
     "453.2b0de4b9.chunk.js.map": "/static/js/453.2b0de4b9.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.b721304b.css",
-    "static/js/main.b660ff72.js"
+    "static/css/main.0a8d60b7.css",
+    "static/js/main.a7fba76e.js"
   ]
 }
