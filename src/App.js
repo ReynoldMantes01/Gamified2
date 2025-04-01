@@ -16,6 +16,7 @@ import MiniGame from "./components/MiniGame";
 import Scoreboard from "./components/Scoreboard"; // Import Scoreboard component
 import bgImage from "./assets/bg.gif";
 import bgMusic from "./assets/BG1.mp3";
+import bossFightMusic from "./assets/SFX/bossfight.wav";
 import mapsData from "./components/maps.json";
 
 const App = () => {
@@ -40,7 +41,9 @@ const App = () => {
     const savedVolume = localStorage.getItem('musicVolume');
     return savedVolume ? parseInt(savedVolume) : 50;
   });
+  const [bossFight, setBossFight] = useState(false); // Add bossFight state
   const audioRef = useRef(null);
+  const bossFightAudioRef = useRef(null);
   const db = getDatabase();
 
 
@@ -52,7 +55,47 @@ const App = () => {
       // Save to localStorage for immediate persistence
       localStorage.setItem('musicVolume', musicVolume.toString());
     }
+    if (bossFightAudioRef.current) {
+      bossFightAudioRef.current.volume = musicVolume / 100;
+    }
   }, [musicVolume]);
+
+  // Handle switching between regular and boss fight music
+  useEffect(() => {
+    const handleBossFightMusic = async () => {
+      if (bossFight) {
+        // Pause regular music
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
+        // Play boss fight music
+        if (bossFightAudioRef.current) {
+          bossFightAudioRef.current.volume = musicVolume / 100;
+          try {
+            await bossFightAudioRef.current.play();
+          } catch (error) {
+            console.error("Autoplay blocked for boss fight music. Waiting for user interaction.");
+          }
+        }
+      } else {
+        // Pause boss fight music
+        if (bossFightAudioRef.current) {
+          bossFightAudioRef.current.pause();
+          bossFightAudioRef.current.currentTime = 0;
+        }
+        // Resume regular music
+        if (audioRef.current) {
+          try {
+            await audioRef.current.play();
+          } catch (error) {
+            console.error("Autoplay blocked for regular music. Waiting for user interaction.");
+          }
+        }
+      }
+    };
+    
+    handleBossFightMusic();
+  }, [bossFight, musicVolume]);
 
   // Setup real-time listener for music volume when user is authenticated
   useEffect(() => {
@@ -342,6 +385,8 @@ const App = () => {
             musicVolume={musicVolume}
             setMusicVolume={setMusicVolume}
             reload={reloadUserProgress}
+            bossFight={bossFight}
+            setBossFight={setBossFight}
           />
         );
       case "almanac":
@@ -376,7 +421,9 @@ const App = () => {
         <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: `url(${bgImage})` }}>
           {/* Background Music */}
           <audio ref={audioRef} src={bgMusic} loop preload="auto" />
-
+          {bossFight && (
+            <audio ref={bossFightAudioRef} src={bossFightMusic} loop preload="auto" />
+          )}
           {loginOpen && renderLoginPopup()}
           {signupOpen && renderSignupPopup()}
           {renderPage()}

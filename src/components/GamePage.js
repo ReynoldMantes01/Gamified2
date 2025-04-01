@@ -15,11 +15,15 @@ import mapLibrary from '../components/maps.json';
 import mapData from './maps.json';
 import { auth } from '../firebase/config';
 import { getDatabase, ref, onValue, set, get } from 'firebase/database';
-
+import hitSound from '../assets/SFX/hit.wav'; // Import hit sound effect
+import winSound from '../assets/SFX/win.wav'; // Import win sound effect
+import loseSound from '../assets/SFX/lose.wav'; // Import lose sound effect
+import hintSound from '../assets/SFX/hint.wav'; // Import hint sound effect
+import scrambleSound from '../assets/SFX/scramble.wav'; // Import scramble sound effect
 import FunFact from './FunFact';
 import useFunFact from '../hooks/useFunFact';
 
-const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level, reload }) => {
+const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level, reload, bossFight, setBossFight }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState([]);
@@ -153,11 +157,49 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         blind: "text-gray-100 bg-gray-900 shadow-[0_0_10px_#111827]"
     };
 
+    // Function to play sound effect
+    const playHitSound = () => {
+        const sound = new Audio(hitSound);
+        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.play();
+    };
+
+    // Function to play win sound effect
+    const playWinSound = () => {
+        const sound = new Audio(winSound);
+        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.play();
+    };
+
+    // Function to play lose sound effect
+    const playLoseSound = () => {
+        const sound = new Audio(loseSound);
+        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.play();
+    };
+
+    // Function to play hint sound effect
+    const playHintSound = () => {
+        const sound = new Audio(hintSound);
+        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.play();
+    };
+
+    // Function to play scramble sound effect
+    const playScrambleSound = () => {
+        const sound = new Audio(scrambleSound);
+        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.play();
+    };
+
     useEffect(() => {
         if (level?.enemy) {
             setCurrentEnemy(level.enemy);
             setEnemyHearts(level.enemy.health);
 
+            // Check if current enemy is a boss and update bossFight state
+            const isBoss = level.enemy.id.includes('_boss');
+            setBossFight(isBoss);
 
             // Set dialog sequence based on level
             if (level.levelNumber === 1) {
@@ -286,6 +328,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
             setVictoryVisible(true);
         } else {
+            playLoseSound();
             setDefeatVisible(true);
             setHintsRemaining(2);
             setHighlightedIndices([]);
@@ -395,6 +438,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         setGridLetters(newGridLetters);
         setIsValidWord(false);
         setHighlightedIndices([]); // Clear highlights on scramble
+        playScrambleSound();
     };
 
     const handleControlKeyScramble = () => {
@@ -423,6 +467,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         setGridLetters(newGridLetters);
         setIsValidWord(false);
         setHighlightedIndices([]); // Clear highlights on scramble
+        playScrambleSound();
     };
 
     const handleHint = () => {
@@ -460,6 +505,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             setHighlightedIndices(newHighlightedIndices);
             setHintsRemaining(prev => prev - 1);
             setHint(`Hints remaining: ${hintsRemaining - 1}`);
+            playHintSound();
 
             // Clear highlight after 3 seconds
             setTimeout(() => {
@@ -482,6 +528,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         }
 
         setEnemyLaserActive(true);
+        playHitSound(); // Play hit sound effect
         setTimeout(() => {
             let damage = 1;
             // Apply exhaust effect (-50% damage)
@@ -504,6 +551,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     // Handle player's attack logic
     const handleAttack = () => {
         setIsCharacterAttacking(true);
+        playHitSound(); // Play hit sound effect
         setTimeout(() => {
             setIsCharacterAttacking(false);
         }, 500);
@@ -970,6 +1018,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             console.log("No user logged in, skipping progress update");
             return;
         }
+
+        // Play victory sound
+        playWinSound();
 
         // Make sure the enemy has the mapId property
         const enemyWithMapId = {

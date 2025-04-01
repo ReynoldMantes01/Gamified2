@@ -11,6 +11,11 @@ import toxinImage from '../assets/toxin.gif';
 import slimesImage from '../assets/slimes.gif';
 import characterIdle from '../assets/attack/mc_idle.gif';
 import characterAttack from '../assets/attack/newchar_attack.gif'; // Import the newchar_attack.gif
+import hitSound from '../assets/SFX/hit.wav'; // Import hit sound effect
+import winSound from '../assets/SFX/win.wav'; // Import win sound effect
+import loseSound from '../assets/SFX/lose.wav'; // Import lose sound effect
+import hintSound from '../assets/SFX/hint.wav'; // Import hint sound effect
+import scrambleSound from '../assets/SFX/scramble.wav'; // Import scramble sound effect
 import mapData from './maps.json';
 import { getDatabase, ref, set, onValue } from 'firebase/database';
 import { auth } from '../firebase/config';
@@ -67,6 +72,37 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
 
     const cooldownLimit = 3; // Adjust to allow reuse after 5 different words
     
+    // Sound effect functions
+    const playHitSound = () => {
+        const sound = new Audio(hitSound);
+        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.play();
+    };
+    
+    const playWinSound = () => {
+        const sound = new Audio(winSound);
+        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.play();
+    };
+    
+    const playLoseSound = () => {
+        const sound = new Audio(loseSound);
+        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.play();
+    };
+
+    const playHintSound = () => {
+        const sound = new Audio(hintSound);
+        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.play();
+    };
+
+    const playScrambleSound = () => {
+        const sound = new Audio(scrambleSound);
+        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.play();
+    };
+
     const getRandomScienceWord = () => {
         const words = Object.keys(scienceTerm);
         
@@ -233,6 +269,7 @@ useEffect(() => {
                 if (prevTime <= 0) {
                     // Enemy attacks when time runs out
                     setEnemyAttacking(true);
+                    playHitSound(); // Play hit sound effect
                     setDefinition('Time\'s up! The enemy attacks!');
                     setTimeout(() => {
                         setEnemyAttacking(false);
@@ -313,6 +350,7 @@ const handleSubmitWord = useCallback(() => {
         // Valid word submitted
         // Trigger player attack animation
         setPlayerAttacking(true);
+        playHitSound(); // Play hit sound effect
         setTimeout(() => {
             setPlayerAttacking(false);
         }, 800); // Match animation duration
@@ -442,6 +480,8 @@ const handleScramble = () => {
 
     setGridLetters(scrambledGrid);
     setDefinition("Letters scrambled! -1 Health as a penalty.");
+    playScrambleSound();
+    playHitSound();
 };
 
 // Save score to database
