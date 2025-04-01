@@ -9,22 +9,13 @@ const Slidebar = ({ isOpen, toggleSlidebar, onMainMenu, setSettingsOpen, setProf
     const menuItems = [
         { label: 'Main Menu', onClick: onMainMenu },
         { label: 'Settings', onClick: () => {
-            toggleSlidebar(); // Close slidebar first
-            setTimeout(() => {
-                setSettingsOpen(true); // Then open settings
-            }, 100); // Small delay to ensure slidebar is closed first
+            setSettingsOpen(true); // Open settings without closing slidebar
         }},
         { label: 'Profile', onClick: () => {
-            toggleSlidebar(); // Close slidebar first
-            setTimeout(() => {
-                setProfileOpen(true); // Then open profile
-            }, 100); // Small delay to ensure slidebar is closed first
+            setProfileOpen(true); // Open profile without closing slidebar
         }},
         { label: 'Scoreboard', onClick: () => {
-            toggleSlidebar(); // Close slidebar first
-            setTimeout(() => {
-                setScoreboardOpen(true); // Then open scoreboard
-            }, 100); // Small delay to ensure slidebar is closed first
+            setScoreboardOpen(true); // Open scoreboard without closing slidebar
         }},
         { label: 'Logout', onClick: onLogout }
     ];
