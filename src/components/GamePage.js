@@ -20,10 +20,11 @@ import winSound from '../assets/SFX/win.wav'; // Import win sound effect
 import loseSound from '../assets/SFX/lose.wav'; // Import lose sound effect
 import hintSound from '../assets/SFX/hint.wav'; // Import hint sound effect
 import scrambleSound from '../assets/SFX/scramble.wav'; // Import scramble sound effect
+import fightSound from '../assets/SFX/fightsound.wav'; // Import fight sound effect
 import FunFact from './FunFact';
 import useFunFact from '../hooks/useFunFact';
 
-const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level, reload, bossFight, setBossFight }) => {
+const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level, reload, bossFight, setBossFight, fightSoundPlaying, setFightSoundPlaying }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState([]);
@@ -192,6 +193,13 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         sound.play();
     };
 
+    // Function to play fight sound effect
+    const playFightSound = () => {
+        const sound = new Audio(fightSound);
+        sound.volume = musicVolume / 100; // Use the same volume setting as music
+        sound.play();
+    };
+
     useEffect(() => {
         if (level?.enemy) {
             setCurrentEnemy(level.enemy);
@@ -200,6 +208,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             // Check if current enemy is a boss and update bossFight state
             const isBoss = level.enemy.id.includes('_boss');
             setBossFight(isBoss);
+            
+            // Set fight sound playing for normal enemies
+            if (!isBoss) {
+                setFightSoundPlaying(true);
+            }
 
             // Set dialog sequence based on level
             if (level.levelNumber === 1) {
@@ -1046,6 +1059,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
         // First, call handleGameOver to show victory screen
         handleGameOver(true);
+        playLoseSound();
 
         // The rest of the progression logic will happen when the player clicks "Next Level"
         // in the victory dialog, which calls handleNextLevel
@@ -1295,6 +1309,13 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             window.removeEventListener('keydown', handleKeyPress);
         };
     }, [handleKeyPress]);
+
+    const handleMainMenu = () => {
+        // Reset boss fight and fight sound states when returning to main menu
+        setBossFight(false);
+        setFightSoundPlaying(false);
+        onMainMenu();
+    };
 
     return (
 
@@ -1790,7 +1811,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             <Slidebar
                 isOpen={slidebarOpen}
                 toggleSlidebar={toggleSlidebar}
-                onMainMenu={onMainMenu}
+                onMainMenu={handleMainMenu}
                 setSettingsOpen={setSettingsOpen}
                 setProfileOpen={setProfileOpen}
                 onLogout={onLogout}
