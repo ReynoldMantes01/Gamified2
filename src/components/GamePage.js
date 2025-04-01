@@ -9,6 +9,7 @@ import attackImage from '../assets/attack.png';
 import attackEnemyImage from '../assets/attack.gif';
 import character from '../assets/newchar.gif';
 import characterAttack from '../assets/attack/newchar_attack.gif';
+import characterIdle from '../assets/attack/mc_idle.gif';
 import functionBackground from '../assets/try.gif';
 import mapLibrary from '../components/maps.json';
 import mapData from './maps.json';
@@ -17,7 +18,6 @@ import { getDatabase, ref, onValue, set, get } from 'firebase/database';
 
 import FunFact from './FunFact';
 import useFunFact from '../hooks/useFunFact';
-
 
 const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, level, reload }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
@@ -32,6 +32,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [playerHearts, setPlayerHearts] = useState(4);
     const [laserActive, setLaserActive] = useState(false);
     const [isCharacterAttacking, setIsCharacterAttacking] = useState(false);
+    const [isCharacterIdle, setIsCharacterIdle] = useState(false);
+    const [scrambleCooldown, setScrambleCooldown] = useState(false);
     const [dialogVisible, setDialogVisible] = useState(false);
     const [dialogMessage, setDialogMessage] = useState('');
     const [dialogSequence, setDialogSequence] = useState([]);
@@ -48,9 +50,6 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [gameCleared, setGameCleared] = useState(false);
 
     const { showFunFact, showFunFactWithDelay } = useFunFact();
-
-
-
 
     useEffect(() => {
         const fetchPlayerHealth = async () => {
@@ -223,6 +222,19 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         return () => clearInterval(interval);
     }, []);
 
+    useEffect(() => {
+        if (!isCharacterAttacking) {
+            const idleAnimationInterval = setInterval(() => {
+                setIsCharacterIdle(true);
+                setTimeout(() => {
+                    setIsCharacterIdle(false);
+                }, 2000); // Show idle animation for 2 seconds
+            }, 10000); // Play idle animation every 10 seconds
+            
+            return () => clearInterval(idleAnimationInterval);
+        }
+    }, [isCharacterAttacking]);
+
     const handleGameOver = async (isVictory) => {
         console.log("Game over with victory:", isVictory);
 
@@ -353,7 +365,27 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         setIsValidWord(false);
     };
 
-    const handleScramble = () => {
+    const handleScramble = (fromControlKey = false) => {
+        // Check if scramble is on cooldown, but only show message if not from Control key
+        if (scrambleCooldown && !fromControlKey) {
+            setDefinition({
+                text: "Recombine is on cooldown! Wait a moment.",
+                source: ''
+            });
+            return;
+        }
+
+        // Set scramble on cooldown
+        if (!fromControlKey) {
+            setScrambleCooldown(true);
+            setTimeout(() => {
+                setScrambleCooldown(false);
+            }, 1000); // 1 second cooldown
+        }
+
+        // Trigger enemy attack animation
+        handleEnemyAttack();
+
         // Generate new grid letters with guaranteed valid word
         const newGridLetters = generateRandomLetters();
 
@@ -363,7 +395,34 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         setGridLetters(newGridLetters);
         setIsValidWord(false);
         setHighlightedIndices([]); // Clear highlights on scramble
+    };
+
+    const handleControlKeyScramble = () => {
+        // Add cooldown check
+        if (window.controlCooldownActive) {
+            return; // Silently do nothing if on cooldown
+        }
+        
+        // Set cooldown flag
+        window.controlCooldownActive = true;
+        
+        // Reset cooldown after 1 second
+        setTimeout(() => {
+            window.controlCooldownActive = false;
+        }, 1000);
+        
+        // Generate new grid letters with guaranteed valid word
+        const newGridLetters = generateRandomLetters();
+
+        // Trigger enemy attack animation
         handleEnemyAttack();
+
+        // Reset all states
+        setSelectedLetters([]);
+        setEmptyIndices([]);
+        setGridLetters(newGridLetters);
+        setIsValidWord(false);
+        setHighlightedIndices([]); // Clear highlights on scramble
     };
 
     const handleHint = () => {
@@ -1162,8 +1221,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             handleHint();
         }
         // Handle Control key for scramble
-        else if (event.key === 'Control') {
-            handleScramble();
+        else if (event.key === 'Control' && !event.repeat) {
+            handleControlKeyScramble();
         }
         // Handle arrow keys for navigation
         else if (event.key === 'ArrowLeft') {
@@ -1204,17 +1263,29 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         @keyframes shoot {
             0% {
                 transform: translateX(0) translateY(-50%);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateX(calc(25vw)) translateY(-50%);
+                opacity: 1;
             }
             100% {
-                transform: translateX(calc(50vw - 100%)) translateY(-50%);
+                transform: translateX(calc(50vw)) translateY(-50%);
+                opacity: 0;
             }
         }
         @keyframes enemyShoot {
             0% {
-                transform: translateX(0) translateY(-50%);
+                transform: translateX(-10vw) translateY(-50%) rotate(180deg);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateX(calc(20vw)) translateY(-50%) rotate(180deg);
+                opacity: 1;
             }
             100% {
-                transform: translateX(calc(50vw - 100%)) translateY(-50%);
+                transform: translateX(calc(50vw)) translateY(-50%) rotate(180deg);
+                opacity: 0;
             }
         }
         `}
@@ -1279,11 +1350,15 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                     bg-contain 
                                     bg-center 
                                     bg-no-repeat 
-                                    transition-transform 
+                                    transition-all 
                                     duration-300 
-                                    ${isCharacterAttacking ? "transform scale-110" : ""
-                            }`}
-                        style={{ backgroundImage: `url(${isCharacterAttacking ? characterAttack : character})` }}
+                                    ${isCharacterAttacking ? "transform scale-110 translate-x-24 md:translate-x-32 lg:translate-x-40" : ""}
+                                    ${isCharacterIdle ? "transform scale-105" : ""}`}
+                        style={{ backgroundImage: `url(${isCharacterAttacking 
+                                                    ? characterAttack 
+                                                    : isCharacterIdle 
+                                                    ? characterIdle 
+                                                    : character})` }}
                     >
                     </div>
                 </div>
@@ -1352,9 +1427,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                             <img
                                 src={attackEnemyImage}
                                 alt="enemy-laser"
-                                className="absolute top-1/2 right-full transform -translate-y-1/2 rotate-180"
+                                className="absolute top-1/2 right-full transform -translate-y-1/2"
                                 style={{
-                                    animation: "enemyShoot 0.5s linear forwards",
+                                    animation: "enemyShoot 1s linear forwards",
                                     height: "8rem",
                                     width: "auto"
                                 }}
@@ -1476,8 +1551,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             </button>
 
             <button
-                className="scramble-button bg-blue-50 text-gray-800 border-2 border-gray-700 py-1.5 md:py-2 text-xs md:text-sm font-bold rounded-lg hover:bg-blue-100 transition-all hover:shadow-md transform hover:-translate-y-0.5"
+                className={`scramble-button bg-blue-50 text-gray-800 border-2 border-gray-700 py-1.5 md:py-2 text-xs md:text-sm font-bold rounded-lg transition-all ${
+                    scrambleCooldown ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-100 hover:shadow-md transform hover:-translate-y-0.5'
+                }`}
                 onClick={handleScramble}
+                disabled={scrambleCooldown}
             >
                 RECOMBINE
             </button>

@@ -9,6 +9,8 @@ import bgImage from '../assets/bg.gif';
 import microbeImage from '../assets/microbe.gif';
 import toxinImage from '../assets/toxin.gif';
 import slimesImage from '../assets/slimes.gif';
+import characterIdle from '../assets/attack/mc_idle.gif';
+import characterAttack from '../assets/attack/newchar_attack.gif'; // Import the newchar_attack.gif
 import mapData from './maps.json';
 import { getDatabase, ref, set, onValue } from 'firebase/database';
 import { auth } from '../firebase/config';
@@ -26,6 +28,7 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     const [currentEnemyHealth, setCurrentEnemyHealth] = useState(3);
     const [gameOver, setGameOver] = useState(false);
     const [playerAttacking, setPlayerAttacking] = useState(false);
+    const [playerIdle, setPlayerIdle] = useState(false);
     const [enemyAttacking, setEnemyAttacking] = useState(false);
     const [currentWord, setCurrentWord] = useState('');
     const [definition, setDefinition] = useState('');
@@ -41,6 +44,12 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     const [selectedLetterIndex, setSelectedLetterIndex] = useState(-1);
     const [longestWord, setLongestWord] = useState('');
     const [showLongestWordScoreboard, setShowLongestWordScoreboard] = useState(false);
+    const [usedWordsQueue, setUsedWordsQueue] = useState([]);
+    const [isShaking, setIsShaking] = useState(false);
+    const [isWrongWord, setIsWrongWord] = useState(false);
+    const [canScramble, setCanScramble] = useState(true);
+    const [scrambleCooldown, setScrambleCooldown] = useState(false);
+    const [highlightedIndices, setHighlightedIndices] = useState([]);
 
     const enemies = [
         { name: "Microbe", image: 'microbe.gif', health: 3 },
@@ -56,7 +65,6 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, profileDa
     const currentEnemy = enemies[currentEnemyIndex % enemies.length];
     const currentEnemyImage = enemyImages[currentEnemy.image];
 
-    const [usedWordsQueue, setUsedWordsQueue] = useState([]);
     const cooldownLimit = 3; // Adjust to allow reuse after 5 different words
     
     const getRandomScienceWord = () => {
@@ -256,6 +264,20 @@ useEffect(() => {
     }
 }, [showTutorial]);
 
+// Add idle animation that plays every 10 seconds
+useEffect(() => {
+    if (!playerAttacking && !isPaused && !gameOver && !showTutorial) {
+        const idleAnimationInterval = setInterval(() => {
+            setPlayerIdle(true);
+            setTimeout(() => {
+                setPlayerIdle(false);
+            }, 2000); // Show idle animation for 2 seconds
+        }, 10000); // Play idle animation every 10 seconds
+        
+        return () => clearInterval(idleAnimationInterval);
+    }
+}, [playerAttacking, isPaused, gameOver, showTutorial]);
+
 // Handle letter selection
 const handleLetterClick = (letter, index) => {
     if (!isPaused && !emptyIndices.includes(index)) {
@@ -284,12 +306,17 @@ const handleSubmitWord = useCallback(() => {
     // Prevent word spam - check if it's in cooldown
     if (usedWordsQueue.includes(word) && word.length >= 2) {
         setDefinition(`"${word}" is on cooldown! Use ${cooldownLimit} different words first.`);
-
         return; 
     }
 
     if (scienceTerm.hasOwnProperty(word)) { 
         // Valid word submitted
+        // Trigger player attack animation
+        setPlayerAttacking(true);
+        setTimeout(() => {
+            setPlayerAttacking(false);
+        }, 800); // Match animation duration
+        
         setCurrentEnemyHealth(prevHealth => {
             const newHealth = prevHealth - 1;
             if (newHealth <= 0) {
@@ -309,10 +336,33 @@ const handleSubmitWord = useCallback(() => {
         // Calculate score based on the length of the valid word
         scoreIncrement = word.length * 10; // 10 points for each letter
         setScore(prevScore => prevScore + scoreIncrement); // Update score
+        
+        // Reset selected letters after submission of valid word
+        setSelectedLetters([]);
+        setEmptyIndices([]);
+        
+        // Regenerate the grid after valid word
+        const newGrid = generateWordGrid();
+        setGridLetters(newGrid);
     } else {
         // Invalid word submitted
         setEnemyAttacking(true);
         setDefinition(`Invalid word -1 Heart! The enemy attacks!`);
+        
+        // Add shaking effect
+        setIsShaking(true);
+        setIsWrongWord(true);
+
+        // Reset animations after delay
+        setTimeout(() => {
+            setEnemyAttacking(false);
+            setIsShaking(false);
+            
+            // Keep wrong word highlight a bit longer
+            setTimeout(() => {
+                setIsWrongWord(false);
+            }, 500);
+        }, 1000);
 
         setPlayerHearts(prev => {
             const newHearts = prev - 1;
@@ -324,48 +374,42 @@ const handleSubmitWord = useCallback(() => {
         });
     }
 
-    // Add the word to the cooldown queue
-    setUsedWordsQueue(prev => [...prev, word].slice(-cooldownLimit));
-    
-    // Reset selected letters after submission
-    setTimeLeft(30); // Reset the timer
-    setSelectedLetters([]);
-    setEmptyIndices([]);
-
-    // Regenerate the grid
-    const newGrid = generateWordGrid();
-    setGridLetters(newGrid);
-}, [selectedLetters, longestWord, usedWordsQueue]);
-
-const saveLongestWord = (word) => {
-    if (auth.currentUser) {
-        const db = getDatabase();
-        const userRef = ref(db, `users/${auth.currentUser.uid}/longestWord`);
-        // First check if there's an existing longest word
-        onValue(userRef, (snapshot) => {
-            const data = snapshot.val();
-            const existingWord = data ? data.word : '';
-            // Only save if the new word is longer than the existing one
-            if (!existingWord || word.length > existingWord.length) {
-                set(userRef, {
-                    word: word,
-                    timestamp: Date.now()
-                });
-            }
-        }, { onlyOnce: true }); // Only read once, not continuously
+    // Add the word to the cooldown queue only if it's not a long word (5 or fewer characters)
+    if (word.length <= 5) {
+        setUsedWordsQueue(prev => [...prev, word].slice(-cooldownLimit));
     }
-};
+    
+    // Reset the timer
+    setTimeLeft(30);
+}, [selectedLetters, longestWord, usedWordsQueue, isPaused, gameOver]);
 
 const handleScramble = () => {
     if (isPaused || gameOver) return; // Prevent scrambling during pause or game over
+    
+    // Check if scramble is on cooldown
+    if (scrambleCooldown) {
+        setDefinition("Scramble is on cooldown! Wait a moment.");
+        return;
+    }
 
     if (playerHearts <= 1) {
         setDefinition("Scramble disabled! Too risky, you're low on health!");
         return; // Stop the function if the player has only 1 HP
     }
 
-    setSelectedLetters([]); // Clear selected letters
-    setEmptyIndices([]); // Reset empty letter spots
+    // Set scramble on cooldown
+    setScrambleCooldown(true);
+    setTimeout(() => {
+        setScrambleCooldown(false);
+    }, 1000); // 1 second cooldown
+
+    // Trigger enemy attack animation
+    setEnemyAttacking(true);
+    
+    // Reset enemy attack animation after 1 second
+    setTimeout(() => {
+        setEnemyAttacking(false);
+    }, 1000);
 
     // Apply penalty: Reduce player's health
     setPlayerHearts(prev => {
@@ -414,6 +458,26 @@ const saveScore = async () => {
         } catch (error) {
             console.error("Error saving score:", error);
         }
+    }
+};
+
+// Save longest word to Firebase
+const saveLongestWord = (word) => {
+    if (auth.currentUser) {
+        const db = getDatabase();
+        const userRef = ref(db, `users/${auth.currentUser.uid}/longestWord`);
+        // First check if there's an existing longest word
+        onValue(userRef, (snapshot) => {
+            const data = snapshot.val();
+            const existingWord = data ? data.word : '';
+            // Only save if the new word is longer than the existing one
+            if (!existingWord || word.length > existingWord.length) {
+                set(userRef, {
+                    word: word,
+                    timestamp: Date.now()
+                });
+            }
+        }, { onlyOnce: true }); // Only read once, not continuously
     }
 };
 
@@ -475,10 +539,12 @@ const handleKeyPress = useCallback((event) => {
             prev >= selectedLetters.length - 1 ? 0 : prev + 1
         );
     }
-     else if (event.key === 'Control') {
-    handleScramble();
+    // Fix Control key handler to prevent accidental triggering
+    else if (event.key === 'Control' && !event.repeat) {
+        // Only trigger scramble on initial keydown, not on key hold
+        handleScramble();
     }
-}, [isPaused, gameOver, showTutorial, gridLetters, emptyIndices, selectedLetters, selectedLetterIndex]);
+}, [isPaused, gameOver, showTutorial, gridLetters, emptyIndices, selectedLetters, selectedLetterIndex, handleScramble]);
 
 // Add keyboard event listener
 useEffect(() => {
@@ -487,6 +553,18 @@ useEffect(() => {
         window.removeEventListener('keydown', handleKeyPress);
     };
 }, [handleKeyPress]);
+
+// Handle clicking on a selected letter
+const handleSelectedLetterClick = (letter, index) => {
+    if (!isPaused) {
+        // Toggle highlight or perform other actions on the selected letter
+        if (highlightedIndices.includes(index)) {
+            setHighlightedIndices(prev => prev.filter(i => i !== index));
+        } else {
+            setHighlightedIndices(prev => [...prev, index]);
+        }
+    }
+};
 
     return (
         <div className="relative min-h-screen w-full overflow-hidden bg-cover bg-center flex flex-col items-center"
@@ -497,6 +575,66 @@ useEffect(() => {
         backgroundRepeat: 'no-repeat',
         userSelect: 'none'
     }}>
+    
+    {/* Add CSS Animation Styles */}
+    <style>
+        {`
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        
+        .shake {
+            animation: shakeAnimation 0.5s ease-in-out;
+        }
+        
+        .wrong-word {
+            box-shadow: 0 0 8px 2px rgba(255, 0, 0, 0.7);
+            border-color: #ff0000 !important;
+        }
+
+        @keyframes shoot {
+            0% {
+                transform: translateX(0) translateY(-50%);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateX(calc(25vw)) translateY(-50%);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(calc(50vw)) translateY(-50%);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes enemyShoot {
+            0% {
+                transform: translateX(-10vw) translateY(-50%) rotate(180deg);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateX(calc(20vw)) translateY(-50%) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(calc(50vw)) translateY(-50%) rotate(180deg);
+                opacity: 0;
+            }
+        }
+        
+        .player-attack {
+            animation: shoot 0.8s ease-out forwards;
+        }
+        
+        .enemy-attack {
+            animation: enemyShoot 0.8s ease-out forwards;
+        }
+        `}
+    </style>
     
     {/* Tutorial Dialog */}
     {showTutorial && (
@@ -582,18 +720,14 @@ useEffect(() => {
         {/* Player Character */}
         <div className="relative">
             <img 
-                src={character} 
+                src={playerAttacking ? characterAttack : playerIdle ? characterIdle : character} 
                 alt="Player" 
-                className="w-40 h-40 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80"
+                className={`w-40 h-40 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 transition-all duration-300
+                    ${playerAttacking ? 'transform translate-x-16 sm:translate-x-24 md:translate-x-32 lg:translate-x-40' : ''}
+                `}
                 style={{ transform: 'scaleX(1)' }} 
             />
-            {playerAttacking && (
-                <img 
-                    src={attackImage} 
-                    alt="Player Attack" 
-                    className="absolute top-1/2 -right-12 sm:-right-24 transform -translate-y-1/2 w-16 h-16 sm:w-32 sm:h-32"
-                />
-            )}
+            {/* Removed the extra attack projectile */}
         </div>
 
         {/* Enemy Health Bar */}
@@ -619,8 +753,7 @@ useEffect(() => {
                 <img 
                     src={attackEnemyImage} 
                     alt="Enemy Attack" 
-                    className="absolute top-1/2 -left-12 sm:-left-24 transform -translate-y-1/2 w-16 h-16 sm:w-32 sm:h-32"
-                    style={{ transform: 'scaleX(-1)' }}
+                    className="absolute top-1/2 -left-12 sm:-left-24 transform -translate-y-1/2 w-16 h-16 sm:w-32 sm:h-32 enemy-attack"
                 />
             )}
         </div>
@@ -653,14 +786,33 @@ useEffect(() => {
 
     {/* Word Input */}
     <div className="absolute bottom-4 w-full flex justify-center items-center space-x-2 sm:space-x-4 px-4">
-        <div className="flex items-center space-x-1 px-2 py-1 sm:px-3 sm:py-2 min-w-[120px] sm:min-w-[150px]">
+        <div className={`flex items-center space-x-1 px-2 py-1 sm:px-3 sm:py-2 min-w-[120px] sm:min-w-[150px] ${isShaking ? 'shake' : ''}`}>
             {selectedLetters.map((letter, index) => (
                 <div
                     key={index}
-                    onClick={() => handleRemoveLetter(index)}
-                    className={`selected-letter cursor-pointer w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center 
-                        text-base sm:text-xl font-bold rounded-lg bg-white border-2 
-                        ${index === selectedLetterIndex ? 'border-blue-500 bg-blue-100' : 'border-gray-300'}`}
+                    className={`
+                        relative 
+                        w-7 h-7 
+                        sm:w-8 sm:h-8 
+                        md:w-10 md:h-10 
+                        border-2 
+                        flex 
+                        items-center 
+                        justify-center 
+                        text-sm 
+                        sm:text-base 
+                        md:text-lg 
+                        font-bold 
+                        rounded-lg 
+                        cursor-pointer 
+                        transition-all 
+                        duration-200
+                        touch-target
+                        ${index === selectedLetterIndex ? 'border-teal-500 bg-blue-100 scale-105' : 'border-gray-700'}
+                        ${isWrongWord ? 'wrong-word' : ''}
+                        ${highlightedIndices.includes(index) ? 'bg-green-300 scale-105 shadow-md' : 'bg-blue-50 hover:bg-blue-100'}
+                    `}
+                    onClick={() => handleSelectedLetterClick(letter, index)}
                 >
                     {letter}
                 </div>
@@ -669,10 +821,13 @@ useEffect(() => {
         
         {/* Scramble Button */}
         <button
-            className="bg-purple-500 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-lg text-base sm:text-lg font-bold hover:bg-purple-600 transform transition-transform hover:scale-105"
+            className={`bg-purple-500 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-lg text-base sm:text-lg font-bold hover:bg-purple-600 transform transition-transform hover:scale-105
+                ${scrambleCooldown ? 'opacity-50 cursor-not-allowed' : ''}
+            `}
             onClick={handleScramble}
+            disabled={scrambleCooldown}
         >
-            Scramble
+            RECOMBINE
         </button>
         
         <button
