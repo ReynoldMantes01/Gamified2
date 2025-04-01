@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Cross } from 'hamburger-react';
 import GameSettings from './GameSettings';
 import Profile from './Profile';
@@ -24,7 +24,7 @@ import fightSound from '../assets/SFX/fightsound.wav'; // Import fight sound eff
 import FunFact from './FunFact';
 import useFunFact from '../hooks/useFunFact';
 
-const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, soundEffectsVolume, backgroundVolume, level, reload, bossFight, setBossFight, fightSoundPlaying, setFightSoundPlaying }) => {
+const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, soundEffectsVolume, setSoundEffectsVolume, backgroundVolume, setBackgroundVolume, level, reload, bossFight, setBossFight, fightSoundPlaying, setFightSoundPlaying }) => {
     const [enemyLaserActive, setEnemyLaserActive] = useState(false);
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState([]);
@@ -162,6 +162,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const playHitSound = () => {
         const sound = new Audio(hitSound);
         sound.volume = soundEffectsVolume / 100; // Use sound effects volume
+        console.log("Playing hit sound with volume:", sound.volume);
         sound.play();
     };
 
@@ -169,6 +170,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const playWinSound = () => {
         const sound = new Audio(winSound);
         sound.volume = soundEffectsVolume / 100; // Use sound effects volume
+        console.log("Playing win sound with volume:", sound.volume);
         sound.play();
     };
 
@@ -176,6 +178,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const playLoseSound = () => {
         const sound = new Audio(loseSound);
         sound.volume = soundEffectsVolume / 100; // Use sound effects volume
+        console.log("Playing lose sound with volume:", sound.volume);
         sound.play();
     };
 
@@ -183,6 +186,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const playHintSound = () => {
         const sound = new Audio(hintSound);
         sound.volume = soundEffectsVolume / 100; // Use sound effects volume
+        console.log("Playing hint sound with volume:", sound.volume);
         sound.play();
     };
 
@@ -190,6 +194,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const playScrambleSound = () => {
         const sound = new Audio(scrambleSound);
         sound.volume = soundEffectsVolume / 100; // Use sound effects volume
+        console.log("Playing scramble sound with volume:", sound.volume);
         sound.play();
     };
 
@@ -197,6 +202,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const playFightSound = () => {
         const sound = new Audio(fightSound);
         sound.volume = backgroundVolume / 100; // Use background volume for fight sound
+        console.log("Playing fight sound with volume:", sound.volume);
         sound.play();
     };
 
@@ -283,7 +289,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 setIsCharacterIdle(true);
                 setTimeout(() => {
                     setIsCharacterIdle(false);
-                }, 2000); // Show idle animation for 2 seconds
+                }, 3000); // Show idle animation for 3 seconds
             }, 10000); // Play idle animation every 10 seconds
             
             return () => clearInterval(idleAnimationInterval);
@@ -848,13 +854,19 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     }, [level]);
 
     const handleSettingsSave = (newMusicVolume, newSoundEffectsVolume, newBackgroundVolume) => {
+        console.log("GamePage: Saving settings with volumes:", newMusicVolume, newSoundEffectsVolume, newBackgroundVolume);
         setMusicVolume(newMusicVolume);
+        setSoundEffectsVolume(newSoundEffectsVolume);
+        setBackgroundVolume(newBackgroundVolume);
         // Close settings modal
         setSettingsOpen(false);
     };
 
     const handleSettingsReset = () => {
         setMusicVolume(50);
+        setSoundEffectsVolume(50);
+        setBackgroundVolume(50);
+        // We don't need to reset these here as they're managed by App.js
     };
 
     // Add effect descriptions
@@ -1427,8 +1439,8 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                     bg-no-repeat 
                                     transition-all 
                                     duration-300 
-                                    ${isCharacterAttacking ? "transform scale-110 translate-x-24 md:translate-x-32 lg:translate-x-40" : ""}
-                                    ${isCharacterIdle ? "transform scale-105" : ""}`}
+                                    ${isCharacterAttacking ? "character-responsive translate-x-24 md:translate-x-32 lg:translate-x-40" : ""}
+                                    ${isCharacterIdle ? "character-responsive" : ""}`}
                         style={{ backgroundImage: `url(${isCharacterAttacking 
                                                     ? characterAttack 
                                                     : isCharacterIdle 
@@ -1654,12 +1666,16 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                             onClose={() => setSettingsOpen(false)}
                             onSave={(newMusicVolume, newSoundEffectsVolume, newBackgroundVolume) => {
                                 setMusicVolume(newMusicVolume);
+                                setSoundEffectsVolume(newSoundEffectsVolume);
+                                setBackgroundVolume(newBackgroundVolume);
                                 // We don't need to set these here as they're managed by App.js
                                 // and passed down as props
                                 console.log("Settings saved with volumes:", newMusicVolume, newSoundEffectsVolume, newBackgroundVolume);
                             }}
                             onReset={() => {
                                 setMusicVolume(50);
+                                setSoundEffectsVolume(50);
+                                setBackgroundVolume(50);
                                 // We don't need to reset these here as they're managed by App.js
                             }}
                             musicVolume={musicVolume}

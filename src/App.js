@@ -176,7 +176,12 @@ const App = () => {
       scoreboardAudioRef.current.play().catch(err => {
         console.error("Error playing scoreboard sound:", err);
       });
-    } else if (currentPage !== "gamePage" && bgMusicAudioRef.current) {
+    } else if (currentPage === "miniGame" && scoreboardAudioRef.current) {
+      scoreboardAudioRef.current.volume = backgroundVolume / 100;
+      scoreboardAudioRef.current.play().catch(err => {
+        console.error("Error playing mini game background sound:", err);
+      });
+    } else if (currentPage !== "gamePage" && currentPage !== "miniGame" && currentPage !== "almanac" && bgMusicAudioRef.current) {
       bgMusicAudioRef.current.volume = musicVolume / 100;
       bgMusicAudioRef.current.play().catch(err => {
         console.error("Error playing background music:", err);
@@ -507,7 +512,7 @@ const App = () => {
       
       case "gamePage":
         return (
-          <GamePage
+          <GamePage 
             level={selectedLevel}
             onMainMenu={() => {
               console.log("Returning to Main Menu.");
@@ -520,7 +525,9 @@ const App = () => {
             musicVolume={musicVolume}
             setMusicVolume={setMusicVolume}
             soundEffectsVolume={soundEffectsVolume}
+            setSoundEffectsVolume={setSoundEffectsVolume}
             backgroundVolume={backgroundVolume}
+            setBackgroundVolume={setBackgroundVolume}
             reload={reloadUserProgress}
             bossFight={bossFight}
             setBossFight={setBossFight}
@@ -546,7 +553,9 @@ const App = () => {
             musicVolume={musicVolume}
             setMusicVolume={setMusicVolume}
             soundEffectsVolume={soundEffectsVolume}
+            setSoundEffectsVolume={setSoundEffectsVolume}
             backgroundVolume={backgroundVolume}
+            setBackgroundVolume={setBackgroundVolume}
             profileData={profileData}
             setProfileData={setProfileData}
           />
@@ -574,29 +583,29 @@ const App = () => {
               }}
             />
           )}
-          {fightSoundPlaying && currentPage === "gamePage" && (
+          {!bossFight && currentPage !== "gamePage" && currentPage !== "miniGame" && currentPage !== "almanac" && (
             <audio 
-              ref={fightSoundAudioRef} 
-              src={fightSound} 
+              ref={audioRef} 
+              src={bgMusic} 
               loop 
               preload="auto" 
-              volume={backgroundVolume / 100} 
+              volume={musicVolume / 100}
               onLoadedMetadata={(e) => {
-                e.target.volume = backgroundVolume / 100;
-                console.log("Fight sound audio loaded with volume:", e.target.volume);
+                e.target.volume = musicVolume / 100;
+                console.log("Background music loaded with volume:", e.target.volume);
               }}
             />
           )}
-          {(currentPage === "settings" || currentPage === "miniGame") && (
+          {currentPage === "miniGame" && (
             <audio 
-              ref={settingsAudioRef} 
-              src={settingsSound} 
+              ref={scoreboardAudioRef} 
+              src={scoreboardSound} 
               loop 
               preload="auto" 
-              volume={backgroundVolume / 100} 
+              volume={backgroundVolume / 100}
               onLoadedMetadata={(e) => {
                 e.target.volume = backgroundVolume / 100;
-                console.log("Settings audio loaded with volume:", e.target.volume);
+                console.log("MiniGame background audio (scoreboard.wav) loaded with volume:", e.target.volume);
               }}
             />
           )}
@@ -606,41 +615,26 @@ const App = () => {
               src={almanacSound} 
               loop 
               preload="auto" 
-              volume={backgroundVolume / 100} 
+              volume={backgroundVolume / 100}
               onLoadedMetadata={(e) => {
                 e.target.volume = backgroundVolume / 100;
-                console.log("Almanac audio loaded with volume:", e.target.volume);
+                console.log("Almanac background audio loaded with volume:", e.target.volume);
               }}
             />
           )}
-          {currentPage === "scoreboard" && (
+          {fightSoundPlaying && currentPage === "gamePage" && !bossFight && (
             <audio 
-              ref={scoreboardAudioRef} 
-              src={scoreboardSound} 
+              ref={fightSoundAudioRef} 
+              src={fightSound} 
               loop 
-              preload="auto" 
-              volume={backgroundVolume / 100} 
+              preload="auto"
+              volume={backgroundVolume / 100}
               onLoadedMetadata={(e) => {
                 e.target.volume = backgroundVolume / 100;
-                console.log("Scoreboard audio loaded with volume:", e.target.volume);
+                console.log("Fight sound loaded with volume:", e.target.volume);
               }}
             />
           )}
-          {currentPage !== "settings" && currentPage !== "almanac" && currentPage !== "scoreboard" && currentPage !== "miniGame" && currentPage !== "gamePage" && (
-            <audio 
-              ref={bgMusicAudioRef} 
-              src={bgMusic} 
-              loop 
-              preload="auto" 
-              volume={musicVolume / 100} 
-              onLoadedMetadata={(e) => {
-                e.target.volume = musicVolume / 100;
-                console.log("Background music loaded with volume:", e.target.volume);
-              }}
-            />
-          )}
-          {loginOpen && renderLoginPopup()}
-          {signupOpen && renderSignupPopup()}
           {renderPage()}
           {settingsOpen && (
             <GameSettings 

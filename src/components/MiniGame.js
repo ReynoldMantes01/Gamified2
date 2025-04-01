@@ -1,5 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Cross } from 'hamburger-react';
+import GameSettings from './GameSettings';
+import Profile from './Profile';
+import Slidebar from './Slidebar';
 import scienceTerm from './scienceTerm';
 import character from '../assets/newchar.gif';
 import attackImage from '../assets/attack.gif';
@@ -16,15 +19,13 @@ import winSound from '../assets/SFX/win.wav'; // Import win sound effect
 import loseSound from '../assets/SFX/lose.wav'; // Import lose sound effect
 import hintSound from '../assets/SFX/hint.wav'; // Import hint sound effect
 import scrambleSound from '../assets/SFX/scramble.wav'; // Import scramble sound effect
+import scoreboardSound from '../assets/SFX/scoreboard.wav'; // Import scoreboard sound for background music
 import mapData from './maps.json';
 import { getDatabase, ref, set, onValue } from 'firebase/database';
 import { auth } from '../firebase/config';
-import Slidebar from './Slidebar';
-import GameSettings from './GameSettings';
-import Profile from './Profile';
 import Scoreboard from './Scoreboard'; // Import Scoreboard component
 
-const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, soundEffectsVolume, backgroundVolume, profileData, setProfileData }) => {
+const MiniGame = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolume, setMusicVolume, soundEffectsVolume, setSoundEffectsVolume, backgroundVolume, setBackgroundVolume }) => {
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [gridLetters, setGridLetters] = useState([]);
     const [playerHearts, setPlayerHearts] = useState(10);
@@ -75,31 +76,36 @@ const MiniGame = ({ onMainMenu, onLogout, musicVolume, setMusicVolume, soundEffe
     // Sound effect functions
     const playHitSound = () => {
         const sound = new Audio(hitSound);
-        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
+        sound.volume = soundEffectsVolume / 100;
+        console.log("Playing hit sound with volume:", sound.volume);
         sound.play();
     };
     
     const playWinSound = () => {
         const sound = new Audio(winSound);
-        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
+        sound.volume = soundEffectsVolume / 100;
+        console.log("Playing win sound with volume:", sound.volume);
         sound.play();
     };
     
     const playLoseSound = () => {
         const sound = new Audio(loseSound);
-        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
+        sound.volume = soundEffectsVolume / 100;
+        console.log("Playing lose sound with volume:", sound.volume);
         sound.play();
     };
 
     const playHintSound = () => {
         const sound = new Audio(hintSound);
-        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
+        sound.volume = soundEffectsVolume / 100;
+        console.log("Playing hint sound with volume:", sound.volume);
         sound.play();
     };
 
     const playScrambleSound = () => {
         const sound = new Audio(scrambleSound);
-        sound.volume = soundEffectsVolume / 100; // Use sound effects volume
+        sound.volume = soundEffectsVolume / 100;
+        console.log("Playing scramble sound with volume:", sound.volume);
         sound.play();
     };
 
@@ -222,7 +228,7 @@ const toggleSlidebar = () => {
     }
 };
 
-const handleClickOutside = useCallback(
+const handleClickOutside = useRef(
     (event) => {
         if (slidebarOpen && !event.target.closest('.slidebar') && !event.target.closest('.slidebar-icon')) {
             setSlidebarOpen(false);
@@ -315,6 +321,48 @@ useEffect(() => {
     }
 }, [playerAttacking, isPaused, gameOver, showTutorial]);
 
+// Reference to the background music audio element
+const backgroundMusicRef = useRef(null);
+
+// Initialize and control background music
+useEffect(() => {
+    // Create background music element
+    const backgroundMusic = new Audio(scoreboardSound);
+    backgroundMusic.loop = true;
+    backgroundMusic.volume = backgroundVolume / 100;
+    backgroundMusicRef.current = backgroundMusic;
+
+    // Play background music when component mounts
+    const playBackgroundMusic = async () => {
+        try {
+            await backgroundMusic.play();
+            console.log("MiniGame: Playing scoreboard.wav as background music with volume:", backgroundMusic.volume);
+        } catch (error) {
+            console.error("Error playing background music:", error);
+        }
+    };
+
+    playBackgroundMusic();
+
+    // Update volume when backgroundVolume changes
+    const updateVolume = () => {
+        if (backgroundMusicRef.current) {
+            backgroundMusicRef.current.volume = backgroundVolume / 100;
+            console.log("MiniGame: Updated background music volume to:", backgroundMusicRef.current.volume);
+        }
+    };
+
+    updateVolume();
+
+    // Cleanup function to stop music when component unmounts
+    return () => {
+        if (backgroundMusicRef.current) {
+            backgroundMusicRef.current.pause();
+            backgroundMusicRef.current = null;
+        }
+    };
+}, [backgroundVolume]); // Re-run when backgroundVolume changes
+
 // Handle letter selection
 const handleLetterClick = (letter, index) => {
     if (!isPaused && !emptyIndices.includes(index)) {
@@ -332,7 +380,7 @@ const handleRemoveLetter = (letterIndex) => {
     }
 };
 
-const handleSubmitWord = useCallback(() => {
+const handleSubmitWord = useRef(() => {
     let scoreIncrement = 0; // Initialize score increment
 
     if (isPaused || gameOver) return;
@@ -522,7 +570,7 @@ const saveLongestWord = (word) => {
 };
 
 // Handle keyboard input
-const handleKeyPress = useCallback((event) => {
+const handleKeyPress = useRef((event) => {
     // Handle Escape key for slidebar
     if (event.key === 'Escape') {
         setSlidebarOpen(prev => !prev);
@@ -737,11 +785,15 @@ const handleSelectedLetterClick = (letter, index) => {
                 onClose={() => setSettingsOpen(false)}
                 onSave={(newMusicVolume, newSoundEffectsVolume, newBackgroundVolume) => {
                     setMusicVolume(newMusicVolume);
-                    // Sound effects and background volume will be handled by App.js
+                    setSoundEffectsVolume(newSoundEffectsVolume);
+                    setBackgroundVolume(newBackgroundVolume);
+                    console.log("MiniGame: Saved volumes:", newMusicVolume, newSoundEffectsVolume, newBackgroundVolume);
                 }}
                 onReset={() => {
                     setMusicVolume(50);
-                    // Sound effects and background volume will be handled by App.js
+                    setSoundEffectsVolume(50);
+                    setBackgroundVolume(50);
+                    console.log("MiniGame: Reset volumes to default");
                 }}
                 musicVolume={musicVolume}
                 soundEffectsVolume={soundEffectsVolume}
