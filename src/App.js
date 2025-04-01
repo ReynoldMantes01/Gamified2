@@ -28,9 +28,10 @@ const App = () => {
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(true);
+  const [loginOpen, setLoginOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [scoreboardOpen, setScoreboardOpen] = useState(false); // Add scoreboardOpen state
   const [userProgress, setUserProgress] = useState(null);
   const [profileData, setProfileData] = useState({
@@ -65,8 +66,6 @@ const App = () => {
   const scoreboardAudioRef = useRef(null);
   const bgMusicAudioRef = useRef(null);
   const db = getDatabase();
-
-
 
   // Update audio volume whenever musicVolume changes
   useEffect(() => {
@@ -291,13 +290,16 @@ const App = () => {
           if (data) {
             setUserProgress(data);
             setIsAuthenticated(true);
+            setLoginOpen(false);
           }
         });
       } else {
         // User is signed out
         setUserProgress(null);
         setIsAuthenticated(false);
+        setLoginOpen(true);
       }
+      setIsAuthChecked(true);
     });
 
     return () => unsubscribe();
@@ -435,31 +437,33 @@ const App = () => {
     console.log('Login successful, navigating to main menu');
   };
 
-  useEffect(() => {
-    const authState = localStorage.getItem('isAuthenticated');
-    if (authState === 'true') {
-      setIsAuthenticated(true);
-      setLoginOpen(false);
-      setCurrentPage("mainMenu");
-    }
-  }, []);
-
   const handleSignupSuccess = () => {
     setSignupOpen(false);
     setLoginOpen(true);
   };
 
   const handleLogout = () => {
-    setIsAuthenticated(false);
-    setLoginOpen(true);
-    setCurrentPage("mainMenu");
-    setSlidebarOpen(false);
+    // Sign out from Firebase authentication
+    const auth = getAuth();
+    auth.signOut().then(() => {
+      // Update UI state
+      setIsAuthenticated(false);
+      setLoginOpen(true);
+      setCurrentPage("mainMenu");
+      setSlidebarOpen(false);
+      setSettingsOpen(false);
+      setProfileOpen(false);
+      setScoreboardOpen(false);
 
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userName');
+      // Clear local storage
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userName');
 
-    console.log('Logged out successfully');
+      console.log('Logged out successfully');
+    }).catch((error) => {
+      console.error('Error signing out:', error);
+    });
   };
 
   const renderLoginPopup = () => (
@@ -635,49 +639,63 @@ const App = () => {
               }}
             />
           )}
-          {renderPage()}
-          {settingsOpen && (
-            <GameSettings 
-              onClose={() => setSettingsOpen(false)}
-              onSave={(newMusicVolume, newSoundEffectsVolume, newBackgroundVolume) => {
-                console.log("Saving volumes:", newMusicVolume, newSoundEffectsVolume, newBackgroundVolume);
-                handleSettingsSave(newMusicVolume, newSoundEffectsVolume, newBackgroundVolume);
-              }}
-              onReset={handleSettingsReset}
-              musicVolume={musicVolume}
-              soundEffectsVolume={soundEffectsVolume}
-              backgroundVolume={backgroundVolume}
-            />
+
+          {!isAuthChecked ? (
+            <div className="fixed inset-0 flex items-center justify-center bg-black">
+              <h1 className="text-6xl font-bold text-white">Gamified</h1>
+            </div>
+          ) : isAuthenticated ? (
+            <>
+              {renderPage()}
+              {settingsOpen && (
+                <GameSettings 
+                  onClose={() => setSettingsOpen(false)}
+                  onSave={(newMusicVolume, newSoundEffectsVolume, newBackgroundVolume) => {
+                    console.log("Saving volumes:", newMusicVolume, newSoundEffectsVolume, newBackgroundVolume);
+                    handleSettingsSave(newMusicVolume, newSoundEffectsVolume, newBackgroundVolume);
+                  }}
+                  onReset={handleSettingsReset}
+                  musicVolume={musicVolume}
+                  soundEffectsVolume={soundEffectsVolume}
+                  backgroundVolume={backgroundVolume}
+                />
+              )}
+              {profileOpen && (
+                <Profile
+                  onClose={() => setProfileOpen(false)}
+                  onSave={() => setProfileOpen(false)}
+                  profileData={profileData}
+                  setProfileData={setProfileData}
+                />
+              )}
+              {scoreboardOpen && (
+                <Scoreboard 
+                  onMainMenu={() => {
+                    console.log("Returning to Main Menu. Stopping Timer.");
+                    setScoreboardOpen(false); // Hide scoreboard
+                    setCurrentPage("mainMenu");
+                  }} 
+                />
+              )}
+              <Slidebar
+                isOpen={slidebarOpen}
+                toggleSlidebar={() => setSlidebarOpen(!slidebarOpen)}
+                onMainMenu={() => {
+                  console.log("Returning to Main Menu. Stopping Timer.");
+                  setCurrentPage("mainMenu");
+              }}          
+                setSettingsOpen={setSettingsOpen}
+                setProfileOpen={setProfileOpen}
+                onLogout={handleLogout}
+                musicVolume={musicVolume}
+              />
+            </>
+          ) : (
+            <>
+              {loginOpen && renderLoginPopup()}
+              {signupOpen && renderSignupPopup()}
+            </>
           )}
-          {profileOpen && (
-            <Profile
-              onClose={() => setProfileOpen(false)}
-              onSave={() => setProfileOpen(false)}
-              profileData={profileData}
-              setProfileData={setProfileData}
-            />
-          )}
-          {scoreboardOpen && (
-            <Scoreboard 
-              onMainMenu={() => {
-                console.log("Returning to Main Menu. Stopping Timer.");
-                setScoreboardOpen(false); // Hide scoreboard
-                setCurrentPage("mainMenu");
-              }} 
-            />
-          )}
-          <Slidebar
-            isOpen={slidebarOpen}
-            toggleSlidebar={() => setSlidebarOpen(!slidebarOpen)}
-            onMainMenu={() => {
-              console.log("Returning to Main Menu. Stopping Timer.");
-              setCurrentPage("mainMenu");
-          }}          
-            setSettingsOpen={setSettingsOpen}
-            setProfileOpen={setProfileOpen}
-            onLogout={handleLogout}
-            musicVolume={musicVolume}
-          />
         </div>
       </GoogleOAuthProvider>
     </ModalProvider>
