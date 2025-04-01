@@ -377,10 +377,12 @@ const handleRemoveLetter = (letterIndex) => {
         const originalIndex = emptyIndices[letterIndex];
         setSelectedLetters(prev => prev.filter((_, i) => i !== letterIndex));
         setEmptyIndices(prev => prev.filter((_, i) => i !== letterIndex));
+        // Clear any highlighting for this letter
+        setHighlightedIndices(prev => prev.filter(i => i !== letterIndex));
     }
 };
 
-const handleSubmitWord = useRef(() => {
+const handleSubmitWord = () => {
     let scoreIncrement = 0; // Initialize score increment
 
     if (isPaused || gameOver) return;
@@ -467,7 +469,7 @@ const handleSubmitWord = useRef(() => {
     
     // Reset the timer
     setTimeLeft(30);
-}, [selectedLetters, longestWord, usedWordsQueue, isPaused, gameOver]);
+};
 
 const handleScramble = () => {
     if (isPaused || gameOver) return; // Prevent scrambling during pause or game over
@@ -606,9 +608,15 @@ const handleKeyPress = useRef((event) => {
     // Handle backspace for letter removal
     else if (event.key === 'Backspace' && selectedLetters.length > 0) {
         if (selectedLetterIndex >= 0) {
+            // Remove the currently selected letter
             handleRemoveLetter(selectedLetterIndex);
-            setSelectedLetterIndex(Math.min(selectedLetterIndex, selectedLetters.length - 2));
+            // Update the selected index to the previous letter or -1 if none left
+            setSelectedLetterIndex(prev => {
+                if (selectedLetters.length <= 1) return -1;
+                return Math.min(prev, selectedLetters.length - 2);
+            });
         } else {
+            // If no letter is specifically selected, remove the last one
             handleRemoveLetter(selectedLetters.length - 1);
         }
     }
@@ -645,11 +653,22 @@ useEffect(() => {
 // Handle clicking on a selected letter
 const handleSelectedLetterClick = (letter, index) => {
     if (!isPaused) {
-        // Toggle highlight or perform other actions on the selected letter
-        if (highlightedIndices.includes(index)) {
-            setHighlightedIndices(prev => prev.filter(i => i !== index));
-        } else {
-            setHighlightedIndices(prev => [...prev, index]);
+        // Remove the letter when clicked instead of just highlighting
+        const originalIndex = emptyIndices[index];
+        
+        // Remove the letter from selected letters
+        setSelectedLetters(prev => prev.filter((_, i) => i !== index));
+        setEmptyIndices(prev => prev.filter((_, i) => i !== index));
+        
+        // Clear any highlighting
+        setHighlightedIndices(prev => prev.filter(i => i !== index));
+        
+        // Reset selected letter index if needed
+        if (selectedLetterIndex === index) {
+            setSelectedLetterIndex(-1);
+        } else if (selectedLetterIndex > index) {
+            // Adjust index if removing a letter before the currently selected one
+            setSelectedLetterIndex(prev => prev - 1);
         }
     }
 };
