@@ -1,12 +1,13 @@
 {
   "files": {
-    "main.css": "/static/css/main.0a8d60b7.css",
-    "main.js": "/static/js/main.a7fba76e.js",
+    "main.css": "/static/css/main.8ce704dc.css",
+    "main.js": "/static/js/main.6ef30d26.js",
     "static/js/453.2b0de4b9.chunk.js": "/static/js/453.2b0de4b9.chunk.js",
     "static/media/BG1.mp3": "/static/media/BG1.162123a86b8ccaafebae.mp3",
     "static/media/almanac.wav": "/static/media/almanac.c84a5035293efd3820ed.wav",
     "static/media/settings.wav": "/static/media/settings.095784e788a206ad439d.wav",
-    "static/media/mc_idle.gif": "/static/media/mc_idle.fccf029a52fb1d18ed83.gif",
+    "static/media/(old)mc_idle.gif": "/static/media/(old)mc_idle.fccf029a52fb1d18ed83.gif",
+    "static/media/mc_idle.gif": "/static/media/mc_idle.374aad8087ebc1e2157e.gif",
     "static/media/try.gif": "/static/media/try.e43287c4ebac2ea94075.gif",
     "static/media/bossfight.wav": "/static/media/bossfight.13a248989f431ec27977.wav",
     "static/media/Animated.gif": "/static/media/Animated.c83b4b9500767e19be29.gif",
@@ -18,7 +19,9 @@
     "static/media/NINJA AVATAR.jpg": "/static/media/NINJA AVATAR.c8010dfa259b9c353eb4.jpg",
     "static/media/attack.gif": "/static/media/attack.58df2fae68bae00658ab.gif",
     "static/media/Character.png": "/static/media/Character.7b1b389354f4d1ff7ba4.png",
+    "static/media/mutant_dna.gif": "/static/media/mutant_dna.ab889b35bb22e017a5b0.gif",
     "static/media/toxin.gif": "/static/media/toxin.c5181d2e211f99a0bc50.gif",
+    "static/media/newchar.gif": "/static/media/newchar.44cfb52030a74fec12e2.gif",
     "static/media/chemistry_world.gif": "/static/media/chemistry_world.2142eb0e08a64acbd7fb.gif",
     "static/media/fightsound.wav": "/static/media/fightsound.5cc2568dfa1aa6ff9330.wav",
     "static/media/win.wav": "/static/media/win.9b5b1a6223e1057f8898.wav",
@@ -29,7 +32,7 @@
     "static/media/physics_world.gif": "/static/media/physics_world.ab3c1cb140792fc620a3.gif",
     "static/media/bg.gif": "/static/media/bg.2294d258cdadf77e4af4.gif",
     "static/media/hit.wav": "/static/media/hit.9d083d7c643182eeb3df.wav",
-    "static/media/mutant_dna.gif": "/static/media/mutant_dna.2cab49bbd3968e6685c9.gif",
+    "static/media/(old)mutant_dna.gif": "/static/media/(old)mutant_dna.2cab49bbd3968e6685c9.gif",
     "static/media/hint.wav": "/static/media/hint.3e2b8a36c21e21afa1a5.wav",
     "static/media/molecule.gif": "/static/media/molecule.aa069e08bceac5baa448.gif",
     "static/media/atom.gif": "/static/media/atom.a392fe3fe0c9ff049b35.gif",
@@ -40,7 +43,7 @@
     "static/media/quark.gif": "/static/media/quark.a388fba0feee6168ba85.gif",
     "static/media/enemyOne.png": "/static/media/enemyOne.8d3e58a795313a7c2f3c.png",
     "static/media/Grass.png": "/static/media/Grass.b6471f1ff0a061c0f284.png",
-    "static/media/newchar.gif": "/static/media/newchar.f9b98efd3aa97e83d276.gif",
+    "static/media/(old)newchar.gif": "/static/media/(old)newchar.f9b98efd3aa97e83d276.gif",
     "static/media/Bio_World.gif": "/static/media/Bio_World.98db9953165e417965d5.gif",
     "static/media/black_hole.gif": "/static/media/black_hole.2dd306d297a65d3aa264.gif",
     "static/media/functionBackground.png": "/static/media/functionBackground.457534b17c54dfbf63f0.png",
@@ -54,12 +57,12 @@
     "static/media/1.jpg": "/static/media/1.e939fd7cf1f097840128.jpg",
     "static/media/dialogueBox.png": "/static/media/dialogueBox.4c6d86e9ecfe4cb95666.png",
     "index.html": "/index.html",
-    "main.0a8d60b7.css.map": "/static/css/main.0a8d60b7.css.map",
-    "main.a7fba76e.js.map": "/static/js/main.a7fba76e.js.map",
+    "main.8ce704dc.css.map": "/static/css/main.8ce704dc.css.map",
+    "main.6ef30d26.js.map": "/static/js/main.6ef30d26.js.map",
     "453.2b0de4b9.chunk.js.map": "/static/js/453.2b0de4b9.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.0a8d60b7.css",
-    "static/js/main.a7fba76e.js"
+    "static/css/main.8ce704dc.css",
+    "static/js/main.6ef30d26.js"
   ]
 }
