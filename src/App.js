@@ -16,6 +16,9 @@ import MiniGame from "./components/MiniGame";
 import Scoreboard from "./components/Scoreboard"; // Import Scoreboard component
 import bgImage from "./assets/bg.gif";
 import bgMusic from "./assets/BG1.mp3";
+import settingsSound from "./assets/SFX/settings.wav";
+import almanacSound from "./assets/SFX/almanac.wav";
+import scoreboardSound from "./assets/SFX/scoreboard.wav";
 import bossFightMusic from "./assets/SFX/bossfight.wav";
 import fightSound from "./assets/SFX/fightsound.wav";
 import mapsData from "./components/maps.json";
@@ -47,6 +50,10 @@ const App = () => {
   const audioRef = useRef(null);
   const bossFightAudioRef = useRef(null);
   const fightSoundAudioRef = useRef(null);
+  const settingsAudioRef = useRef(null);
+  const almanacAudioRef = useRef(null);
+  const scoreboardAudioRef = useRef(null);
+  const bgMusicAudioRef = useRef(null);
   const db = getDatabase();
 
 
@@ -64,78 +71,86 @@ const App = () => {
     if (fightSoundAudioRef.current) {
       fightSoundAudioRef.current.volume = musicVolume / 100;
     }
+    if (settingsAudioRef.current) {
+      settingsAudioRef.current.volume = musicVolume / 100;
+    }
+    if (almanacAudioRef.current) {
+      almanacAudioRef.current.volume = musicVolume / 100;
+    }
+    if (scoreboardAudioRef.current) {
+      scoreboardAudioRef.current.volume = musicVolume / 100;
+    }
+    if (bgMusicAudioRef.current) {
+      bgMusicAudioRef.current.volume = musicVolume / 100;
+    }
   }, [musicVolume]);
 
   // Add a specific effect to handle page changes and control audio
   useEffect(() => {
-    // Directly control audio based on current page
-    if (currentPage === "gamePage") {
-      // Immediately stop the regular background music in GamePage
+    // Stop all audio first
+    const stopAllAudio = () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
       }
-    } else {
-      // Play regular music in non-GamePage screens if not in a boss fight
-      if (audioRef.current && !bossFight) {
-        audioRef.current.play().catch(err => {
-          console.error("Error playing background music:", err);
-        });
+      if (bossFightAudioRef.current) {
+        bossFightAudioRef.current.pause();
+        bossFightAudioRef.current.currentTime = 0;
       }
-    }
-  }, [currentPage, bossFight]);
-
-  // Handle switching between regular and boss fight music
-  useEffect(() => {
-    const handleBattleMusic = async () => {
-      // Handle boss fight music
-      if (bossFight && currentPage === "gamePage") {
-        // Play boss fight music only in game page during boss fights
-        if (bossFightAudioRef.current) {
-          bossFightAudioRef.current.volume = musicVolume / 100;
-          try {
-            await bossFightAudioRef.current.play();
-          } catch (error) {
-            console.error("Autoplay blocked for boss fight music. Waiting for user interaction.");
-          }
-        }
-        
-        // Stop normal fight sound when boss fight is active
-        if (fightSoundAudioRef.current) {
-          fightSoundAudioRef.current.pause();
-          fightSoundAudioRef.current.currentTime = 0;
-          setFightSoundPlaying(false);
-        }
-      } else {
-        // Stop boss fight music when not in a boss fight or not in game page
-        if (bossFightAudioRef.current) {
-          bossFightAudioRef.current.pause();
-          bossFightAudioRef.current.currentTime = 0;
-        }
-        
-        // Handle normal fight sound
-        if (currentPage === "gamePage" && !bossFight && fightSoundPlaying) {
-          // Play normal fight sound for regular enemies
-          if (fightSoundAudioRef.current) {
-            fightSoundAudioRef.current.volume = musicVolume / 100;
-            try {
-              await fightSoundAudioRef.current.play();
-            } catch (error) {
-              console.error("Autoplay blocked for fight sound. Waiting for user interaction.");
-            }
-          }
-        } else {
-          // Stop fight sound when not in game page or fight is not active
-          if (fightSoundAudioRef.current) {
-            fightSoundAudioRef.current.pause();
-            fightSoundAudioRef.current.currentTime = 0;
-          }
-        }
+      if (fightSoundAudioRef.current) {
+        fightSoundAudioRef.current.pause();
+        fightSoundAudioRef.current.currentTime = 0;
+      }
+      if (settingsAudioRef.current) {
+        settingsAudioRef.current.pause();
+        settingsAudioRef.current.currentTime = 0;
+      }
+      if (almanacAudioRef.current) {
+        almanacAudioRef.current.pause();
+        almanacAudioRef.current.currentTime = 0;
+      }
+      if (scoreboardAudioRef.current) {
+        scoreboardAudioRef.current.pause();
+        scoreboardAudioRef.current.currentTime = 0;
+      }
+      if (bgMusicAudioRef.current) {
+        bgMusicAudioRef.current.pause();
+        bgMusicAudioRef.current.currentTime = 0;
       }
     };
-    
-    handleBattleMusic();
-  }, [bossFight, musicVolume, currentPage, fightSoundPlaying]);
+
+    stopAllAudio();
+
+    // Play the appropriate audio based on current page
+    if (currentPage === "gamePage") {
+      // GamePage has its own audio handling with boss fights
+      if (bossFight && bossFightAudioRef.current) {
+        bossFightAudioRef.current.play().catch(err => {
+          console.error("Error playing boss fight music:", err);
+        });
+      } else if (!bossFight && fightSoundPlaying && fightSoundAudioRef.current) {
+        fightSoundAudioRef.current.play().catch(err => {
+          console.error("Error playing fight sound:", err);
+        });
+      }
+    } else if ((currentPage === "settings" || currentPage === "miniGame") && settingsAudioRef.current) {
+      settingsAudioRef.current.play().catch(err => {
+        console.error("Error playing settings sound:", err);
+      });
+    } else if (currentPage === "almanac" && almanacAudioRef.current) {
+      almanacAudioRef.current.play().catch(err => {
+        console.error("Error playing almanac sound:", err);
+      });
+    } else if (currentPage === "scoreboard" && scoreboardAudioRef.current) {
+      scoreboardAudioRef.current.play().catch(err => {
+        console.error("Error playing scoreboard sound:", err);
+      });
+    } else if (bgMusicAudioRef.current) {
+      bgMusicAudioRef.current.play().catch(err => {
+        console.error("Error playing background music:", err);
+      });
+    }
+  }, [currentPage, bossFight, fightSoundPlaying]);
 
   // Setup real-time listener for music volume when user is authenticated
   useEffect(() => {
@@ -461,15 +476,24 @@ const App = () => {
     <ModalProvider value={{ settingsOpen, profileOpen, loginOpen, signupOpen, scoreboardOpen }}>
       <GoogleOAuthProvider clientId="157299428708-eraakaj5sblugtout401ailphf12j81n.apps.googleusercontent.com">
         <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: `url(${bgImage})` }}>
-          {/* Background Music - Only render when not in GamePage */}
-          {currentPage !== "gamePage" && (
-            <audio ref={audioRef} src={bgMusic} loop preload="auto" />
-          )}
+          {/* Audio Elements */}
           {bossFight && currentPage === "gamePage" && (
             <audio ref={bossFightAudioRef} src={bossFightMusic} loop preload="auto" />
           )}
           {fightSoundPlaying && currentPage === "gamePage" && (
             <audio ref={fightSoundAudioRef} src={fightSound} loop preload="auto" />
+          )}
+          {(currentPage === "settings" || currentPage === "miniGame") && (
+            <audio ref={settingsAudioRef} src={settingsSound} loop preload="auto" />
+          )}
+          {currentPage === "almanac" && (
+            <audio ref={almanacAudioRef} src={almanacSound} loop preload="auto" />
+          )}
+          {currentPage === "scoreboard" && (
+            <audio ref={scoreboardAudioRef} src={scoreboardSound} loop preload="auto" />
+          )}
+          {currentPage !== "settings" && currentPage !== "almanac" && currentPage !== "scoreboard" && currentPage !== "miniGame" && currentPage !== "gamePage" && (
+            <audio ref={bgMusicAudioRef} src={bgMusic} loop preload="auto" />
           )}
           {loginOpen && renderLoginPopup()}
           {signupOpen && renderSignupPopup()}
