@@ -1,12 +1,12 @@
 {
   "files": {
     "main.css": "/static/css/main.b721304b.css",
-    "main.js": "/static/js/main.addad82e.js",
+    "main.js": "/static/js/main.7bad20cc.js",
     "static/js/453.2b0de4b9.chunk.js": "/static/js/453.2b0de4b9.chunk.js",
     "static/media/BG1.mp3": "/static/media/BG1.162123a86b8ccaafebae.mp3",
-    "static/media/bossfight.wav": "/static/media/bossfight.6d64eaf51b693a0f02a1.wav",
     "static/media/mc_idle.gif": "/static/media/mc_idle.fccf029a52fb1d18ed83.gif",
     "static/media/try.gif": "/static/media/try.e43287c4ebac2ea94075.gif",
+    "static/media/bossfight.wav": "/static/media/bossfight.13a248989f431ec27977.wav",
     "static/media/Animated.gif": "/static/media/Animated.c83b4b9500767e19be29.gif",
     "static/media/GEISHA AVATAR.jpg": "/static/media/GEISHA AVATAR.6ad9cf75b19731698319.jpg",
     "static/media/ALIEN AVATAR.jpg": "/static/media/ALIEN AVATAR.0dca0309d5d45034ee24.jpg",
@@ -17,6 +17,7 @@
     "static/media/Character.png": "/static/media/Character.7b1b389354f4d1ff7ba4.png",
     "static/media/toxin.gif": "/static/media/toxin.c5181d2e211f99a0bc50.gif",
     "static/media/chemistry_world.gif": "/static/media/chemistry_world.2142eb0e08a64acbd7fb.gif",
+    "static/media/fightsound.wav": "/static/media/fightsound.5cc2568dfa1aa6ff9330.wav",
     "static/media/win.wav": "/static/media/win.9b5b1a6223e1057f8898.wav",
     "static/media/lose.wav": "/static/media/lose.183e2b8a775ec673ac2a.wav",
     "static/media/SUSHICAT AVATAR.jpg": "/static/media/SUSHICAT AVATAR.5ce4ee58b3fb164f3f2f.jpg",
@@ -51,11 +52,11 @@
     "static/media/dialogueBox.png": "/static/media/dialogueBox.4c6d86e9ecfe4cb95666.png",
     "index.html": "/index.html",
     "main.b721304b.css.map": "/static/css/main.b721304b.css.map",
-    "main.addad82e.js.map": "/static/js/main.addad82e.js.map",
+    "main.7bad20cc.js.map": "/static/js/main.7bad20cc.js.map",
     "453.2b0de4b9.chunk.js.map": "/static/js/453.2b0de4b9.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.b721304b.css",
-    "static/js/main.addad82e.js"
+    "static/js/main.7bad20cc.js"
   ]
 }
