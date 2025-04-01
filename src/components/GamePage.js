@@ -294,6 +294,9 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         console.log("Game over with victory:", isVictory);
 
         if (isVictory) {
+            // Play victory sound
+            playWinSound();
+            
             console.log("Victory! Updating user progress for enemy:", currentEnemy?.id);
 
             if (auth.currentUser) {
@@ -341,6 +344,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
             setVictoryVisible(true);
         } else {
+            // Play defeat sound
             playLoseSound();
             setDefeatVisible(true);
             setHintsRemaining(2);
@@ -552,7 +556,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             setPlayerHearts((prev) => {
                 const newHeartCount = Math.max(0, prev - damage);
                 if (newHeartCount === 0) {
-    ; // Stop the timer
+                    playLoseSound(); // Play lose sound when player dies
                     setDefeatVisible(true);
                 }
                 return newHeartCount;
@@ -1733,8 +1737,10 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                 className="w-full bg-green-500 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-600 transition-colors"
                                 onClick={() => {
                                     resetPlayerHealth(); // Reset player health
-                                    setEnemyHearts(currentEnemy.health); // Reset enemy health using its maxHealth
-                    ; // Resume timer (DO NOT reset elapsed time)
+                                    setEnemyHearts(currentEnemy.health); // Reset enemy health
+                                    setHintsRemaining(3); // Reset hints to full
+                                    setHighlightedIndices([]); // Clear any highlighted hints
+                                    setHint(''); // Clear hint message
                                     setDefeatVisible(false); // Hide defeat screen
                                 }}
                             >
