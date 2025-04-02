@@ -22,6 +22,7 @@ import scoreboardSound from "./assets/SFX/scoreboard.wav";
 import bossFightMusic from "./assets/SFX/bossfight.wav";
 import fightSound from "./assets/SFX/fightsound.wav";
 import mapsData from "./components/maps.json";
+import Bg from './assets/Science Quest Icon.png';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState("mainMenu");
@@ -641,9 +642,13 @@ const App = () => {
           )}
 
           {!isAuthChecked ? (
-            <div className="fixed inset-0 flex items-center justify-center bg-black">
-              <h1 className="text-6xl font-bold text-white">Gamified</h1>
-            </div>
+         <div className="fixed inset-0 flex items-center justify-center bg-black">
+         <img 
+           src={Bg} 
+           alt="Gamified" 
+           className="w-3/4 sm:w-1/2 md:w-1/3 max-w-lg h-auto" 
+         />
+       </div>
           ) : isAuthenticated ? (
             <>
               {renderPage()}

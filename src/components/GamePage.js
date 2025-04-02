@@ -1609,11 +1609,11 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         <button
             className={`
                 bg-gradient-to-r 
-                from-teal-500 to-teal-600 text-white 
+                from-indigo-500 to-indigo-600 text-white 
                 border-2 border-gray-700 py-1.5 md:py-2 text-center
                 font-bold text-sm md:text-base rounded-lg transition-all
                 ${!isValidWord ? "opacity-50 cursor-not-allowed"
-                : "hover:from-teal-600 hover:to-teal-700 hover:shadow-lg transform hover:-translate-y-0.5"}`}
+                : "hover:from-indigo-600 hover:to-indigo-700 hover:shadow-md transform hover:-translate-y-0.5"}`}
             onClick={handleAttack}
             disabled={!isValidWord}
         >

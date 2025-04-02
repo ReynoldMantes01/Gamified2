@@ -134,8 +134,7 @@ const FunFact = ({ onLoadingComplete }) => {
     return (
         <div className="fun-fact-container" style={{ userSelect: 'none' }}>
             <div className="fun-fact-content">
-                <div className="loading-spinner"></div>
-                <h3>Did you know?</h3>
+            <h2 class="fun-fact-header">Did You Know?</h2>
                 <p className="fact-text">{fact}</p>
                 <p className="category-text">Category: {category.charAt(0).toUpperCase() + category.slice(1)}</p>
             </div>
