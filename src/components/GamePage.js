@@ -309,6 +309,26 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 // Update user progress when enemy is defeated
                 await updateUserProgress(currentEnemy);
 
+                // Check if next enemy is a boss and update bossFight state
+                const currentEnemyIdx = enemyProgression.findIndex(e => e.id === currentEnemy?.id);
+                const nextEnemyIndex = currentEnemyIdx + 1;
+                
+                if (nextEnemyIndex < enemyProgression.length) {
+                    const nextEnemy = enemyProgression[nextEnemyIndex];
+                    const nextIsBoss = nextEnemy.id.includes('_boss');
+                    console.log("Next enemy is boss:", nextIsBoss, nextEnemy.id);
+                    
+                    // Stop fight sound if next is boss
+                    if (nextIsBoss) {
+                        setFightSoundPlaying(false);
+                        // Set bossFight to true after a short delay to ensure audio transition
+                        setTimeout(() => {
+                            setBossFight(true);
+                            console.log("Boss fight music should start playing now");
+                        }, 500);
+                    }
+                }
+
                 // Increase player health
                 setPlayerHearts(prev => {
                     const newHealth = Math.min(prev + 1, 4); // Increase health by 1, max of 4
@@ -1325,6 +1345,14 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         setFightSoundPlaying(false);
         onMainMenu();
     };
+
+    useEffect(() => {
+        // This effect handles the audio transition when bossFight state changes
+        if (bossFight) {
+            console.log("Boss fight state is true, boss music should play");
+            setFightSoundPlaying(false); // Ensure regular fight music is stopped
+        }
+    }, [bossFight]);
 
     return (
 
