@@ -569,6 +569,13 @@ const App = () => {
         return <MainMenu onPlay={() => setCurrentPage("gamePage")} />;
     }
   };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsAuthChecked(true);
+    }, 500); // 2-second delay
+
+    return () => clearTimeout(timer); // Cleanup to avoid memory leaks
+  }, []);
 
   return (
     <ModalProvider value={{ settingsOpen, profileOpen, loginOpen, signupOpen, scoreboardOpen }}>

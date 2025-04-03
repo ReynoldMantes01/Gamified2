@@ -766,10 +766,6 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             highlight: "letter-grid"
         },
         {
-            message: "Some letters have special effects! Hover over them to see what they do.",
-            highlight: null
-        },
-        {
             message: "Use HINTS when you're stuck, but use them wisely - you only have 3 per level!",
             highlight: "hint-box "
         },
@@ -827,8 +823,6 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             // Reset health to 4 if player is at level 1
             if (level.levelNumber === 1) {
                 resetPlayerHealth(4);
-                setShowTutorial(false);
-                setTutorialStep(0);
                 setDialogVisible(false);
             } else {
                 const enemyDialogs = [
@@ -1514,7 +1508,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                             <img
                                 src={attackEnemyImage}
                                 alt="enemy-laser"
-                                className="absolute top-1/2 right-full transform -translate-y-1/2"
+                                className="absolute top-1/2 right-full transform translate-y-1/2"
                                 style={{
                                     animation: "enemyShoot 1s linear forwards",
                                     height: "8rem",
@@ -1783,48 +1777,68 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
             {/* Dialog Box */}
             {dialogVisible && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-[#f4d9a3] border-4 border-black p-6 rounded-lg text-center max-w-md w-full">
-                        {showTutorial ? (
-                            <>
-                                <h2 className="text-2xl font-bold mb-4">Tutorial</h2>
-                                <p className="text-lg mb-4">{tutorialSteps[tutorialStep].message}</p>
-                                {tutorialStep < tutorialSteps.length - 1 ? (
-                                    <button
-                                        className="bg-blue-500 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-blue-600 transition-colors"
-                                        onClick={handleNextDialog}
-                                    >
-                                        Next
-                                    </button>
-                                ) : (
-                                    <button
-                                        className="bg-green-500 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-green-600 transition-colors"
-                                        onClick={handleNextDialog}
-                                    >
-                                        Start Game
-                                    </button>
-                                )}
-                            </>
-                        ) : (
-                            <>
-                                {currentEnemy?.image && (
-                                    <img
-                                        src={require(`../assets/${currentEnemy.image}`)}
-                                        alt={currentEnemy.name}
-                                        className="w-32 h-32 object-contain mx-auto mb-4"
-                                    />
-                                )}
-                                <p className="text-lg mb-4">{dialogSequence[currentDialogIndex]}</p>
-                                <button
-                                    className="bg-blue-500 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-blue-600 transition-colors"
-                                    onClick={handleNextDialog}
-                                >
-                                    {currentDialogIndex < dialogSequence.length - 1 ? "Next" : "Begin Battle"}
-                                </button>
-                            </>
-                        )}
-                    </div>
-                </div>
+                <div className="fixed  flex items-center mt-27 justify-center z-50 p-4">
+      <div className="bg-gradient-to-r from-indigo-900 to-blue-900 border-4 border-teal-400 p-6 mb-28 rounded-lg text-center max-w-md w-full shadow-lg shadow-teal-500/50">
+        {showTutorial ? (
+          <>
+            <div className="flex justify-center mb-4">
+              <div className="h-12 w-12 rounded-full bg-teal-400 flex items-center justify-center">
+                <span className="text-2xl">🧪</span>
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold mb-4 text-teal-300">TUTORIAL </h2>
+            <p className="text-lg mb-6 text-white">{tutorialSteps[tutorialStep].message}</p>
+            {tutorialStep < tutorialSteps.length - 1 ? (
+              <button
+                className="bg-teal-500 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-teal-600 transition-colors border-2 border-teal-300"
+                onClick={handleNextDialog}
+              >
+                Continue 
+              </button>
+            ) : (
+              <button
+                className="bg-green-500 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-green-600 transition-colors border-2 border-green-300"
+                onClick={handleNextDialog}
+              >
+                Begin The Scientific Quest
+              </button>
+            )}
+          </>
+        ) : (
+          <>
+            {currentEnemy?.image && (
+              <div className="relative mb-6">
+                <div className="absolute inset-0 bg-teal-500 blur-md opacity-30 rounded-full"></div>
+                <img
+                  src={require(`../assets/${currentEnemy.image}`)}
+                  alt={currentEnemy.name}
+                  className="w-40 h-40 object-contain mx-auto relative z-10"
+                />
+              </div>
+            )}
+            <h3 className="text-xl font-bold mb-2 text-red-300">ANOMALY DETECTED</h3>
+            <p className="text-lg mb-6 text-white">{dialogSequence[currentDialogIndex]}</p>
+            <button
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-blue-700 transition-colors border-2 border-blue-400"
+              onClick={handleNextDialog}
+            >
+              {currentDialogIndex < dialogSequence.length - 1 ? "Continue Scan" : "Initialize Defense Protocols"}
+            </button>
+          </>
+        )}
+        <div className="mt-4 flex justify-center space-x-2">
+          {tutorialSteps.map((_, index) => (
+            <div 
+              key={index} 
+              className={`h-2 w-2 rounded-full ${
+                showTutorial && index === tutorialStep ? 'bg-teal-400' : 
+                showTutorial && index < tutorialStep ? 'bg-teal-700' : 'bg-gray-700'
+              }`}
+            ></div>
+          ))}
+        </div>
+      </div>
+    </div>
             )}
 
             {/* Fun Fact */}

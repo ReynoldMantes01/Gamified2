@@ -4,7 +4,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { getDatabase, ref, set, get } from 'firebase/database';
 import ForgotPassword from './ForgotPassword';
 import FunFact from './FunFact';
-
+import Bg from '../assets/Science Quest Icon.png';
 const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
     const [email, setEmail] = useState(() => localStorage.getItem('savedEmail') || '');
     const [password, setPassword] = useState('');
@@ -78,9 +78,13 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
 
     if (showLoadingScreen) {
         return (
-            <div className="fixed inset-0 flex flex-col items-center justify-center bg-black">
-                <h1 className="text-6xl font-bold text-white">Gamified</h1>
-            </div>
+            <div className="fixed inset-0 flex items-center justify-center bg-black">
+            <img 
+              src={Bg} 
+              alt="Gamified" 
+              className="w-3/4 sm:w-1/2 md:w-1/3 max-w-lg h-auto" 
+            />
+          </div>
         );
     }
 
@@ -134,9 +138,6 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
 
             {showForgotPassword && (
                 <ForgotPassword onClose={() => setShowForgotPassword(false)} />
-            )}
-            {showFunFact && (
-                <FunFact />
             )}
         </div>
     );
