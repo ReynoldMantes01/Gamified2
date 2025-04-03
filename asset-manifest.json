@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.8ce704dc.css",
-    "main.js": "/static/js/main.99c0d4b3.js",
+    "main.css": "/static/css/main.042d3fb3.css",
+    "main.js": "/static/js/main.c1f346c7.js",
     "static/js/453.2b0de4b9.chunk.js": "/static/js/453.2b0de4b9.chunk.js",
     "static/media/BG1.mp3": "/static/media/BG1.162123a86b8ccaafebae.mp3",
     "static/media/almanac.wav": "/static/media/almanac.c84a5035293efd3820ed.wav",
@@ -12,6 +12,7 @@
     "static/media/bossfight.wav": "/static/media/bossfight.13a248989f431ec27977.wav",
     "static/media/Animated.gif": "/static/media/Animated.c83b4b9500767e19be29.gif",
     "static/media/GEISHA AVATAR.jpg": "/static/media/GEISHA AVATAR.6ad9cf75b19731698319.jpg",
+    "static/media/Almanac.gif": "/static/media/Almanac.7953225f9ccb95788e7a.gif",
     "static/media/scoreboard.wav": "/static/media/scoreboard.81618b393909219f2686.wav",
     "static/media/ALIEN AVATAR.jpg": "/static/media/ALIEN AVATAR.0dca0309d5d45034ee24.jpg",
     "static/media/Chemistry.gif": "/static/media/Chemistry.e48784934d1d7de377c9.gif",
@@ -35,6 +36,7 @@
     "static/media/(old)mutant_dna.gif": "/static/media/(old)mutant_dna.2cab49bbd3968e6685c9.gif",
     "static/media/hint.wav": "/static/media/hint.3e2b8a36c21e21afa1a5.wav",
     "static/media/molecule.gif": "/static/media/molecule.aa069e08bceac5baa448.gif",
+    "static/media/Science Quest Icon.png": "/static/media/Science Quest Icon.cb658f266af2ec303cc3.png",
     "static/media/atom.gif": "/static/media/atom.a392fe3fe0c9ff049b35.gif",
     "static/media/microbe.gif": "/static/media/microbe.13a8cde36f588d5b9340.gif",
     "static/media/scramble.wav": "/static/media/scramble.07de398be9000512fd06.wav",
@@ -57,12 +59,12 @@
     "static/media/1.jpg": "/static/media/1.e939fd7cf1f097840128.jpg",
     "static/media/dialogueBox.png": "/static/media/dialogueBox.4c6d86e9ecfe4cb95666.png",
     "index.html": "/index.html",
-    "main.8ce704dc.css.map": "/static/css/main.8ce704dc.css.map",
-    "main.99c0d4b3.js.map": "/static/js/main.99c0d4b3.js.map",
+    "main.042d3fb3.css.map": "/static/css/main.042d3fb3.css.map",
+    "main.c1f346c7.js.map": "/static/js/main.c1f346c7.js.map",
     "453.2b0de4b9.chunk.js.map": "/static/js/453.2b0de4b9.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.8ce704dc.css",
-    "static/js/main.99c0d4b3.js"
+    "static/css/main.042d3fb3.css",
+    "static/js/main.c1f346c7.js"
   ]
 }
