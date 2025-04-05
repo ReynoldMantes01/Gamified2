@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Cross } from 'hamburger-react';
 import GameSettings from './GameSettings';
 import Profile from './Profile';
@@ -572,7 +572,7 @@ const saveLongestWord = (word) => {
 };
 
 // Handle keyboard input
-const handleKeyPress = useRef((event) => {
+const handleKeyPress = useCallback((event) => {
     // Handle Escape key for slidebar
     if (event.key === 'Escape') {
         setSlidebarOpen(prev => !prev);
