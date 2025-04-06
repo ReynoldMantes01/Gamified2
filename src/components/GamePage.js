@@ -1756,65 +1756,89 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
 
 
             {/* Victory Dialog */}
-            {victoryVisible && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-[#f4d9a3] border-4 border-black p-6 rounded-lg text-center max-w-sm w-full">
-                        <h2 className="text-3xl font-bold mb-4">Victory!</h2>
-                        <p className="text-xl mb-6">You defeated {currentEnemy?.name}!</p>
-                        <div className="space-y-3">
-                            <button
-                                className="w-full bg-green-500 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-600 transition-colors"
-                                onClick={handleNextLevel}
-                            >
-                                Next Level
-                            </button>
-                            <button
-                                className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-blue-600 transition-colors"
-                                onClick={() => {
-                                    setVictoryVisible(false);
-                                    onMainMenu();
-                                }}
-                            >
-                                Back to Main Menu
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+      {victoryVisible && (
+        <div className="fixed inset-0 flex items-center mt-27 justify-center z-50 p-4">
+          <div className="bg-gradient-to-r from-indigo-900 to-blue-900 border-4 border-teal-400 p-6 mb-28 rounded-lg text-center max-w-md w-full shadow-lg shadow-teal-500/50">
+            <div className="flex justify-center mb-4">
+              <div className="h-12 w-12 rounded-full bg-teal-400 flex items-center justify-center">
+                <span className="text-2xl">🧠</span>
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold mb-4 text-teal-300">
+              EXPERIMENT SUCCESSFUL
+            </h2>
+            <p className="text-lg mb-6 text-white">
+              You've successfully neutralized {currentEnemy?.name} with your
+              scientific prowess!
+            </p>
+            <div className="space-y-3">
+              <div
+                className="bg-teal-500 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-teal-600 transition-colors border-2 border-teal-300 cursor-pointer"
+                onClick={handleNextLevel}
+              >
+                Next Level
+              </div>
+              <div
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-blue-700 transition-colors border-2 border-blue-400 cursor-pointer mt-3 sm:mt-0"
+                onClick={() => {
+                  setVictoryVisible(false);
+                  onMainMenu();
+                }}
+              >
+                Return to MainMenu
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-            {/* Defeat Dialog */}
-            {defeatVisible && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-[#f4d9a3] border-4 border-black p-6 rounded-lg text-center max-w-sm w-full">
-                        <h2 className="text-3xl font-bold mb-4">Defeat!</h2>
-                        <p className="text-xl mb-6">You have been defeated!</p>
-                        <div className="space-y-3">
-                            <button
-                                className="w-full bg-green-500 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-600 transition-colors"
-                                onClick={() => {
-                                    resetPlayerHealth(); // Reset player health
-                                    setEnemyHearts(currentEnemy.health); // Reset enemy health
-                                    setHintsRemaining(3); // Reset hints to full
-                                    setHighlightedIndices([]); // Clear any highlighted hints
-                                    setHint(''); // Clear hint message
-                                    setDefeatVisible(false); // Hide defeat screen
-                                }}
-                            >
-                                Try Again
-                            </button>
-                            <button
-                                className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-blue-600 transition-colors"
-                                onClick={() => {
-                                    setDefeatVisible(false);
-                                    onMainMenu();
-                                }}
-                            >
-                                Back to Main Menu
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+      {/* Defeat Dialog */}
+      {defeatVisible && (
+        <div className="fixed inset-0 flex items-center mt-27 justify-center z-50 p-4">
+          <div className="bg-gradient-to-r from-indigo-900 to-blue-900 border-4 border-red-400 p-6 mb-28 rounded-lg text-center max-w-md w-full shadow-lg shadow-red-500/50">
+            <div className="flex justify-center mb-4">
+              <div className="h-12 w-12 rounded-full bg-red-400 flex items-center justify-center">
+                <span className="text-2xl">⚠️</span>
+              </div>
+            </div>
+            <h3 className="text-xl font-bold mb-2 text-red-300">
+              EXPERIMENT FAILED
+            </h3>
+            <p className="text-lg mb-6 text-white">
+              Your hypothesis didn't hold up under testing conditions!
+            </p>
+            <div className="space-y-3">
+              <div
+                className="bg-teal-500 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-teal-600 transition-colors border-2 border-teal-300 cursor-pointer"
+                onClick={() => {
+                  resetPlayerHealth();
+                  setEnemyHearts(currentEnemy.health);
+                  setHintsRemaining(3);
+                  setHighlightedIndices([]);
+                  setHint("");
+                  setDefeatVisible(false);
+                }}
+              >
+                Retry
+              </div>
+              <div
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-blue-700 transition-colors border-2 border-blue-400 cursor-pointer mt-3 sm:mt-0"
+                onClick={() => {
+                  setDefeatVisible(false);
+                  onMainMenu();
+                }}
+              >
+                Return to MainMenu
+              </div>
+            </div>
+            <div className="mt-4 flex justify-center space-x-2">
+              <div className="h-2 w-2 rounded-full bg-red-400"></div>
+              <div className="h-2 w-2 rounded-full bg-gray-700"></div>
+              <div className="h-2 w-2 rounded-full bg-gray-700"></div>
+            </div>
+          </div>
+        </div>
+      )}
 
             {/* Dialog Box */}
             {dialogVisible && (
