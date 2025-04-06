@@ -309,6 +309,16 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 // Update user progress when enemy is defeated
                 await updateUserProgress(currentEnemy);
 
+                // Check if current enemy was a boss and reset boss fight state
+                if (currentEnemy?.id?.endsWith('_boss')) {
+                    setBossFight(false);
+                    setFightSoundPlaying(false);
+                    // Start normal fight sound after a short delay
+                    setTimeout(() => {
+                        setFightSoundPlaying(true);
+                    }, 500);
+                }
+
                 // Check if next enemy is a boss and update bossFight state
                 const currentEnemyIdx = enemyProgression.findIndex(e => e.id === currentEnemy?.id);
                 const nextEnemyIndex = currentEnemyIdx + 1;
@@ -726,7 +736,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 // Stay on same map, just change enemy
                 console.log("Staying on same map, changing enemy");
                 setCurrentEnemy(nextEnemy);
-                resetGame();
+                resetGame(nextEnemy);  // Pass the nextEnemy directly to resetGame
             }
         } else {
             console.log("No more enemies, returning to main menu");
@@ -1151,7 +1161,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         });
     };
 
-    const resetGame = () => {
+    const resetGame = (enemy = null) => {
         console.log("Resetting game state for new enemy");
 
         // Keep existing letters and effects, just fill in empty spots
@@ -1171,12 +1181,15 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             blind: 0
         });
 
-        // Set enemy hearts based on current enemy
-        if (currentEnemy) {
-            setEnemyHearts(currentEnemy.health || 3);
+        // Use the provided enemy or fall back to currentEnemy
+        const targetEnemy = enemy || currentEnemy;
+        
+        // Set enemy hearts based on target enemy
+        if (targetEnemy) {
+            setEnemyHearts(targetEnemy.health || 3);
 
             // Set dialog for the new enemy
-            const enemyDialog = currentEnemy.dialog || `${currentEnemy.name} appears!`;
+            const enemyDialog = targetEnemy.dialog || `${targetEnemy.name} appears!`;
             setDialogSequence([enemyDialog]);
             setCurrentDialogIndex(0);
             setDialogMessage(enemyDialog);
