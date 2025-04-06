@@ -21,7 +21,7 @@
             "strength": "Dirty Places"
           },
           "image": "microbe.gif",
-          "dialog": "OH NO! THE MICROBES, Microbes are tiny living organisms, such as bacteria, viruses, fungi, and protozoa, that are too small to be seen with the naked eye. They exist everywhere, play essential roles in ecosystems, and can be beneficial (like in digestion) or harmful (causing diseases). "
+          "dialog": "Heh heh... you can't see me, but I'm *everywhere*. I'm the unseen invader—bacteria, viruses, and worse. I slip into your skin, your breath... your bloodstream. Think you can stop me with just soap? *Hint: Microbes are everywhere—some are helpful, but many can be dangerous without hygiene. Washing hands really matters!*"
         },
         {
           "id": "bio_t2",
@@ -38,7 +38,7 @@
             "strength": "Polluted Areas"
           },
           "image": "toxin.gif",
-          "dialog": "TOXIC CRAWLER! after we defeat MICROBES there is more dangerous Enemy, but did you know that Toxic refers to something harmful or poisonous to living organisms, potentially causing damage, illness, or death when absorbed, inhaled, or ingested. So stay out of it's Poison Spray."
+          "dialog": "Cough... cough... do you smell that? It's the stench of decay. I'm born from pollution and rot, and I *feed* on your clean world. Antidotes? Hah! Let's see if you can survive my poison fog. *Did you know? Toxic substances can be natural or man-made, and knowing how to neutralize them is key to survival.*"
         },
         {
           "id": "bio_boss",
@@ -55,7 +55,7 @@
             "strength": "Absorbing Traits"
           },
           "image": "mutant_dna.gif",
-          "dialog": "PHEW! we manage to survive againts that TOXIC CRAWLERS......!!!!!! OH NO! What happen to you? Mr.DNA? (Mutant DNA refers to DNA that has undergone a change or mutation in its sequence, altering its normal genetic information. This can occur naturally or be induced, potentially affecting how genes function and leading to variations, diseases, or adaptations.)"
+          "dialog": "You're still alive? How... disappointing. I was once human... once. Now I twist genes like threads in a web. Mutation... evolution... corruption. Are you ready to meet your *genetic destiny*? *Remember: DNA mutations can cause diseases, but they're also how species evolve. Mutation isn't always bad—it’s how change happens.*"
         }
       ],
       "next_map_id": "map2"
@@ -84,7 +84,8 @@
             "weakness": "Mathematical Terms",
             "strength": "Common Words"
           },
-          "image": "quark.gif"
+          "image": "quark.gif",
+          "dialog": "Flicker... flicker... I'm the particle that shouldn't exist. I twitch between realities, obeying no logic. In this realm, chaos reigns—and *I'm its architect*. *Quarks are the smallest building blocks of matter—they make up protons and neutrons, the core of every atom.*"
         },
         {
           "id": "phy_t2",
@@ -100,7 +101,8 @@
             "weakness": "Philosophical Words",
             "strength": "Scientific Terms"
           },
-          "image": "graviton.gif"
+          "image": "graviton.gif",
+          "dialog": "You feel that pull? It's me... dragging you down. Gravity is not your friend here. I’ll crush your hopes under forces you can't even see. Escape? Impossible. *Gravitons are theoretical particles that explain gravity on the quantum level. Scientists are still searching for proof of their existence.*"
         },
         {
           "id": "phy_boss",
@@ -116,7 +118,8 @@
             "weakness": "Simple Words",
             "strength": "Complex Words"
           },
-          "image": "black_hole.gif"
+          "image": "black_hole.gif",
+          "dialog": "*Whispers from beyond...* You’ve crossed the event horizon now. Light, matter, even time—it all ends here. Scream if you like. No one will hear you inside the singularity. *Black holes are real, and their gravity is so strong that even light can’t escape. They’re the ultimate test of physics!*"
         }
       ],
       "next_map_id": "map3"
@@ -141,7 +144,8 @@
             "weakness": "Chemical Names",
             "strength": "Everyday Words"
           },
-          "image": "atom.gif"
+          "image": "atom.gif",
+          "dialog": "So small... so dangerous. I am the foundation of all things—and your *undoing*. One spark, one wrong reaction, and BOOM... I scatter your essence into the void. *Atoms are the smallest unit of matter, made of protons, neutrons, and electrons. They’re everywhere—even in you.*"
         },
         {
           "id": "chem_t2",
@@ -157,7 +161,8 @@
             "weakness": "Organic Chemistry Words",
             "strength": "Non-Chemical Terms"
           },
-          "image": "molecule.gif"
+          "image": "molecule.gif",
+          "dialog": "We are bound... and yet unstable. I hold together by forces you don’t understand. Break my bonds, and watch your reality dissolve into a haze of strange fumes. *Molecules form when atoms bond together. Their structure determines everything—from water to poison.*"
         },
         {
           "id": "chem_boss",
@@ -173,7 +178,8 @@
             "weakness": "Physics Terms",
             "strength": "Chemical Terms"
           },
-          "image": "reaction_master.gif"
+          "image": "reaction_master.gif",
+          "dialog": "The laboratory whispers my name... every explosion, every burst of acid. I control the reactions, I ignite the chaos. Bow before your *catalyst king*, or be *consumed in fire and foam*! *Chemical reactions change matter. Catalysts speed them up without being changed themselves—like magic, but scientific!*"
         }
       ],
       "next_map_id": null
