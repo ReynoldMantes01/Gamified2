@@ -167,7 +167,7 @@
         {
           "id": "chem_boss",
           "name": "Reaction Master",
-          "health": 15,
+          "health": 10,
           "attacks": [
             {
               "name": "Catalyst Burst",

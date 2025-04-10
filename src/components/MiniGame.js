@@ -718,20 +718,20 @@ const handleSelectedLetterClick = (letter, index) => {
             }
         }
         
-        @keyframes enemyShoot {
-            0% {
-                transform: translateX(-10vw) translateY(-50%) rotate(180deg);
-                opacity: 0.7;
-            }
-            50% {
-                transform: translateX(calc(20vw)) translateY(-50%) rotate(180deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateX(calc(50vw)) translateY(-50%) rotate(180deg);
-                opacity: 0;
-            }
-        }
+@keyframes enemyShoot {
+    0% {
+        transform: translateX(0) translateY(-50%) rotate(180deg);
+        opacity: 0.7;
+    }
+    50% {
+        transform: translateX(calc(-20vw)) translateY(-50%) rotate(180deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(calc(-50vw)) translateY(-50%) rotate(180deg);
+        opacity: 0;
+    }
+}
         
         .player-attack {
             animation: shoot 0.8s ease-out forwards;
@@ -873,10 +873,10 @@ const handleSelectedLetterClick = (letter, index) => {
             />
             {enemyAttacking && (
                 <img 
-                    src={attackEnemyImage} 
-                    alt="Enemy Attack" 
-                    className="absolute top-1/2 -left-12 sm:-left-24 transform -translate-y-1/2 w-16 h-16 sm:w-32 sm:h-32 enemy-attack"
-                />
+                src={attackEnemyImage} 
+                alt="Enemy Attack" 
+                className="absolute top-1/2 right-0 transform -translate-y-1/2 w-16 h-16 sm:w-32 sm:h-32 enemy-attack"
+            />
             )}
         </div>
     </div>

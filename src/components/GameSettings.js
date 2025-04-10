@@ -196,14 +196,13 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume, soundEffectsVolum
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" style={{ userSelect: 'none' }}>
-      {showFunFact && <FunFact />}
       <div className="bg-gray-800 text-white p-8 rounded w-[450px]">
         <h2 className="text-4xl mb-8 text-center">Settings</h2>
         
         {/* Music Volume Section */}
         <div className="mb-6">
           <label htmlFor="musicVolume" className="block mb-4 text-center">Music Volume</label>
-          <div className="text-xs text-center text-gray-400 mb-2">(Controls BG1.mp3)</div>
+          <div className="text-xs text-center text-gray-400 mb-2"></div>
           <div className={`p-2 rounded ${selectedButton === -1 ? 'ring-2 ring-white' : ''}`}>
             <input
               type="range"
@@ -222,7 +221,7 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume, soundEffectsVolum
         {/* Background Volume Section */}
         <div className="mb-6">
           <label htmlFor="backgroundVolume" className="block mb-4 text-center">Background Volume</label>
-          <div className="text-xs text-center text-gray-400 mb-2">(Controls bossfight.wav, fightsound.wav, settings.wav, scoreboard.wav)</div>
+          <div className="text-xs text-center text-gray-400 mb-2"></div>
           <div className={`p-2 rounded ${selectedButton === -1 ? 'ring-2 ring-white' : ''}`}>
             <input
               type="range"
@@ -235,19 +234,19 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume, soundEffectsVolum
               className="w-full"
             />
             <div className="text-center mt-2">{tempBackgroundVolume}%</div>
-            <button 
+{/*             <button 
               onClick={playTestBackgroundSound}
               className="mt-2 text-xs text-blue-400 hover:text-blue-300"
             >
               Test Background Sound
-            </button>
+            </button> */}
           </div>
         </div>
 
         {/* Sound Effects Volume Section */}
         <div className="mb-6">
           <label htmlFor="soundEffectsVolume" className="block mb-4 text-center">Sound Effects Volume</label>
-          <div className="text-xs text-center text-gray-400 mb-2">(Controls hint.wav, hit.wav, lose.wav, win.wav, scramble.wav)</div>
+          <div className="text-xs text-center text-gray-400 mb-2"></div>
           <div className={`p-2 rounded ${selectedButton === -1 ? 'ring-2 ring-white' : ''}`}>
             <input
               type="range"
@@ -260,12 +259,12 @@ const GameSettings = ({ onClose, onSave, onReset, musicVolume, soundEffectsVolum
               className="w-full"
             />
             <div className="text-center mt-2">{tempSoundEffectsVolume}%</div>
-            <button 
+{/*             <button 
               onClick={playTestSoundEffect}
               className="mt-2 text-xs text-blue-400 hover:text-blue-300"
             >
               Test Sound Effect
-            </button>
+            </button> */}
           </div>
         </div>
 

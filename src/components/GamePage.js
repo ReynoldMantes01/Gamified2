@@ -614,7 +614,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         // Check if the word is a valid science term
         if (scienceTerm[word]) {
             // Calculate damage as 0.2 per letter
-            const damage = word.length * 0.2;
+            const damage = word.length * 10;
 
             // Apply status effects if any
             let totalDamage = damage;
@@ -1443,18 +1443,26 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                 </div>
 
                 {/* Right Side */}
-                <div className="player-info flex items-center mt-2 sm:mt-0">
-
-                    <div className="hearts flex items-center">
-                        {[...Array(enemyHearts)].map((_, i) => (
-                            <img key={i}
-                                src={heartImage}
-                                alt="Heart"
-                                className="w-8 h-8 sm:w-12 sm:h-12 ml-2 sm:ml-6" />
-                        ))}
-                    </div>
-                </div>
-            </div>
+                <div className="player-info flex flex-col items-center mt-2 sm:mt-0">
+    {/* Enemy Name Display */}
+    {currentEnemy?.name && (
+        <div className="enemy-name-display mb-2 px-3 py-1 bg-red-900 bg-opacity-80 rounded-lg border-2 border-red-700">
+            <span className="text-xl sm:text-2xl font-bold text-white">
+                {currentEnemy.name}
+            </span>
+        </div>
+    )}
+    <div className="hearts flex items-center">
+        {[...Array(enemyHearts)].map((_, i) => (
+            <img key={i}
+                src={heartImage}
+                alt="Heart"
+                className="w-6 h-6 sm:w-8 sm:h-8 mr-2" />
+                
+        ))}
+    </div>
+</div>
+</div>
 
             {/* Main Game Content */}
             <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-7xl gap-2 sm:gap-4 mb-2 sm:mb-4">
@@ -1549,7 +1557,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                             <img
                                 src={attackEnemyImage}
                                 alt="enemy-laser"
-                                className="absolute top-1/2 right-full transform translate-y-1/2"
+                                className="absolute top-1/2 left-full transform translate-y-1/2"
                                 style={{
                                     animation: "enemyShoot 1s linear forwards",
                                     height: "8rem",

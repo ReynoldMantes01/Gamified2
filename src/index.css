@@ -21,11 +21,11 @@ body {
 /* enemy attack animation */
 @keyframes enemyShoot {
     0% {
-        right: 100%; 
+        left: 100%; 
         opacity: 5;
     }
     100% {
-        right: 80vmax; 
+        left: 80vmax; 
         opacity: 0;
     }
 }
