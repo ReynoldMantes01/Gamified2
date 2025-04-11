@@ -614,7 +614,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
         // Check if the word is a valid science term
         if (scienceTerm[word]) {
             // Calculate damage as 0.2 per letter
-            const damage = word.length * 10;
+            const damage = word.length * 0.2;
 
             // Apply status effects if any
             let totalDamage = damage;
@@ -743,7 +743,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             // No more enemies, return to main menu
             reload();
             setTimeout(() => {
-                onMainMenu();
+                setGameCleared(true);
             }, 500); // Small delay to ensure reload completes
         }
     };
@@ -1748,19 +1748,45 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
             )}
             {/* Game Cleared Dialog */}
             {gameCleared && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">
-                    <div className="bg-gray-900 p-8 text-center text-white border-4 border-gray-700">
-                        <h2 className="text-4xl font-bold mb-4">🏆 Game Completed! 🏆</h2>
-                        <p className="text-lg mb-4">You completed the game</p>
-                        <button 
-                            onClick={onMainMenu}
-                            className="bg-green-500 px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-600"
-                        >
-                            Return to Main Menu
-                        </button>
-                    </div>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-90 z-50 animate-fadeIn">
+        <div className="bg-gradient-to-b from-gray-800 to-gray-900 p-8 rounded-xl text-center text-white border-4 border-yellow-400 shadow-2xl transform scale-110 animate-bounceIn">
+            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                <div className="flex space-x-3">
+                    {[1, 2, 3, 4, 5].map(star => (
+                        <div key={star} className="text-4xl animate-pulse text-yellow-400">⭐</div>
+                    ))}
                 </div>
-            )}
+            </div>
+            
+            <h2 className="text-5xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500">
+                🏆 VICTORY! 🏆
+            </h2>
+            
+            <div className="mb-6 px-8 py-4 bg-gray-800 rounded-lg">
+                <p className="text-xl mb-2">You've conquered <span className="font-bold text-green-400">all challenges</span> and</p>
+                <p className="text-xl font-bold text-blue-300">completed the entire game!</p>
+            </div>
+            
+            <div className="flex justify-center space-x-4 mb-2">
+                <div className="animate-float">🧪</div>
+                <div className="animate-float delay-100">🔬</div>
+                <div className="animate-float delay-200">🧬</div>
+                <div className="animate-float delay-300">⚛️</div>
+            </div>
+            
+            <button 
+                onClick={onMainMenu}
+                className="mt-6 bg-gradient-to-r from-green-500 to-emerald-600 px-8 py-4 rounded-lg text-xl font-bold hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-green-500/50 transform hover:scale-105"
+            >
+                Return to Main Menu
+            </button>
+            
+            <div className="mt-6 text-sm text-gray-400">
+                Thank you for playing Science Quest!
+            </div>
+        </div>
+    </div>
+)}
 
 
             {/* Victory Dialog */}
