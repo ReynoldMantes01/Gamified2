@@ -50,6 +50,13 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
+            
+            // Check if the user's email is verified
+            if (!user.emailVerified) {
+                setError('Please verify your email!');
+                return;
+            }
+            
             localStorage.setItem('savedEmail', email);
             handleLoginSuccess(user);
         } catch (error) {

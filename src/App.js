@@ -282,18 +282,26 @@ const App = () => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is signed in
-        const db = getDatabase();
-        const userRef = ref(db, `users/${user.uid}`);
-        
-        onValue(userRef, (snapshot) => {
-          const data = snapshot.val();
-          if (data) {
-            setUserProgress(data);
-            setIsAuthenticated(true);
-            setLoginOpen(false);
-          }
-        });
+        // Check if the user's email is verified
+        if (user.emailVerified) {
+          // User is signed in and email is verified
+          const db = getDatabase();
+          const userRef = ref(db, `users/${user.uid}`);
+          
+          onValue(userRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+              setUserProgress(data);
+              setIsAuthenticated(true);
+              setLoginOpen(false);
+            }
+          });
+        } else {
+          // User is signed in but email is not verified
+          setUserProgress(null);
+          setIsAuthenticated(false);
+          setLoginOpen(true);
+        }
       } else {
         // User is signed out
         setUserProgress(null);

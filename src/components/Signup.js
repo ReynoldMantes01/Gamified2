@@ -47,6 +47,8 @@ const Signup = ({ onSwitchToLogin }) => {
 
             // Send verification email
             await sendEmailVerification(user);
+            
+            // Show verification message
             setVerificationSent(true);
 
         } catch (error) {
