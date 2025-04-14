@@ -345,7 +345,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                     // Update health in Firebase
                     const db = getDatabase();
                     const userRef = ref(db, `users/${auth.currentUser.uid}/health`);
-                    set(userRef, newHealth);
+                    set(userRef, newHealth); 
                     return newHealth;
                 });
             } else {
@@ -1482,7 +1482,7 @@ const GamePage = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
                                     bg-no-repeat 
                                     transition-all 
                                     duration-300 
-                                    ${isCharacterAttacking ? "character-responsive translate-x-24 md:translate-x-32 lg:translate-x-40" : ""}
+                                    ${isCharacterAttacking ? "character-responsive duration-100 md:translate-x-32 lg:translate-x-40" : ""}
                                     ${isCharacterIdle ? "character-responsive" : ""}`}
                         style={{ backgroundImage: `url(${isCharacterAttacking 
                                                     ? characterAttack 

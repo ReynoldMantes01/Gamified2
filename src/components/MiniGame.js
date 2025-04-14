@@ -745,16 +745,16 @@ const handleSelectedLetterClick = (letter, index) => {
     
     {/* Tutorial Dialog */}
     {showTutorial && (
-        <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-            <div className="bg-white p-6 sm:p-8 rounded-lg max-w-md w-full text-center">
-                <h2 className="text-xl sm:text-2xl font-bold mb-4">Welcome to Mini Game!</h2>
-                <p className="mb-6 text-sm sm:text-base">
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div className="bg-white p-4 md:p-6 lg:p-8 rounded-lg max-w-md w-full text-center">
+                <h2 className="text-xl md:text-xl  lg:text-2xl font-bold mb-3 md:mb-4">Welcome to Mini Game!</h2>
+                <p className="mb-4 md:mb-6 text-xs md:text-sm lg:text-base">
                     After playing the adventure mode, let's test your vocabulary in science terms!
                     In this mode, there are no hints - you must rely on your knowledge.
                     Each grid contains at least one valid science term. Can you find it?
                 </p>
                 <button 
-                    className="bg-blue-500 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg text-base sm:text-xl hover:bg-blue-600"
+                    className="bg-blue-500 text-white px-3 py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 rounded-lg text-sm md:text-base lg:text-xl hover:bg-blue-600"
                     onClick={() => setShowTutorial(false)}
                 >
                     Start Game
@@ -764,25 +764,25 @@ const handleSelectedLetterClick = (letter, index) => {
     )}
     
     {/* Header */} 
-    <div className="w-full flex justify-between items-center p-2 sm:p-4 bg-black bg-opacity-50">
+    <div className="w-full flex justify-between items-center p-2 md:p-3 lg:p-4 bg-black bg-opacity-50">
         {/* Heart */}
         <div className="flex items-center">
-            <img src={heartImage} alt="Heart" className="w-6 h-6 sm:w-8 sm:h-8 mr-2" />
-            <span className="text-white text-base sm:text-2xl">{playerHearts}</span>
+            <img src={heartImage} alt="Heart" className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 mr-1 md:mr-2" />
+            <span className="text-white text-sm md:text-base lg:text-2xl">{playerHearts}</span>
         </div>
         
         {/* Center Score */} 
-        <div className="text-white text-base sm:text-2xl absolute left-1/2 transform -translate-x-1/2">
+        <div className="text-white text-sm md:text-base lg:text-2xl absolute left-1/2 transform -translate-x-1/2">
             Score: {score}
         </div>
         
         {/* Navigation */}                     
-        <div className="flex items-center space-x-2 sm:space-x-4">
+        <div className="flex items-center space-x-2 md:space-x-3 lg:space-x-4">
         <div className="transition-all 
-                                    duration-300 hover:scale-110 
-                                    hover:rotate-90 text-white focus:outline-none
-                                    focus:ring-4 focus:ring slidebar-icon 
-                                    text-xl sm:text-2xl cursor-pointer" 
+                duration-300 hover:scale-110 
+                hover:rotate-90 text-white focus:outline-none
+                focus:ring-4 focus:ring slidebar-icon 
+                text-base md:text-xl lg:text-2xl cursor-pointer" 
                                     onClick={toggleSlidebar}>
                         <Cross toggled={slidebarOpen} toggle={toggleSlidebar} />
                     </div>
@@ -838,7 +838,7 @@ const handleSelectedLetterClick = (letter, index) => {
     </div>
 
     {/* Battle Area */}
-    <div className="w-full flex-1 flex justify-between items-center px-4 sm:px-10 mt-2 sm:mt-4 relative">
+    <div className="w-full flex-1 flex justify-between items-center px-2 md:px-6 lg:px-10 mt-2 relative">
         {/* Player Character */}
         <div className="relative">
             <img 
@@ -883,17 +883,17 @@ const handleSelectedLetterClick = (letter, index) => {
 
     {/* Definition Display */}
     <div className="w-full p-2 text-center mt-auto">
-        <div className="bg-white bg-opacity-75 rounded p-2 max-w-2xl mx-auto text-sm sm:text-lg">
+        <div className="bg-white bg-opacity-75 rounded p-2 max-w-2xl mx-auto text-xs md:text-sm lg:text-lg">
             {definition || "Form a science term from the letters below!"}
         </div>
     </div>
 
     {/* Game Grid */}
-    <div className="grid grid-cols-5 gap-1 sm:gap-2 p-2 sm:p-4 mb-8 sm:mb-16">
+    <div className="grid grid-cols-5 gap-2 md:gap-2 p-6  mb-16 md:mb-14 lg:mb-12">
         {gridLetters.map((letter, index) => (
             <button
                 key={index}
-                className={`w-12 h-12 sm:w-16 sm:h-16 text-base sm:text-2xl font-bold rounded-lg shadow-lg transform transition-all duration-200 ${
+                className={`w-8 h-8 md:w-12 md:h-12 lg:w-16 lg:h-16 text-xs md:text-base lg:text-2xl font-bold rounded-lg shadow-lg transform transition-all duration-200 ${
                     emptyIndices.includes(index)
                         ? 'bg-gray-200 text-gray-400 cursor-default'
                         : 'bg-white hover:scale-105 hover:bg-blue-100'
@@ -907,23 +907,23 @@ const handleSelectedLetterClick = (letter, index) => {
     </div>
 
     {/* Word Input */}
-    <div className="absolute bottom-4 w-full flex justify-center items-center space-x-2 sm:space-x-4 px-4">
-        <div className={`flex items-center space-x-1 px-2 py-1 sm:px-3 sm:py-2 min-w-[120px] sm:min-w-[150px] ${isShaking ? 'shake' : ''}`}>
+    <div className="fixed bottom-2 md:bottom-3 lg:bottom-4 w-full flex justify-center items-center space-x-1 md:space-x-2 lg:space-x-4 px-2 md:px-4">
+        <div className={`flex items-center space-x-1 px-1 py-1 md:px-2 md:py-1 lg:px-3 lg:py-2 min-w-[80px] md:min-w-[120px] lg:min-w-[150px] ${isShaking ? 'shake' : ''}`}>
             {selectedLetters.map((letter, index) => (
                 <div
                     key={index}
                     className={`
                         relative 
-                        w-7 h-7 
-                        sm:w-8 sm:h-8 
-                        md:w-10 md:h-10 
+                        w-5 h-5 
+                        md:w-7 md:h-7 
+                        lg:w-10 lg:h-10 
                         border-2 
                         flex 
                         items-center 
                         justify-center 
-                        text-sm 
-                        sm:text-base 
-                        md:text-lg 
+                        text-xs 
+                        md:text-sm 
+                        lg:text-lg 
                         font-bold 
                         rounded-lg 
                         cursor-pointer 
@@ -943,20 +943,21 @@ const handleSelectedLetterClick = (letter, index) => {
         
         {/* Scramble Button */}
         <button
-            className={`bg-purple-500 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-lg text-base sm:text-lg font-bold hover:bg-purple-600 transform transition-transform hover:scale-105
+            className={`bg-purple-500 text-white px-2 py-1 md:px-3 md:py-1 lg:px-4 lg:py-2 rounded-lg text-xs md:text-sm lg:text-lg font-bold hover:bg-purple-600 transform transition-transform hover:scale-105
                 ${scrambleCooldown ? 'opacity-50 cursor-not-allowed' : ''}
             `}
             onClick={handleScramble}
             disabled={scrambleCooldown}
         >
-            RECOMBINE
+            <span className="hidden md:inline">RECOMBINE</span>
+            <span className="md:hidden">RECOMBINE</span>
         </button>
         
         <button
-            className="bg-blue-500 text-white px-2 py-1 sm:px-2 sm:py-1 flex justify-end rounded-lg text-base sm:text-lg hover:bg-blue-600 transform transition-transform hover:scale-105"
+            className="bg-blue-500 text-white px-2 py-1 md:px-2 md:py-1 flex justify-end rounded-lg text-xs md:text-sm lg:text-lg hover:bg-blue-600 transform transition-transform hover:scale-105"
             onClick={handleSubmitWord}
         >
-            Submit
+            <span className="whitespace-nowrap">Submit</span>
         </button>
     </div>
 
@@ -971,16 +972,16 @@ const handleSelectedLetterClick = (letter, index) => {
 
     {/* Game Over Screen */}
     {gameOver && (
-        <div className="absolute inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center p-4">
-            <h2 className="text-white text-2xl sm:text-4xl mb-4 text-center">Game Over!</h2>
-            <p className="text-white text-xl sm:text-2xl mb-8 text-center">Final Score: {score}</p>
-            <button
-                className="bg-blue-500 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg text-base sm:text-xl hover:bg-blue-600"
-                onClick={onMainMenu}
-            >
-                Return to Main Menu
-            </button>
-        </div>
+      <div className="fixed inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center p-4">
+      <h2 className="text-white text-xl md:text-2xl lg:text-4xl mb-2 md:mb-4 text-center">Game Over!</h2>
+      <p className="text-white text-lg md:text-xl lg:text-2xl mb-4 md:mb-8 text-center">Final Score: {score}</p>
+      <button
+          className="bg-blue-500 text-white px-3 py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 rounded-lg text-sm md:text-base lg:text-xl hover:bg-blue-600"
+          onClick={onMainMenu}
+      >
+          Return to Main Menu
+      </button>
+  </div>
     )}
 </div>
 );
