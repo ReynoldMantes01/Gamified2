@@ -11,6 +11,13 @@ import heartImage from '../assets/heart.png';
 import bgImage from '../assets/bg.gif';
 import microbeImage from '../assets/microbe.gif';
 import toxinImage from '../assets/toxin.gif';
+import mutantDnaImage from '../assets/mutant_dna.gif';
+import quarkImage from '../assets/quark.gif';
+import gravitonImage from '../assets/graviton.gif';
+import blackHoleImage from '../assets/black_hole.gif';
+import atomImage from '../assets/atom.gif';
+import moleculeImage from '../assets/molecule.gif';
+import reactionMasterImage from '../assets/reaction_master.gif';
 import slimesImage from '../assets/slimes.gif';
 import characterIdle from '../assets/attack/mc_idle.gif';
 import characterAttack from '../assets/attack/newchar_attack.gif'; // Import the newchar_attack.gif
@@ -58,14 +65,28 @@ const MiniGame = ({ onMainMenu, profileData, setProfileData, onLogout, musicVolu
     const [highlightedIndices, setHighlightedIndices] = useState([]);
 
     const enemies = [
-        { name: "Microbe", image: 'microbe.gif', health: 3 },
-        { name: "Toxic Crawler", image: 'toxic_crawler.gif', health: 4 },
+        { name: "Microbe", image: 'microbe.gif', health: 1 },
+        { name: "Toxic Crawler", image: 'toxin.gif', health: 2 },
+        { name: "Mutant DNA", image: 'mutant_dna.gif', health: 5 },
+        { name: "Quark", image: 'quark.gif', health: 2 },
+        { name: "Graviton", image: 'graviton.gif', health: 5 },
+        { name: "Black Hole", image: 'black_hole.gif', health: 12 },
+        { name: "Atom", image: 'atom.gif', health: 3 },
+        { name: "Molecule", image: 'molecule.gif', health: 6 },
+        { name: "Reaction Master", image: 'reaction_master.gif', health: 10 }
     ];
 
     // Map enemy image filenames to imported images
     const enemyImages = {
         'microbe.gif': microbeImage,
-        'toxic_crawler.gif': toxinImage,
+        'toxin.gif': toxinImage,
+        'mutant_dna.gif': mutantDnaImage,
+        'quark.gif': quarkImage,
+        'graviton.gif': gravitonImage,
+        'black_hole.gif': blackHoleImage,
+        'atom.gif': atomImage,
+        'molecule.gif': moleculeImage,
+        'reaction_master.gif': reactionMasterImage
     };
 
     const currentEnemy = enemies[currentEnemyIndex % enemies.length];
@@ -375,10 +396,21 @@ const handleLetterClick = (letter, index) => {
 const handleRemoveLetter = (letterIndex) => {
     if (!isPaused) {
         const originalIndex = emptyIndices[letterIndex];
+        
+        // Remove the letter from selected letters
         setSelectedLetters(prev => prev.filter((_, i) => i !== letterIndex));
         setEmptyIndices(prev => prev.filter((_, i) => i !== letterIndex));
+        
         // Clear any highlighting for this letter
         setHighlightedIndices(prev => prev.filter(i => i !== letterIndex));
+        
+        // Reset selected letter index if needed
+        if (selectedLetterIndex === letterIndex) {
+            setSelectedLetterIndex(-1);
+        } else if (selectedLetterIndex > letterIndex) {
+            // Adjust index if removing a letter before the currently selected one
+            setSelectedLetterIndex(prev => prev - 1);
+        }
     }
 };
 
@@ -409,6 +441,16 @@ const handleSubmitWord = () => {
             const newHealth = prevHealth - 1;
             if (newHealth <= 0) {
                 // Handle enemy defeat logic here if needed
+                playWinSound();
+                
+                // Move to next enemy
+                const nextEnemyIndex = currentEnemyIndex + 1;
+                if (nextEnemyIndex < enemies.length) {
+                    setCurrentEnemyIndex(nextEnemyIndex);
+                    setCurrentEnemyHealth(enemies[nextEnemyIndex].health);
+                } else {
+                    setGameOver(true);
+                }
             }
             return newHealth;
         });
